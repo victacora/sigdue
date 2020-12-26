@@ -22,7 +22,6 @@
     <string name="account_preferences_key">ConfigurarCuenta</string>
     <string name="account_preferences_title">ConfigurarCuenta</string>
     <string name="account_preferences_summary">Configurar sincronizacion y notificaciones.</string>
-    <string name="listar_inmovilizacion_title">Inmovilizaciones Móviles</string>
     <string name="inm_sincronizar">Sincronizar inmovilizaciones</string>
     <string name="inm_cerrar">Cerrar sesión</string>
     <string name="login_activity_ok_button">Iniciar sesión</string>
@@ -125,5 +124,5 @@
     <string name="ui_listar_inmovilizaciones">Listando información...</string>
     <string name="vacio" />
     <string name="inm_sincronizar_maestros">Sincronizar maestros</string>
-    <string name="informacion_title">SIGDUE Móviles</string>
+    <string name="informacion_title">SIGDUE Móvil</string>
 </resources>

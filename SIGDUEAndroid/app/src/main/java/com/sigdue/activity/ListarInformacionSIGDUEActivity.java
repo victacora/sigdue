@@ -232,7 +232,7 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         try {
-            setTitle(getString(R.string.listar_inmovilizacion_title));
+            setTitle(getString(R.string.informacion_title));
             if (this.app != null) {
                 this.daoSession = this.app.getDaoSession();
             }
