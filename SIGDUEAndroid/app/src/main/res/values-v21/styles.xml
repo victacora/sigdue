@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <style name="NoActionBar" parent="@style/Theme.AppCompat.Light.NoActionBar">
+    	<item name="colorPrimary">@color/actionbar_background</item>
+        <item name="colorPrimaryDark">@color/actionbar_background</item>
+        <item name="colorAccent">@color/comparendos_moviles_accent</item>
+        <item name="android:textColor">@color/text_title</item>
+        <item name="android:textColorSecondary">@color/text_body</item>
+        <item name="android:spinnerItemStyle">@style/AccountSpinner</item>
+        <item name="searchViewStyle">@style/MySearchViewStyle</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+</resources>

@@ -1,0 +1,98 @@
+<?xml version="1" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+            <com.sigdue.ui.AutoResizeTextView
+                android:id="@+id/numeroInmovilizacion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:textSize="19sp"
+                android:textStyle="bold" />
+
+            <com.sigdue.ui.AutoResizeTextView
+                android:id="@+id/fechaComparendo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/numeroInmovilizacion"
+                android:textSize="17sp" />
+
+            <com.sigdue.ui.AutoResizeTextView
+                android:id="@+id/vehiculo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/fechaComparendo"
+                android:textSize="17sp" />
+
+            <com.sigdue.ui.AutoResizeTextView
+                android:id="@+id/documentoInfractor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/vehiculo"
+                android:textSize="17sp" />
+
+            <com.sigdue.ui.AutoResizeTextView
+                android:id="@+id/nombreInfractor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/documentoInfractor"
+                android:textSize="17sp" />
+
+            <com.sigdue.ui.AutoResizeTextView
+                android:id="@+id/placaAgente"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/nombreInfractor"
+                android:textSize="17sp" />
+
+            <com.sigdue.ui.AutoResizeTextView
+                android:id="@+id/usuario"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/placaAgente"
+                android:textSize="17sp" />
+
+            <com.sigdue.ui.AutoResizeTextView
+                android:id="@+id/estado"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/usuario"
+                android:textSize="17sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/usuario"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnEditar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Editar"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/btnVerFotos"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Ver fotos"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+</LinearLayout>

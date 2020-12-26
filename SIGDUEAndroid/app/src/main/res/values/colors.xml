@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <color name="comparendos_moviles">#339933</color>
+    <color name="comparendos_moviles_blue_dark">@color/comparendos_moviles</color>
+    <color name="comparendos_moviles_accent">@color/comparendos_moviles</color>
+
+	<color name="orange1">#FF6600</color>
+	<color name="orange2">#FF9900</color>
+	<color name="yellow">#FFCC00</color>
+	<color name="comparendo_indicator">#FF9900</color>
+    <color name="actionbar_background">@color/comparendos_moviles</color>
+    <color name="statusbar_background">@color/comparendos_moviles_blue_dark</color>
+    <color name="actionbar_text">#FFF</color>
+    <color name="actionbar_divider">#555</color>
+    
+    <color name="comparendo_list_default_bg">#373737</color>
+	<color name="bookmark_list_activated_bg">#455082</color>
+
+    <color name="add_bookmark_action_button">@color/comparendos_moviles</color>
+    <color name="add_bookmark_action_button_pressed">@color/comparendos_moviles_blue_dark</color>
+
+	<color name="tag_list_default_bg">#000000</color>
+	<color name="tag_list_activated_bg">#BF8600</color>
+	<color name="bookmark_view_bg">#00000000</color>
+	<color name="tag_view_bg">#00000000</color>
+
+    <color name="text_title">#de000000</color>
+    <color name="text_body">#de000000</color>
+    <color name="text_caption">#8a000000</color>
+
+    <color name="drawer_background">@color/comparendos_moviles</color>
+    <color name="drawer_list_background">#FFFFFF</color>
+    <color name="drawer_divider">#15000000</color>
+
+    <color name="add_comparendo_background">#FFFFFF</color>
+
+    <color name="search_suggestion_background_pressed">#E0E0E0</color>
+    <color name="search_suggestion_background_default">#FFFFFF</color>
+
+    <color name="login_button_background">@color/comparendos_moviles</color>
+    <color name="primary_color">@color/comparendos_moviles</color>
+    <color name="colorAccent">#c8e8ff</color>
+    <color name="EditextSeleted">#f2f2f2</color>
+    <color name="EditextNoSeleted">#d9d9d9</color>
+    d9d9d9
+</resources>

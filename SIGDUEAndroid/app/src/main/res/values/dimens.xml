@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="widget_margin">2dp</dimen>
+    <dimen name="widget_height">56dp</dimen>
+    <dimen name="add_switch_margin_left">0dp</dimen>
+    <dimen name="add_switch_margin_right">0dp</dimen>
+    <dimen name="action_bar_width">265dp</dimen>
+
+    <dimen name="add_inmovilizacion_padding">16dp</dimen>
+    <dimen name="add_inmovilizacion_section_padding">12dp</dimen>
+    <integer name="add_bookmark_note_lines">2</integer>
+    <dimen name="add_bookmark_form_padding">0dp</dimen>
+
+    <dimen name="account_list_height">64dp</dimen>
+
+    <dimen name="bookmark_list_view_height">72dp</dimen>
+
+    <dimen name="view_bookmark_padding">16dp</dimen>
+    <dimen name="view_bookmark_title_text">18sp</dimen>
+    <dimen name="view_bookmark_body_text">16sp</dimen>
+    <dimen name="view_bookmark_tag_text">18sp</dimen>
+    <dimen name="view_bookmark_section_padding">12dp</dimen>
+    <dimen name="view_bookmark_body_margin_left">32dp</dimen>
+    <dimen name="view_bookmark_icon_size">24dp</dimen>
+
+    <dimen name="view_note_padding">16dp</dimen>
+    <dimen name="view_note_title_text">18sp</dimen>
+    <dimen name="view_note_body_text">16sp</dimen>
+    <dimen name="view_inmovilizacion_padding">12dp</dimen>
+    <dimen name="view_note_body_margin_left">32dp</dimen>
+    <dimen name="view_note_icon_size">24dp</dimen>
+
+    <dimen name="browse_bookmark_title_text">16sp</dimen>
+    <dimen name="browse_bookmark_tag_text">14sp</dimen>
+    <dimen name="drawer_width">300dp</dimen>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="toolbar_padding_top">0dp</dimen>
+    <dimen name="custom_tab_layout_height">72dp</dimen>
+    <dimen name="tab_label">14sp</dimen>
+</resources>

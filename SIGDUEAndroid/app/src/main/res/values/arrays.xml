@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pref_tiempo_sincronizacion_gps">
+        <item>0 minutos</item>
+        <item>5 minutos</item>
+        <item>15 minutos</item>
+        <item>30 minutos</item>
+        <item>45 minutos</item>
+        <item>1 hora</item>
+    </string-array>
+    <string-array name="pref_tiempo_sincronizacion_gps_values">
+        <item>0</item>
+        <item>5</item>
+        <item>15</item>
+        <item>30</item>
+        <item>45</item>
+        <item>60</item>
+    </string-array>
+    <string-array name="opciones_menu">
+        <item>opcion_menu_comparendos</item>
+        <item>opcion_menu_consultar_runt_personas</item>
+        <item>opcion_menu_consultar_runt_vehiculos</item>
+        <item>opcion_menu_consultar_simit</item>
+        <item>opcion_menu_configuracion</item>
+        <item>opcion_menu_cerrar_sesion</item>
+    </string-array>
+    <string-array name="opciones_menu_icons">
+        <item>opcion_menu_comparendos</item>
+        <item>opcion_menu_consultar_runt_personas</item>
+        <item>opcion_menu_consultar_runt_vehiculos</item>
+        <item>opcion_menu_simit</item>
+        <item>opcion_menu_configuracion</item>
+        <item>opcion_menu_cerrar_sesion</item>
+    </string-array>
+</resources>

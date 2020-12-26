@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+	<style name="LayoutRight">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:gravity">right</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+    <style name="LoginFrame">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingTop">5dip</item>
+        <item name="android:paddingBottom">13dp</item>
+        <item name="android:paddingLeft">20dp</item>
+        <item name="android:paddingRight">20dp</item>
+    </style>
+    <style name="LoginMessage">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">5dp</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+    </style>
+    <style name="LoginButtonFrame">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">#c6c3c6</item>
+        <item name="android:minHeight">54dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingLeft">2dp</item>
+        <item name="android:paddingRight">2dp</item>
+    </style>
+    <style name="LoginButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:minWidth">100dp</item>
+    </style>
+    <style name="WidgetButton">
+        <item name="android:layout_width">50dp</item>
+        <item name="android:layout_height">50dp</item>
+        <item name="android:layout_marginLeft">5dp</item>
+        <item name="android:layout_gravity">center_vertical</item>
+    </style>
+
+    <style name="TabletLandFrame">
+        <item name="android:paddingLeft">150dp</item>
+        <item name="android:paddingRight">150dp</item>
+        <item name="android:background">#151515</item>
+    </style>
+
+    <style name="AccountSpinner" parent="android:TextAppearance.Widget.TextView.SpinnerItem">
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:layout_marginRight">12dp</item>
+    </style>
+
+    <style name="MySearchViewStyle" parent="Widget.AppCompat.SearchView">
+        <item name="suggestionRowLayout">@layout/search_suggestion</item>
+    </style>
+
+    <style name="NoActionBar" parent="@style/Theme.AppCompat.Light.NoActionBar">
+    	<item name="colorPrimary">@color/actionbar_background</item>
+        <item name="colorPrimaryDark">@color/actionbar_background</item>
+        <item name="colorAccent">@color/comparendos_moviles_accent</item>
+        <item name="android:textColor">@color/text_title</item>
+        <item name="android:textColorSecondary">@color/text_body</item>
+        <item name="android:spinnerItemStyle">@style/AccountSpinner</item>
+        <item name="searchViewStyle">@style/MySearchViewStyle</item>
+    </style>
+
+    <style name="InmovilizacionesMoviles" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/actionbar_background</item>
+        <item name="colorPrimaryDark">@color/statusbar_background</item>
+        <item name="colorAccent">@color/comparendos_moviles_accent</item>
+        <item name="android:textColor">@color/text_title</item>
+        <item name="android:textColorSecondary">@color/text_body</item>
+        <item name="android:spinnerItemStyle">@style/AccountSpinner</item>
+        <item name="searchViewStyle">@style/MySearchViewStyle</item>
+    </style>
+</resources>

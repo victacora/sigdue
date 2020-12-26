@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/pref_configuracion_servicios_title">
+        <EditTextPreference
+            android:defaultValue="@string/pref_url_accesoria_default"
+            android:key="@string/pref_url_accesoria_key"
+            android:summary="@string/pref_url_accesoria"
+            android:title="@string/pref_url_accesoria_title" />
+        <EditTextPreference
+            android:defaultValue="@string/pref_url_comp_moviles_default"
+            android:key="@string/pref_url_comp_moviles_key"
+            android:summary="@string/pref_url_comp_moviles"
+            android:title="@string/pref_url_comp_moviles_title" />
+        <EditTextPreference
+            android:defaultValue="@string/pref_url_comp_consultas_default"
+            android:key="@string/pref_url_comp_consultas_key"
+            android:summary="@string/pref_url_comp_consultas"
+            android:title="@string/pref_url_comp_consultas_title" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/pref_configuracion_impresora_title">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/pref_usar_impresora_wifi_bluetooth_key"
+            android:summaryOff="@string/pref_usar_impresora_wifi_bluetooth_summary_off"
+            android:summaryOn="@string/pref_usar_impresora_wifi_bluetooth_summary_on"
+            android:switchTextOff="@string/pref_usar_impresora_wifi_bluetooth_switch_off"
+            android:switchTextOn="@string/pref_usar_impresora_wifi_bluetooth_switch_on"
+            android:title="@string/pref_usar_impresora_wifi_bluetooth_title" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="@string/pref_usar_wifi_key"
+            android:summaryOff="@string/pref_usar_wifi_summary_off"
+            android:summaryOn="@string/pref_usar_wifi_summary_on"
+            android:switchTextOff="@string/pref_usar_wifi_switch_off"
+            android:switchTextOn="@string/pref_usar_wifi_switch_on"
+            android:title="@string/pref_usar_wifi_title" />
+        <EditTextPreference
+            android:defaultValue="@string/pref_macip_default"
+            android:key="@string/pref_macip_key"
+            android:summary="@string/pref_macip_summary"
+            android:title="@string/pref_macip_title" />
+        />
+
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/pref_sincronizar_maestros_title">
+        <Preference
+            android:key="@string/pref_sincronizar_maestros_key"
+            android:summary="@string/pref_sincronizar_maestros_summary"
+            android:title="@string/pref_sincronizar_maestros_title" />
+        <EditTextPreference
+            android:defaultValue="@string/pref_timeout_default"
+            android:key="@string/pref_timeout_key"
+            android:summary="@string/pref_timeout_summary"
+            android:title="@string/pref_timeout_title" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/pref_transito_title">
+        <EditTextPreference
+            android:defaultValue="@string/pref_nombre_transito_default"
+            android:key="@string/pref_nombre_transito_key"
+            android:summary="@string/pref_nombre_transito_summary"
+            android:title="@string/pref_nombre_transito_title" />
+        <EditTextPreference
+            android:defaultValue="@string/vacio"
+            android:key="@string/pref_id_transito_key"
+            android:summary="@string/pref_id_transito_summary"
+            android:title="@string/pref_id_transito_title" />
+        <EditTextPreference
+            android:defaultValue="@string/vacio"
+            android:key="@string/pref_eslogan_key"
+            android:summary="@string/pref_eslogan_summary"
+            android:title="@string/pref_eslogan_title" />
+        <Preference
+            android:defaultValue="@string/vacio"
+            android:key="@string/pref_logo_key"
+            android:summary="@string/pref_logo_summary"
+            android:title="@string/pref_logo_title" />
+        <ListPreference
+            android:key="@string/pref_departamento_key"
+            android:summary="@string/pref_departamento_summary"
+            android:title="@string/pref_departamento_title" />
+        <ListPreference
+            android:key="@string/pref_municipio_key"
+            android:summary="@string/pref_municipio_summary"
+            android:title="@string/pref_municipio_title" />
+        <ListPreference
+            android:key="@string/pref_tipodocumento_key"
+            android:summary="@string/pref_tipodocumento_summary"
+            android:title="@string/pref_tipodocumento_title" />
+        <ListPreference
+            android:key="@string/pref_organismotransito_key"
+            android:summary="@string/pref_organismotransito_summary"
+            android:title="@string/pref_organismotransito_title" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/pref_tiempo_sincronizacion_gps_title">
+        <ListPreference
+            android:defaultValue="@string/pref_tiempo_sincronizacion_gps_default"
+            android:entries="@array/pref_tiempo_sincronizacion_gps"
+            android:entryValues="@array/pref_tiempo_sincronizacion_gps_values"
+            android:key="@string/pref_tiempo_sincronizacion_gps_key"
+            android:summary="@string/pref_tiempo_sincronizacion_gps_summary"
+            android:title="@string/pref_tiempo_sincronizacion_gps_title" />
+    </PreferenceCategory>
+</PreferenceScreen>
