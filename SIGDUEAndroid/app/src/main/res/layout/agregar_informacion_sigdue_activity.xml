@@ -837,6 +837,7 @@
                     android:id="@+id/imagen"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
+                    android:scaleType="centerCrop"
                     android:layout_marginBottom="5dp"/>
 
                 <ImageView

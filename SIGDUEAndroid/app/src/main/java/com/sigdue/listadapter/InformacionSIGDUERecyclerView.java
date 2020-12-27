@@ -17,11 +17,11 @@ import com.sigdue.ui.AutoResizeTextView;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-public class InmovilizacionRecyclerView extends RecyclerView.Adapter<InmovilizacionRecyclerView.ComparendoViewHolder> {
+public class InformacionSIGDUERecyclerView extends RecyclerView.Adapter<InformacionSIGDUERecyclerView.ComparendoViewHolder> {
     private List<Inmovilizacion> data;
     private Context mContext;
 
-    public InmovilizacionRecyclerView(List<Inmovilizacion> data, Context mContext) {
+    public InformacionSIGDUERecyclerView(List<Inmovilizacion> data, Context mContext) {
         this.data = data;
         this.mContext = mContext;
     }

@@ -7,7 +7,7 @@ import com.sigdue.utilidadesgenerales.DBConnection;
 import com.sigdue.db.DaoSession;
 import com.sigdue.utilidadesgenerales.UtilidadesGenerales;
 
-public class AplicacionInmovilizaciones extends Application {
+public class AplicacionSIGDUE extends Application {
 
     DBConnection dbConnection;
     private String usuario = "";

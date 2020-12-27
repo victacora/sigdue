@@ -45,7 +45,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.sigdue.aplication.AplicacionInmovilizaciones;
+import com.sigdue.aplication.AplicacionSIGDUE;
 import com.sigdue.db.ClaseVehiculo;
 import com.sigdue.db.ClaseVehiculoDao;
 import com.sigdue.db.Color;
@@ -72,7 +72,7 @@ import com.sigdue.db.Vehiculo;
 import com.sigdue.db.VehiculoDao;
 import com.sigdue.db.Zonas;
 import com.sigdue.db.ZonasDao;
-import com.sigdue.listadapter.InmovilizacionRecyclerView;
+import com.sigdue.listadapter.InformacionSIGDUERecyclerView;
 import com.sigdue.service.EnviarInformacionSIGDUEService;
 import com.sigdue.utilidadesgenerales.UtilidadesGenerales;
 import com.sigdue.db.DaoSession;
@@ -99,7 +99,7 @@ import static com.sigdue.Constants.SLEEP_PROGRESS_MAESTROS;
 public class ListarInformacionSIGDUEActivity extends AppCompatActivity {
 
     private static final String TAG = "ListarInmActivity";
-    private AplicacionInmovilizaciones app;
+    private AplicacionSIGDUE app;
     private FloatingActionButton btnAgregarComparendo;
     private ClaseVehiculoDao claseVehiculoDao;
     private ColorDao coloresDao;
@@ -110,7 +110,7 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity {
     private InfraccionDao infraccionDao;
     private InmovilizacionDao inmovilizacionDao;
     LinearLayoutManager llm;
-    private InmovilizacionRecyclerView mAdapter;
+    private InformacionSIGDUERecyclerView mAdapter;
     private EjecutarConsultarServiciosAsyncTask mConsultarInmovilizacionesTask;
     private ProgressDialogFragment mProgressDialog;
     private MunicipioDao municipioDao;
@@ -147,7 +147,7 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity {
 
             UtilidadesGenerales.context = this;
             setContentView(R.layout.listar_informacion_sigdue_activity);
-            this.app = (AplicacionInmovilizaciones) getApplication();
+            this.app = (AplicacionSIGDUE) getApplication();
             this.daoSession = this.app.getDaoSession();
             this.inmovilizacionDao = this.daoSession.getInmovilizacionDao();
             this.departamentosDao = this.daoSession.getDepartamentoDao();
@@ -707,7 +707,7 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity {
         this.mConsultarInmovilizacionesTask = null;
         hideProgress();
         if (opcion != 4) {
-            this.mAdapter = new InmovilizacionRecyclerView(inmovilizaciones, this);
+            this.mAdapter = new InformacionSIGDUERecyclerView(inmovilizaciones, this);
             this.rv.setAdapter(this.mAdapter);
         }
         AlertDialog.Builder builder;

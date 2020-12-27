@@ -44,7 +44,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.sigdue.R;
-import com.sigdue.aplication.AplicacionInmovilizaciones;
+import com.sigdue.aplication.AplicacionSIGDUE;
 import com.sigdue.db.ClaseVehiculo;
 import com.sigdue.db.ClaseVehiculoDao;
 import com.sigdue.db.Color;
@@ -84,7 +84,7 @@ import static com.sigdue.Constants.SLEEP_PROGRESS_MAESTROS;
 public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "LoginActivity";
-    private AplicacionInmovilizaciones app;
+    private AplicacionSIGDUE app;
     private AutenticarUsuarioAsyncTask mAuthTask = null;
     private DialogFragment mProgressDialog = null;
     private TextView mMessage;
@@ -111,7 +111,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         try {
             UtilidadesGenerales.context = this;
-            app = (AplicacionInmovilizaciones) getApplicationContext();
+            app = (AplicacionSIGDUE) getApplicationContext();
             daoSession = app.getDaoSession();
             departamentosDao = daoSession.getDepartamentoDao();
             municipioDao = daoSession.getMunicipioDao();
@@ -323,7 +323,7 @@ public class LoginActivity extends AppCompatActivity {
                                 Thread.sleep(SLEEP_PROGRESS_MAESTROS);
                             }
                         }*/
-                        resultadoAutenticacion=new Persona();
+                        resultadoAutenticacion = new Persona();
                         resultadoAutenticacion.setApellido1("Puyo");
                         resultadoAutenticacion.setApellido2("Epia");
                         resultadoAutenticacion.setNombre1("Victor");
@@ -668,7 +668,10 @@ public class LoginActivity extends AppCompatActivity {
             } else if (requestCode == UtilidadesGenerales.CAMERA_CODE
                     && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 mensaje = "Error al activar permiso para uso de camara.";
-            }  else if (requestCode == UtilidadesGenerales.ACCESS_WIFI_STATE_CODE
+            } else if (requestCode == UtilidadesGenerales.RECORD_AUDIO
+                    && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                mensaje = "Error al activar permiso para almacenar audio desde el equipo.";
+            } else if (requestCode == UtilidadesGenerales.ACCESS_WIFI_STATE_CODE
                     && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 mensaje = "Error al activar permiso para consutar el estado de conexion a WIFI.";
             } else if (requestCode == UtilidadesGenerales.ACCESS_NETWORK_STATE_CODE
@@ -680,18 +683,16 @@ public class LoginActivity extends AppCompatActivity {
             } else if (requestCode == UtilidadesGenerales.ACCESS_FINE_LOCATION_CODE
                     && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 mensaje = "Error al activar permiso de consulta GPS, ubicación precisa.";
-            }  else if (requestCode == UtilidadesGenerales.ACCESS_COARSE_LOCATION_CODE
+            } else if (requestCode == UtilidadesGenerales.ACCESS_COARSE_LOCATION_CODE
                     && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 mensaje = "Error al activar permiso de consulta GPS, ubicación aproximada.";
             } else if (requestCode == UtilidadesGenerales.WRITE_EXTERNAL_STORAGE_CODE
                     && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 mensaje = "Error al activar permiso de almacenamiento en memoria externa.";
-            }
-            else if (requestCode == UtilidadesGenerales.READ_EXTERNAL_STORAGE_CODE
+            } else if (requestCode == UtilidadesGenerales.READ_EXTERNAL_STORAGE_CODE
                     && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 mensaje = "Error al activar permiso de lectura de memoria externa.";
-            }
-            else if (requestCode == UtilidadesGenerales.VIBRATE_CODE
+            } else if (requestCode == UtilidadesGenerales.VIBRATE_CODE
                     && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 mensaje = "Error al activar permiso para el manejo de notifiaciones.";
             }
@@ -747,6 +748,38 @@ public class LoginActivity extends AppCompatActivity {
                 android.app.AlertDialog alert = builder.create();
                 alert.show();
                 Log.i(TAG, "Solicitar permiso para uso de camara.");
+            } else if (ActivityCompat.checkSelfPermission(this,
+                    Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+                builder.setTitle("Información");
+                builder.setCancelable(false);
+                builder.setMessage("Esta aplicación requiere tener habilitado el permiso para almacenar audio desde el equipo.");
+                builder.setPositiveButton("Activar", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.RECORD_AUDIO},
+                                UtilidadesGenerales.RECORD_AUDIO);
+                        dialog.dismiss();
+                    }
+                });
+                android.app.AlertDialog alert = builder.create();
+                alert.show();
+                Log.i(TAG, "Solicitar permiso para uso de audio.");
+            } else if (ActivityCompat.checkSelfPermission(this,
+                    Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+                builder.setTitle("Información");
+                builder.setCancelable(false);
+                builder.setMessage("Esta aplicación requiere tener habilitado el permiso para almacenar audio desde el equipo.");
+                builder.setPositiveButton("Activar", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.CAMERA},
+                                UtilidadesGenerales.RECORD_AUDIO);
+                        dialog.dismiss();
+                    }
+                });
+                android.app.AlertDialog alert = builder.create();
+                alert.show();
+                Log.i(TAG, "Solicitar permiso para uso de audio.");
             } else if (ActivityCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_WIFI_STATE) != PackageManager.PERMISSION_GRANTED) {
                 android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
@@ -811,8 +844,7 @@ public class LoginActivity extends AppCompatActivity {
                 alert.show();
 
                 Log.i(TAG, "Solicitar permiso para consulta GPS por ubicación precisa.");
-            }
-            else if (ActivityCompat.checkSelfPermission(this,
+            } else if (ActivityCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
                 builder.setTitle("Información");
@@ -828,7 +860,7 @@ public class LoginActivity extends AppCompatActivity {
                 alert.show();
 
                 Log.i(TAG, "Solicitar permiso para consulta GPS por ubicación aproximada.");
-            }else if (ActivityCompat.checkSelfPermission(this,
+            } else if (ActivityCompat.checkSelfPermission(this,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
                 builder.setTitle("Información");
@@ -843,8 +875,7 @@ public class LoginActivity extends AppCompatActivity {
                 android.app.AlertDialog alert = builder.create();
                 alert.show();
                 Log.i(TAG, "Solicitar permiso para escribir en memoria externa.");
-            }
-            else if (ActivityCompat.checkSelfPermission(this,
+            } else if (ActivityCompat.checkSelfPermission(this,
                     Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
                 builder.setTitle("Información");
@@ -859,9 +890,7 @@ public class LoginActivity extends AppCompatActivity {
                 android.app.AlertDialog alert = builder.create();
                 alert.show();
                 Log.i(TAG, "Solicitar permiso para leer la memoria externa.");
-            }
-
-            else if (ActivityCompat.checkSelfPermission(this,
+            } else if (ActivityCompat.checkSelfPermission(this,
                     Manifest.permission.VIBRATE) != PackageManager.PERMISSION_GRANTED) {
                 android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
                 builder.setTitle("Información");

@@ -41,6 +41,8 @@ public class UtilidadesGenerales {
     public static final int ACCESS_COARSE_LOCATION_CODE = 1007;
     public static final int ACCESS_WIFI_STATE_CODE = 1008;
     public static final int VIBRATE_CODE = 1009;
+    public static final int RECORD_AUDIO = 1010;
+    public static final int RECORD_VIDEO = 1011;
 
     public static void mostrarMensaje(final String mensaje) throws Exception {
         if (context == null) throw new Exception("No se ha establecido el contexto");

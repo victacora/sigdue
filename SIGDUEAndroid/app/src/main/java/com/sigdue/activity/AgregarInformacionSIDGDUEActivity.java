@@ -2,8 +2,11 @@ package com.sigdue.activity;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -14,6 +17,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.FileUtils;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
@@ -39,7 +43,7 @@ import android.widget.SpinnerAdapter;
 import com.iangclifton.android.floatlabel.FloatLabel;
 import com.sigdue.BuildConfig;
 import com.sigdue.R;
-import com.sigdue.aplication.AplicacionInmovilizaciones;
+import com.sigdue.aplication.AplicacionSIGDUE;
 import com.sigdue.db.ClaseVehiculo;
 import com.sigdue.db.ClaseVehiculoDao;
 import com.sigdue.db.Color;
@@ -79,6 +83,7 @@ import com.sigdue.webservice.modelo.WSGruparResult;
 import org.greenrobot.greendao.query.QueryBuilder;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -101,7 +106,7 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
     private String TAG = "AgregarInmActivity";
     private EditText apellidoDos;
     private EditText apellidoUno;
-    private AplicacionInmovilizaciones app;
+    private AplicacionSIGDUE app;
     private Button btnAtras;
     private ImageButton btnBuscarInfractor;
     private ImageButton btnBuscarVehiculo;
@@ -187,7 +192,7 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
             dialogoBuscando = null;
             isBusquedaInfractor = false;
             isBusquedaVehiculo = false;
-            this.app = (AplicacionInmovilizaciones) getApplication();
+            this.app = (AplicacionSIGDUE) getApplication();
             this.daoSession = this.app.getDaoSession();
             this.inmovilizacionDao = this.daoSession.getInmovilizacionDao();
             this.infraccionDao = this.daoSession.getInfraccionDao();
@@ -542,20 +547,8 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                 public void onClick(View v) {
                     try {
                         Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-                        File videosFolder = new File(Environment.getExternalStorageDirectory(), RUTAMULTIMEDIAINMOVILIZACION);
-                        if (!videosFolder.exists()) videosFolder.mkdirs();
-                        rutaVideo = videosFolder.getPath() + "/" + inmovilizacion.getId_inmovilizacion() + "_video_" + ".mp4";
-                        Uri uriSavedVideo = null;
-                        File video = new File(videosFolder, rutaVideo);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            uriSavedVideo = FileProvider.getUriForFile(AgregarInformacionSIDGDUEActivity.this, BuildConfig.APPLICATION_ID + ".provider", video);
-                        } else {
-                            uriSavedVideo = Uri.fromFile(video);
-                        }
-
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedVideo);
                         intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
-                        intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 30);
+                        intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 60*5);
                         startActivityForResult(intent, CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE);
                     } catch (Exception ex) {
                         ex.printStackTrace();
@@ -1189,7 +1182,7 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                         } else {
                             persona.setId_persona(Math.abs((personas.get(0)).getId_persona()) + 1);
                         }
-                        persona.setNo_identificacion((this.numeroDocumento!=null&&this.numeroDocumento.getText().equals("")?"-3":this.numeroDocumento.getText().toString()));
+                        persona.setNo_identificacion((this.numeroDocumento != null && this.numeroDocumento.getText().equals("") ? "-3" : this.numeroDocumento.getText().toString()));
                         persona.setId_tipo_identificacion(tipoDocumento);
                         persona.setNombre1(this.nombreUno.getText().toString());
                         persona.setNombre2(this.nombreDos.getText().toString());
@@ -1219,7 +1212,7 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                     } else {
                         vehiculo.setId_vehiculo(Math.abs((vehiculos.get(0)).getId_vehiculo()) + 1);
                     }
-                    vehiculo.setPlaca((this.numeroPlaca!=null&&this.numeroPlaca.getText().equals("")?"000000":this.numeroPlaca.getText().toString()));
+                    vehiculo.setPlaca((this.numeroPlaca != null && this.numeroPlaca.getText().equals("") ? "000000" : this.numeroPlaca.getText().toString()));
                     vehiculo.setNo_serie(this.numeroSerie.getText().toString());
                     vehiculo.setNo_chasis(this.numeroChasis.getText().toString());
                     vehiculo.setNo_motor(this.numeroMotor.getText().toString());
@@ -1339,8 +1332,36 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                 }
             }
         } else if (requestCode == CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE && resultCode == -1) {
+            guardarVideo(data);
             this.mostrarVideo.setVisibility(View.VISIBLE);
             mostrarVideo();
+        }
+    }
+
+    private void guardarVideo(Intent data) {
+        try {
+            File videosFolder = new File(Environment.getExternalStorageDirectory(), RUTAMULTIMEDIAINMOVILIZACION);
+            if (!videosFolder.exists()) videosFolder.mkdirs();
+            rutaVideo = videosFolder.getPath() + "/" + inmovilizacion.getId_inmovilizacion() + "_video_" + ".mp4";
+            Uri videoUri = data.getData();
+            AssetFileDescriptor videoAsset = getContentResolver().openAssetFileDescriptor(videoUri, "r");
+            FileInputStream fis = videoAsset.createInputStream();
+
+            FileOutputStream fos = new FileOutputStream(rutaVideo);
+
+            byte[] buf = new byte[1024];
+            int len;
+            while ((len = fis.read(buf)) > 0) {
+                fos.write(buf, 0, len);
+            }
+            fis.close();
+            fos.close();
+
+            ContentResolver contentResolver = getContentResolver();
+            contentResolver.delete(videoUri, null, null);
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
