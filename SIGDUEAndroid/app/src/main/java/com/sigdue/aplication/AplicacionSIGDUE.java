@@ -1,6 +1,14 @@
 package com.sigdue.aplication;
 
 import android.app.Application;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.location.LocationManager;
+import android.provider.Settings;
+import android.support.v7.app.AlertDialog;
 
 import com.sigdue.R;
 import com.sigdue.utilidadesgenerales.DBConnection;
@@ -12,6 +20,8 @@ public class AplicacionSIGDUE extends Application {
     DBConnection dbConnection;
     private String usuario = "";
     private long idPersona = -1;
+
+
 
     @Override
     public void onCreate() {
@@ -27,6 +37,7 @@ public class AplicacionSIGDUE extends Application {
             ex.printStackTrace();
         }
     }
+
 
     public DBConnection getDbConnection() {
         return dbConnection;
@@ -51,4 +62,6 @@ public class AplicacionSIGDUE extends Application {
     public void setUsuario(String usuario) {
         this.usuario = usuario;
     }
+
+
 }

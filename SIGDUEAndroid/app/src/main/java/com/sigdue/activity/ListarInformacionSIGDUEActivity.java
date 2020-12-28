@@ -29,8 +29,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.view.MenuItemCompat;
@@ -122,10 +124,21 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity {
     private VehiculoDao vehiculoDao;
     private ZonasDao zonasDao;
 
+    private BroadcastReceiver mHabilitarGPS = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            try {
+                habilitarGPS();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+
+    };
+
     private BroadcastReceiver mActualizarListaComparendosBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            // TODO Auto-generated method stub
             try {
                 String result = intent.getStringExtra("resultado");
                 if (result != null && !result.equals("")) {
@@ -225,23 +238,6 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity {
         } catch (Exception ex) {
             ex.printStackTrace();
             return;
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        try {
-            setTitle(getString(R.string.informacion_title));
-            if (this.app != null) {
-                this.daoSession = this.app.getDaoSession();
-            }
-            ejecutarConsultaServicios(0, "");
-            IntentFilter filter = new IntentFilter();
-            filter.addAction(RESPUESTA_SERVICIO);
-            registerReceiver(mActualizarListaComparendosBroadcastReceiver, filter);
-        } catch (Exception ex) {
-            ex.printStackTrace();
         }
     }
 
@@ -879,4 +875,60 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity {
             return dialog;
         }
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        try {
+            setTitle(getString(R.string.informacion_title));
+            if (this.app != null) {
+                this.daoSession = this.app.getDaoSession();
+            }
+            ejecutarConsultaServicios(0, "");
+
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(RESPUESTA_SERVICIO);
+            registerReceiver(mActualizarListaComparendosBroadcastReceiver, filter);
+
+            filter = new IntentFilter();
+            filter.addAction("android.location.PROVIDERS_CHANGED");
+            registerReceiver(mHabilitarGPS, filter);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(mHabilitarGPS);
+        unregisterReceiver(mActualizarListaComparendosBroadcastReceiver);
+    }
+
+
+    public void habilitarGPS() {
+        try {
+            String tiempoSincronizacion = (String) UtilidadesGenerales.leerSharedPreferences(R.string.pref_tiempo_sincronizacion_gps_key, R.string.vacio, UtilidadesGenerales.STRING_TYPE);
+            long time = (tiempoSincronizacion != null && !tiempoSincronizacion.equals("") ? Long.parseLong(tiempoSincronizacion) : 0);
+            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) && !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(this);
+                builder.setCancelable(false);
+                builder.setMessage("Este aplicación requiere el uso de GPS por favor habilitelo para continuar.")
+                        .setCancelable(false)
+                        .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                startActivity(intent);
+                            }
+                        });
+                android.support.v7.app.AlertDialog alert = builder.create();
+                alert.show();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
 }
