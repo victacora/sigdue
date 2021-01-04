@@ -47,82 +47,37 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.sigdue.R;
 import com.sigdue.aplication.AplicacionSIGDUE;
-import com.sigdue.db.ClaseVehiculo;
-import com.sigdue.db.ClaseVehiculoDao;
-import com.sigdue.db.Color;
-import com.sigdue.db.ColorDao;
-import com.sigdue.db.Departamento;
-import com.sigdue.db.DepartamentoDao;
-import com.sigdue.db.Grua;
-import com.sigdue.db.GruaDao;
-import com.sigdue.db.Infraccion;
-import com.sigdue.db.InfraccionDao;
-import com.sigdue.db.Inmovilizacion;
-import com.sigdue.db.InmovilizacionDao;
-import com.sigdue.db.Municipio;
-import com.sigdue.db.MunicipioDao;
-import com.sigdue.db.Parqueadero;
-import com.sigdue.db.ParqueaderoDao;
-import com.sigdue.db.Persona;
-import com.sigdue.db.PersonaDao;
-import com.sigdue.db.TipoIdentificacion;
-import com.sigdue.db.TipoIdentificacionDao;
-import com.sigdue.db.TipoServicio;
-import com.sigdue.db.TipoServicioDao;
-import com.sigdue.db.Vehiculo;
-import com.sigdue.db.VehiculoDao;
-import com.sigdue.db.Zonas;
-import com.sigdue.db.ZonasDao;
+import com.sigdue.db.DaoSession;
+import com.sigdue.db.Predial;
+import com.sigdue.db.PredialDao;
 import com.sigdue.listadapter.InformacionSIGDUERecyclerView;
 import com.sigdue.service.EnviarInformacionSIGDUEService;
 import com.sigdue.utilidadesgenerales.UtilidadesGenerales;
-import com.sigdue.db.DaoSession;
-import com.sigdue.webservice.api.WSGruparClient;
-import com.sigdue.webservice.api.WSGruparInterface;
-import com.sigdue.webservice.modelo.WSGruparResult;
-import com.sigdue.R;
+import com.sigdue.webservice.api.WSSIGDUEClient;
+import com.sigdue.webservice.api.WSSIGDUEInterface;
 
 import org.greenrobot.greendao.query.QueryBuilder;
-import org.greenrobot.greendao.query.WhereCondition;
 
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Response;
 
 import static com.sigdue.Constants.NOTIFICACIONES_ID;
 import static com.sigdue.Constants.RESPUESTA_SERVICIO;
-import static com.sigdue.Constants.SLEEP_PROGRESS_MAESTROS;
 
 public class ListarInformacionSIGDUEActivity extends AppCompatActivity {
 
     private static final String TAG = "ListarInmActivity";
     private AplicacionSIGDUE app;
     private FloatingActionButton btnAgregarComparendo;
-    private ClaseVehiculoDao claseVehiculoDao;
-    private ColorDao coloresDao;
     private DaoSession daoSession;
-    private DepartamentoDao departamentosDao;
     private ProgressDialog dialogoBuscando;
-    private GruaDao gruasDao;
-    private InfraccionDao infraccionDao;
-    private InmovilizacionDao inmovilizacionDao;
     LinearLayoutManager llm;
     private InformacionSIGDUERecyclerView mAdapter;
     private EjecutarConsultarServiciosAsyncTask mConsultarInmovilizacionesTask;
     private ProgressDialogFragment mProgressDialog;
-    private MunicipioDao municipioDao;
-    private ParqueaderoDao parqueaderoDao;
-    private PersonaDao personasDao;
     RecyclerView rv;
-    private TipoIdentificacionDao tipoIdentificacionDao;
-    private TipoServicioDao tipoServicioDao;
-    private VehiculoDao vehiculoDao;
-    private ZonasDao zonasDao;
+    private PredialDao predialDao;
 
     private BroadcastReceiver mHabilitarGPS = new BroadcastReceiver() {
         @Override
@@ -162,19 +117,7 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity {
             setContentView(R.layout.listar_informacion_sigdue_activity);
             this.app = (AplicacionSIGDUE) getApplication();
             this.daoSession = this.app.getDaoSession();
-            this.inmovilizacionDao = this.daoSession.getInmovilizacionDao();
-            this.departamentosDao = this.daoSession.getDepartamentoDao();
-            this.municipioDao = this.daoSession.getMunicipioDao();
-            this.infraccionDao = this.daoSession.getInfraccionDao();
-            this.parqueaderoDao = this.daoSession.getParqueaderoDao();
-            this.zonasDao = this.daoSession.getZonasDao();
-            this.tipoIdentificacionDao = this.daoSession.getTipoIdentificacionDao();
-            this.gruasDao = this.daoSession.getGruaDao();
-            this.coloresDao = this.daoSession.getColorDao();
-            this.tipoServicioDao = this.daoSession.getTipoServicioDao();
-            this.claseVehiculoDao = this.daoSession.getClaseVehiculoDao();
-            this.personasDao = this.daoSession.getPersonaDao();
-            this.vehiculoDao = this.daoSession.getVehiculoDao();
+            this.predialDao = this.daoSession.getPredialDao();
             this.rv = (RecyclerView) findViewById(R.id.rv);
             this.rv.setHasFixedSize(true);
             this.llm = new LinearLayoutManager(this);
@@ -189,9 +132,9 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity {
             btnAgregarComparendo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View arg0) {
-                    //if (ListarInmovilizacionesActivity.this.validarParametrizacion().equals("")) {
+                    if (validarParametrizacion().equals("")) {
                         ListarInformacionSIGDUEActivity.this.startActivityForResult(new Intent(ListarInformacionSIGDUEActivity.this, AgregarInformacionSIDGDUEActivity.class), NOTIFICACIONES_ID);
-                    //}
+                    }
                 }
             });
         } catch (Exception ex) {
@@ -320,355 +263,41 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity {
     }
 
 
-    public class EjecutarConsultarServiciosAsyncTask extends AsyncTask<Object, String, List<Inmovilizacion>> {
+    public class EjecutarConsultarServiciosAsyncTask extends AsyncTask<Object, String, List<Predial>> {
         private int opcion = -1;
 
         @Override
-        protected List<Inmovilizacion> doInBackground(Object... params) {
+        protected List<Predial> doInBackground(Object... params) {
             try {
-                List<Inmovilizacion> inmovilizaciones = null;
+                List<Predial> prediales = null;
                 opcion = (int) params[0];
                 String consulta = (String) params[1];
-                WSGruparInterface service = WSGruparClient.getClient();
+                WSSIGDUEInterface service = WSSIGDUEClient.getClient();
                 switch (opcion) {
-                    case 0://listar todos los inmovilizaciones
-                        inmovilizaciones = inmovilizacionDao.queryBuilder().orderDesc(InmovilizacionDao.Properties.Fec_ini_inm).list();
+                    case 0://listar todos los prediales
+                        prediales = predialDao.queryBuilder().orderAsc(PredialDao.Properties.Id_predial).list();
                         break;
                     case 1:
                         //ordenar ascendentemente por fecha
-                        inmovilizaciones = inmovilizacionDao.queryBuilder().orderAsc(InmovilizacionDao.Properties.Fec_ini_inm).list();
+                        prediales = predialDao.queryBuilder().orderAsc(PredialDao.Properties.Id_predial).list();
                         break;
                     case 2:
                         //ordenar descendentemente por fecha
-                        inmovilizaciones = inmovilizacionDao.queryBuilder().orderDesc(InmovilizacionDao.Properties.Fec_ini_inm).list();
+                        prediales = predialDao.queryBuilder().orderDesc(PredialDao.Properties.Id_predial).list();
                         break;
                     case 3:
                         //aplicar filtro
-                        QueryBuilder qb = inmovilizacionDao.queryBuilder();
+                        QueryBuilder qb = predialDao.queryBuilder();
                         QueryBuilder.LOG_SQL = true;
                         if (UtilidadesGenerales.isOnline()) {
-                            Response<WSGruparResult<com.sigdue.webservice.modelo.Inmovilizacion>> responseInmovilizaciones = service.consultarinmovilizaciones(consulta.replaceAll("/", "-")).execute();
-                            if (responseInmovilizaciones != null && responseInmovilizaciones.isSuccessful()) {
-                                List<com.sigdue.webservice.modelo.Inmovilizacion> inmovilizacionesServicio = ((WSGruparResult) responseInmovilizaciones.body()).getItems();
-                                if (inmovilizacionesServicio != null && inmovilizacionesServicio.size() > 0) {
-                                    SimpleDateFormat formatFechaHora = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-                                    inmovilizaciones = new ArrayList();
-                                    try {
-                                        for (com.sigdue.webservice.modelo.Inmovilizacion inm : inmovilizacionesServicio) {
-                                            Inmovilizacion inmovilizacion = new Inmovilizacion();
-                                            inmovilizacion.__setDaoSession(ListarInformacionSIGDUEActivity.this.daoSession);
-                                            inmovilizacion.setNo_comparendo(inm.getNo_comparendo());
-                                            if (!(inm.getFec_ini_inm() == null || inm.getFec_ini_inm().equals(""))) {
-                                                inmovilizacion.setFec_ini_inm(formatFechaHora.parse(inm.getFec_ini_inm()));
-                                            }
-                                            inmovilizacion.setId_usuario(inm.getId_usuario());
-                                            inmovilizacion.setId_agente(inm.getId_agente());
-                                            inmovilizacion.setPropietario_presente(inm.getPropietario_presente());
-                                            inmovilizacion.setId_infraccion(inm.getId_infraccion());
-                                            inmovilizacion.setId_grua(inm.getId_grua());
-                                            inmovilizacion.setId_zona(inm.getId_zona());
-                                            inmovilizacion.setId_parqueadero(inm.getId_parqueadero());
-                                            inmovilizacion.setDesenganche(inm.getDesenganche());
-                                            inmovilizacion.setObservacion(inm.getObservacion());
-                                            inmovilizacion.setDireccion(inm.getDireccion());
-                                            Vehiculo vehiculo = new Vehiculo();
-                                            vehiculo.setPlaca(inm.getPlaca());
-                                            vehiculo.setNo_chasis(inm.getNo_chasis());
-                                            vehiculo.setNo_motor(inm.getNo_motor());
-                                            vehiculo.setNo_serie(inm.getNo_serie());
-                                            vehiculo.setId_clase_vehiculo(inm.getId_clase_vehiculo());
-                                            vehiculo.setId_color(inm.getId_color());
-                                            vehiculo.setId_tipo_servicio(inm.getId_tipo_servicio());
-                                            inmovilizacion.setVehiculo(vehiculo);
-                                            Persona infractor = new Persona();
-                                            infractor.setId_tipo_identificacion(inm.getId_tipo_identificacion());
-                                            infractor.setNo_identificacion(inm.getNo_identificacion());
-                                            infractor.setNombre1(inm.getNombre1());
-                                            infractor.setNombre2(inm.getNombre2());
-                                            infractor.setApellido1(inm.getApellido1());
-                                            infractor.setApellido2(inm.getApellido2());
-                                            inmovilizacion.setInfractor(infractor);
-                                            inmovilizacion.setEstado("E");
-                                            inmovilizaciones.add(inmovilizacion);
-                                        }
-                                        return inmovilizaciones;
-                                    } catch (Exception e) {
-                                        qb.join(InmovilizacionDao.Properties.Id_infractor, Persona.class);
-                                        qb.join(InmovilizacionDao.Properties.Id_agente, Persona.class);
-                                        qb.join(InmovilizacionDao.Properties.Id_infraccion, Infraccion.class);
-                                        qb.where(new WhereCondition.StringCondition(" CAST(T.NO_COMPARENDO AS TEXT) LIKE '%" + consulta + "%' OR  J1.NO_IDENTIFICACION LIKE '%" + consulta + "%' OR J2.placa LIKE '%" + consulta + "%' OR strftime('%d/%m/%Y', T.FEC_INI_INM/1000, 'unixepoch') LIKE '%" + consulta + "%' OR J3.CODIGO LIKE '%" + consulta + "%' "));
-                                        inmovilizaciones = qb.list();
-                                    }
-                                } else {
-                                    qb.join(InmovilizacionDao.Properties.Id_infractor, Persona.class);
-                                    qb.join(InmovilizacionDao.Properties.Id_agente, Persona.class);
-                                    qb.join(InmovilizacionDao.Properties.Id_infraccion, Infraccion.class);
-                                    qb.where(new WhereCondition.StringCondition(" CAST(T.NO_COMPARENDO AS TEXT) LIKE '%" + consulta + "%' OR  J1.NO_IDENTIFICACION LIKE '%" + consulta + "%' OR J2.placa LIKE '%" + consulta + "%' OR strftime('%d/%m/%Y', T.FEC_INI_INM/1000, 'unixepoch') LIKE '%" + consulta + "%' OR J3.CODIGO LIKE '%" + consulta + "%' "));
-                                    inmovilizaciones = qb.list();
-                                }
-                            } else {
-                                qb.join(InmovilizacionDao.Properties.Id_infractor, Persona.class);
-                                qb.join(InmovilizacionDao.Properties.Id_agente, Persona.class);
-                                qb.join(InmovilizacionDao.Properties.Id_infraccion, Infraccion.class);
-                                qb.where(new WhereCondition.StringCondition(" CAST(T.NO_COMPARENDO AS TEXT) LIKE '%" + consulta + "%' OR  J1.NO_IDENTIFICACION LIKE '%" + consulta + "%' OR J2.placa LIKE '%" + consulta + "%' OR strftime('%d/%m/%Y', T.FEC_INI_INM/1000, 'unixepoch') LIKE '%" + consulta + "%' OR J3.CODIGO LIKE '%" + consulta + "%' "));
-                                inmovilizaciones = qb.list();
-                            }
-                        } else {
-                            qb.join(InmovilizacionDao.Properties.Id_infractor, Persona.class);
-                            qb.join(InmovilizacionDao.Properties.Id_agente, Persona.class);
-                            qb.join(InmovilizacionDao.Properties.Id_infraccion, Infraccion.class);
-                            qb.where(new WhereCondition.StringCondition(" CAST(T.NO_COMPARENDO AS TEXT) LIKE '%" + consulta + "%' OR  J1.NO_IDENTIFICACION LIKE '%" + consulta + "%' OR J2.placa LIKE '%" + consulta + "%' OR strftime('%d/%m/%Y', T.FEC_INI_INM/1000, 'unixepoch') LIKE '%" + consulta + "%' OR J3.CODIGO LIKE '%" + consulta + "%' "));
-                            inmovilizaciones = qb.list();
                         }
                         break;
                     case 4:
                         if (UtilidadesGenerales.isOnline()) {
-                            List<Inmovilizacion> inmovilizacionEnviadas = inmovilizacionDao.queryBuilder().where(InmovilizacionDao.Properties.Estado.eq("E")).list();
-                            if (inmovilizacionEnviadas != null && inmovilizacionEnviadas.size() > 0) {
-                                inmovilizacionDao.deleteInTx(inmovilizacionEnviadas);
-                            }
-                            inmovilizaciones = new ArrayList();
-                            Call<WSGruparResult<Departamento>> listarDepartamentosCall = service.listarDepartamentos();
-                            Response<WSGruparResult<Departamento>> responseDepartamentos = listarDepartamentosCall.execute();
-                            if (responseDepartamentos != null && responseDepartamentos.isSuccessful()) {
-                                WSGruparResult<Departamento> result = responseDepartamentos.body();
-                                List<Departamento> departamentos = result.getItems();
-                                if (departamentos != null && departamentos.size() > 0) {
-                                    publishProgress("Actualizando departamentos. N° registros: " + departamentos.size());
-                                    Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                                    departamentosDao.deleteAll();
-                                    departamentosDao.insertInTx(departamentos);
-                                } else {
-                                    publishProgress("No se encontraron registros en departamentos.");
-                                    Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                                }
-                            } else {
-                                publishProgress("Error al consultar departamentos.");
-                                Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                            }
-
-                            Call<WSGruparResult<Municipio>> listarMunicipiosCall = service.listarMunicipios();
-                            Response<WSGruparResult<Municipio>> responseMunicipios = listarMunicipiosCall.execute();
-                            if (responseMunicipios != null && responseMunicipios.isSuccessful()) {
-                                WSGruparResult<Municipio> result = responseMunicipios.body();
-                                List<Municipio> municipios = result.getItems();
-                                if (municipios != null && municipios.size() > 0) {
-                                    publishProgress("Actualizando municipios. N° registros: " + municipios.size());
-                                    Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                                    municipioDao.deleteAll();
-                                    municipioDao.insertInTx(municipios);
-                                } else {
-                                    publishProgress("No se encontraron registros en municipios.");
-                                    Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                                }
-                            } else {
-                                publishProgress("Error al consultar municipios.");
-                                Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                            }
-
-
-                            Call<WSGruparResult<Infraccion>> listarInfraccionesCall = service.listarInfracciones();
-                            Response<WSGruparResult<Infraccion>> responseInfracciones = listarInfraccionesCall.execute();
-                            if (responseInfracciones != null && responseInfracciones.isSuccessful()) {
-                                WSGruparResult<Infraccion> result = responseInfracciones.body();
-                                List<Infraccion> infracciones = result.getItems();
-                                if (infracciones != null && infracciones.size() > 0) {
-                                    publishProgress("Actualizando infracciones. N° registros: " + infracciones.size());
-                                    Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                                    infraccionDao.deleteAll();
-                                    infraccionDao.insertInTx(infracciones);
-                                } else {
-                                    publishProgress("No se encontraron registros en infracciones.");
-                                    Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                                }
-                            } else {
-                                publishProgress("Error al consultar infracciones.");
-                                Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                            }
-
-
-                            Call<WSGruparResult<Parqueadero>> listarParqueaderoCall = service.listarParqueadero();
-                            Response<WSGruparResult<Parqueadero>> responseParqueadero = listarParqueaderoCall.execute();
-                            if (responseParqueadero != null && responseParqueadero.isSuccessful()) {
-                                WSGruparResult<Parqueadero> result = responseParqueadero.body();
-                                List<Parqueadero> parqueaderos = result.getItems();
-                                if (parqueaderos != null && parqueaderos.size() > 0) {
-                                    publishProgress("Actualizando parqueaderos. N° registros: " + parqueaderos.size());
-                                    Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                                    parqueaderoDao.deleteAll();
-                                    parqueaderoDao.insertInTx(parqueaderos);
-                                } else {
-                                    publishProgress("No se encontraron registros en parqueadero.");
-                                    Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                                }
-                            } else {
-                                publishProgress("Error al consultar parqueaderos.");
-                                Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                            }
-
-                            Call<WSGruparResult<Zonas>> listarZonasCall = service.listarZonas();
-                            Response<WSGruparResult<Zonas>> responseZonas = listarZonasCall.execute();
-                            if (responseZonas != null && responseZonas.isSuccessful()) {
-                                WSGruparResult<Zonas> result = responseZonas.body();
-                                List<Zonas> zonas = result.getItems();
-                                if (zonas != null && zonas.size() > 0) {
-                                    publishProgress("Actualizando zonas. N° registros: " + zonas.size());
-                                    Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                                    zonasDao.deleteAll();
-                                    zonasDao.insertInTx(zonas);
-                                } else {
-                                    publishProgress("No se encontraron registros en zonas.");
-                                    Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                                }
-                            } else {
-                                publishProgress("Error al consultar zonas.");
-                                Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                            }
-
-                            Call<WSGruparResult<TipoIdentificacion>> listarTipoIdentificacionCall = service.listarTipoIdentificacion();
-                            Response<WSGruparResult<TipoIdentificacion>> responseTipoIdentificacion = listarTipoIdentificacionCall.execute();
-                            if (responseTipoIdentificacion != null && responseTipoIdentificacion.isSuccessful()) {
-                                WSGruparResult<TipoIdentificacion> result = responseTipoIdentificacion.body();
-                                List<TipoIdentificacion> tipoIdentificaciones = result.getItems();
-                                if (tipoIdentificaciones != null && tipoIdentificaciones.size() > 0) {
-                                    publishProgress("Actualizando tipo identificacion. N° registros: " + tipoIdentificaciones.size());
-                                    Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                                    tipoIdentificacionDao.deleteAll();
-                                    tipoIdentificacionDao.insertInTx(tipoIdentificaciones);
-                                } else {
-                                    publishProgress("No se encontraron registros en tipo identificacion.");
-                                    Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                                }
-                            } else {
-                                publishProgress("Error al consultar tipo identificaciones.");
-                                Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                            }
-
-                            Call<WSGruparResult<Grua>> listarGruasCall = service.listarGruas();
-                            Response<WSGruparResult<Grua>> responseGruas = listarGruasCall.execute();
-                            if (responseGruas != null && responseGruas.isSuccessful()) {
-                                WSGruparResult<Grua> result = responseGruas.body();
-                                List<Grua> gruas = result.getItems();
-                                if (gruas != null && gruas.size() > 0) {
-                                    publishProgress("Actualizando gruas. N° registros: " + gruas.size());
-                                    Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                                    gruasDao.deleteAll();
-                                    gruasDao.insertInTx(gruas);
-                                } else {
-                                    publishProgress("No se encontraron registros en gruas.");
-                                    Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                                }
-                            } else {
-                                publishProgress("Error al consultar gruas.");
-                                Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                            }
-
-                            Call<WSGruparResult<Color>> listarColoresCall = service.listarColores();
-                            Response<WSGruparResult<Color>> responseColores = listarColoresCall.execute();
-                            if (responseColores != null && responseColores.isSuccessful()) {
-                                WSGruparResult<Color> result = responseColores.body();
-                                List<Color> colores = result.getItems();
-                                if (colores != null && colores.size() > 0) {
-                                    publishProgress("Actualizando colores. N° registros: " + colores.size());
-                                    Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                                    coloresDao.deleteAll();
-                                    coloresDao.insertInTx(colores);
-                                } else {
-                                    publishProgress("No se encontraron registros en colores.");
-                                    Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                                }
-                            } else {
-                                publishProgress("Error al consultar colores.");
-                                Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                            }
-
-                            Call<WSGruparResult<TipoServicio>> listarTipoServicioCall = service.listarTipoServicios();
-                            Response<WSGruparResult<TipoServicio>> responseTipoServicios = listarTipoServicioCall.execute();
-                            if (responseTipoServicios != null && responseTipoServicios.isSuccessful()) {
-                                WSGruparResult<TipoServicio> result = responseTipoServicios.body();
-                                List<TipoServicio> tipoServicios = result.getItems();
-                                if (tipoServicios != null && tipoServicios.size() > 0) {
-                                    publishProgress("Actualizando tipo servicios. N° registros: " + tipoServicios.size());
-                                    Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                                    tipoServicioDao.deleteAll();
-                                    tipoServicioDao.insertInTx(tipoServicios);
-                                } else {
-                                    publishProgress("No se encontraron registros en tipo servicios.");
-                                    Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                                }
-                            } else {
-                                publishProgress("Error al consultar tipo servicios.");
-                                Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                            }
-
-                            Call<WSGruparResult<ClaseVehiculo>> listarClaseVehiculoCall = service.listarClaseVehiculos();
-                            Response<WSGruparResult<ClaseVehiculo>> responseClaseVehiculo = listarClaseVehiculoCall.execute();
-                            if (responseClaseVehiculo != null && responseClaseVehiculo.isSuccessful()) {
-                                WSGruparResult<ClaseVehiculo> result = responseClaseVehiculo.body();
-                                List<ClaseVehiculo> claseVehiculos = result.getItems();
-                                if (claseVehiculos != null && claseVehiculos.size() > 0) {
-                                    publishProgress("Actualizando clase vehiculos. N° registros: " + claseVehiculos.size());
-                                    Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                                    claseVehiculoDao.deleteAll();
-                                    claseVehiculoDao.insertInTx(claseVehiculos);
-                                } else {
-                                    publishProgress("No se encontraron registros en clase vehiculos.");
-                                    Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                                }
-                            } else {
-                                publishProgress("Error al consultar clase vehiculos.");
-                                Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                            }
-
-                        /*Call<WSGruparResult<Vehiculo>> listarVehiculoCall = service.listarVehiculos();
-                        Response<WSGruparResult<Vehiculo>> responseVehiculo = listarVehiculoCall.execute();
-                        if (responseVehiculo != null && responseVehiculo.isSuccessful()) {
-                            WSGruparResult<Vehiculo> result = responseVehiculo.body();
-                            List<Vehiculo> vehiculos = result.getItems();
-                            if (vehiculos != null && vehiculos.size() > 0) {
-                                publishProgress("Actualizando vehiculos. N° registros: " + vehiculos.size());
-                                Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                                vehiculoDao.deleteAll();
-
-                                vehiculoDao.insertInTx(vehiculos);
-
-                            } else {
-                                publishProgress("No se encontraron registros en vehiculos.");
-                                Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                            }
-                        } else {
-                            publishProgress("Error al consultar vehiculos.");
-                            Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                        }*/
-
-                            Call<WSGruparResult<Persona>> listarPersonasCall = service.listarPersonas();
-                            Response<WSGruparResult<Persona>> responsePersonas = listarPersonasCall.execute();
-                            if (responsePersonas != null && responsePersonas.isSuccessful()) {
-                                WSGruparResult<Persona> result = responsePersonas.body();
-                                List<Persona> personas = result.getItems();
-                                if (personas != null && personas.size() > 0) {
-                                    publishProgress("Actualizando usuarios y agentes. N° registros: " + personas.size());
-                                    Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                                    /*List<Persona> agenteUsuarios = personasDao.queryBuilder().where(PersonaDao.Properties.Tipo.eq("U"), PersonaDao.Properties.Tipo.eq("A")).list();
-                                    if (agenteUsuarios != null && agenteUsuarios.size() > 0) {
-                                        personasDao.deleteInTx(agenteUsuarios);
-                                    }*/
-                                    personasDao.insertOrReplaceInTx(personas);
-                                } else {
-                                    publishProgress("No se encontraron registros en usuarios y agentes.");
-                                    Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                                }
-                            } else {
-                                publishProgress("Error al consultar usuarios y agentes.");
-                                Thread.sleep(SLEEP_PROGRESS_MAESTROS);
-                            }
-                        } else {
-                            publishProgress("No fue posible la actualizacion de maestros, verifique su conexion a internet e intente nuevamente.");
-                            Thread.sleep(SLEEP_PROGRESS_MAESTROS);
                         }
                         break;
                 }
-                return inmovilizaciones;
+                return prediales;
             } catch (Exception ex) {
                 Log.e(TAG, "ListarInmovilizaciones.doInBackground: fallo consultar comparendos");
                 Log.e(TAG, "", ex);
@@ -688,7 +317,7 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity {
 
 
         @Override
-        protected void onPostExecute(final List<Inmovilizacion> inmovilizaciones) {
+        protected void onPostExecute(final List<Predial> inmovilizaciones) {
             onConsultarInmovilizacionFinish(inmovilizaciones, opcion);
         }
 
@@ -699,7 +328,7 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity {
     }
 
 
-    private void onConsultarInmovilizacionFinish(List<Inmovilizacion> inmovilizaciones, int opcion) {
+    private void onConsultarInmovilizacionFinish(List<Predial> inmovilizaciones, int opcion) {
         this.mConsultarInmovilizacionesTask = null;
         hideProgress();
         if (opcion != 4) {
@@ -771,7 +400,7 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity {
 
     public String validarParametrizacion() {
         String parametrosComparendos = "";
-        try {
+        try {/*
             if (this.departamentosDao.queryBuilder().count() == 0) {
                 parametrosComparendos = parametrosComparendos + "-No existen departamentos registrados.\n";
             }
@@ -819,7 +448,7 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity {
                 });
                 AlertDialog alert = builder.create();
                 alert.show();
-            }
+            }*/
         } catch (Exception ex) {
             ex.printStackTrace();
         }

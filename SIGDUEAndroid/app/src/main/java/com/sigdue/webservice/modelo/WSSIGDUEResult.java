@@ -2,11 +2,11 @@ package com.sigdue.webservice.modelo;
 
 import java.util.List;
 
-public class WSGruparResult<T> {
+public class WSSIGDUEResult<T> {
     private List<T> items;
     private Next next;
 
-    public WSGruparResult() {
+    public WSSIGDUEResult() {
         this.items = null;
     }
 

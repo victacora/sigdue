@@ -8,68 +8,38 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.sigdue.R;
-import com.sigdue.db.Infraccion;
-import com.sigdue.db.Inmovilizacion;
-import com.sigdue.db.Persona;
-import com.sigdue.db.Vehiculo;
+import com.sigdue.db.Predial;
 import com.sigdue.ui.AutoResizeTextView;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class InformacionSIGDUERecyclerView extends RecyclerView.Adapter<InformacionSIGDUERecyclerView.ComparendoViewHolder> {
-    private List<Inmovilizacion> data;
+    private List<Predial> data;
     private Context mContext;
 
-    public InformacionSIGDUERecyclerView(List<Inmovilizacion> data, Context mContext) {
+    public InformacionSIGDUERecyclerView(List<Predial> data, Context mContext) {
         this.data = data;
         this.mContext = mContext;
     }
 
     @Override
     public ComparendoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.template_inmovilizacion, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.template_informacion_sigdue, parent, false);
         ComparendoViewHolder vh = new ComparendoViewHolder(v);
         return vh;
     }
 
     @Override
     public void onBindViewHolder(ComparendoViewHolder holder, final int position) {
-        String nombreInfractor;
-        String nombreUsuario;
-        SimpleDateFormat formatFechaHora = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        AutoResizeTextView autoResizeTextView = holder.numeroComp;
-        autoResizeTextView.setText("Nº Comp: " + (this.data.get(position).getNo_comparendo() == null || (this.data.get(position)).getNo_comparendo().equals("") ? "" : this.data.get(position).getNo_comparendo()));
-        String fecha = "";
-        try {
-            fecha = formatFechaHora.format(this.data.get(position).getFec_ini_inm());
-        } catch (Exception ex) {
-            fecha = "";
-            ex.printStackTrace();
-        }
-        holder.fechaComp.setText("Fecha: " + fecha);
-        Persona infractor = (this.data.get(position)).getInfractor();
-        Vehiculo vehiculo = (this.data.get(position)).getVehiculo();
-        Infraccion infraccion = (this.data.get(position)).getInfraccion();
-        autoResizeTextView = holder.vehiculo;
-        String codigo = (infraccion == null || infraccion.getCodigo().equals("")) ? "" : infraccion.getCodigo();
-        autoResizeTextView.setText("Placa veh: " + (vehiculo != null ? vehiculo.getPlaca() : "") + " Cod Inf: " + codigo);
-        holder.numeroCedula.setText("N° documento: " + (infractor != null ? infractor.getNo_identificacion() : ""));
-        if (infractor != null) {
-            nombreInfractor = (infractor.getNombre1() != null ? infractor.getNombre1() : "") + " " + (infractor.getNombre2() != null ? infractor.getNombre2() : "") + " " + (infractor.getApellido1() != null ? infractor.getApellido1() : "") + " " + (infractor.getApellido2() != null ? infractor.getApellido2() : "");
-        } else {
-            nombreInfractor = "";
-        }
-        holder.nombreInfractor.setText("Infractor: " + nombreInfractor);
-        Persona agente = (this.data.get(position)).getAgente();
-        holder.placaAgente.setText("Placa agente: " + (agente != null ? agente.getPlaca() : ""));
-        Persona usuario = (this.data.get(position)).getUsuario();
-        if (usuario != null) {
-            nombreUsuario = (usuario.getNombre1() != null ? usuario.getNombre1() : "") + " " + (usuario.getNombre2() != null ? usuario.getNombre2() : "") + " " + (usuario.getApellido1() != null ? usuario.getApellido1() : "") + " " + (usuario.getApellido2() != null ? usuario.getApellido2() : "");
-        } else {
-            nombreUsuario = "";
-        }
-        holder.usuario.setText("Usuario: " + (usuario != null ? usuario.getNo_identificacion() : "") + " - " + nombreUsuario);
+        holder.codigoDane.setText("Nº DANE: " + (this.data.get(position).getDane_sede() == null || (this.data.get(position)).getDane_sede().equals("") ? "" : this.data.get(position).getDane_sede()));
+        holder.codigoPredio.setText("Cod Predio: " + (this.data.get(position).getCod_predio() == null || (this.data.get(position)).getCod_predio().equals("") ? "" : this.data.get(position).getCod_predio()));
+        holder.clasePredio.setText("Clase Predio: " + (this.data.get(position).getClase_predio() == null || (this.data.get(position)).getCod_predio().equals("") ? "" : this.data.get(position).getCod_predio()));
+        holder.tenencia.setText("Tenencia: " + (this.data.get(position).getTenencia() == null || (this.data.get(position)).getTenencia().equals("") ? "" : this.data.get(position).getTenencia()));
+        holder.distanciaPoblado.setText("Distancia poblado: " + (this.data.get(position).getDist_km_centro_poblado() == null || (this.data.get(position)).getDist_km_centro_poblado().equals("") ? "" : this.data.get(position).getDist_km_centro_poblado()));
+        holder.tipoDocumento.setText("Tipo documento: " + (this.data.get(position).getTipo_documento() == null || (this.data.get(position)).getTipo_documento().equals("") ? "" : this.data.get(position).getTipo_documento()));
+        holder.topografia.setText("Topografía: " + (this.data.get(position).getTopografia() == null || (this.data.get(position)).getTopografia().equals("") ? "" : this.data.get(position).getTopografia()));
+
         if ((this.data.get(position)).getEstado() == null || !(this.data.get(position)).getEstado().equals("E")) {
             holder.estado.setText("Inmovilizacion no enviada.");
             holder.estado.setTextColor(this.mContext.getResources().getColor(R.color.primary_color));
@@ -93,25 +63,25 @@ public class InformacionSIGDUERecyclerView extends RecyclerView.Adapter<Informac
     public static class ComparendoViewHolder extends RecyclerView.ViewHolder {
         CardView cv;
         AutoResizeTextView estado;
-        AutoResizeTextView fechaComp;
-        AutoResizeTextView nombreInfractor;
-        AutoResizeTextView numeroCedula;
-        AutoResizeTextView numeroComp;
-        AutoResizeTextView placaAgente;
-        AutoResizeTextView usuario;
-        AutoResizeTextView vehiculo;
+        AutoResizeTextView tipoDocumento;
+        AutoResizeTextView codigoDane;
+        AutoResizeTextView codigoPredio;
+        AutoResizeTextView distanciaPoblado;
+        AutoResizeTextView tenencia;
+        AutoResizeTextView clasePredio;
+        AutoResizeTextView topografia;
 
         ComparendoViewHolder(View itemView) {
             super(itemView);
             cv = (CardView) itemView.findViewById(R.id.cv);
-            nombreInfractor = (AutoResizeTextView) itemView.findViewById(R.id.nombreInfractor);
-            numeroCedula = (AutoResizeTextView) itemView.findViewById(R.id.documentoInfractor);
-            usuario = (AutoResizeTextView) itemView.findViewById(R.id.usuario);
-            placaAgente = (AutoResizeTextView) itemView.findViewById(R.id.placaAgente);
-            numeroComp = (AutoResizeTextView) itemView.findViewById(R.id.numeroInmovilizacion);
-            fechaComp = (AutoResizeTextView) itemView.findViewById(R.id.fechaComparendo);
-            this.vehiculo = (AutoResizeTextView) itemView.findViewById(R.id.vehiculo);
-            this.estado = (AutoResizeTextView) itemView.findViewById(R.id.estado);
+            codigoDane = (AutoResizeTextView) itemView.findViewById(R.id.codigo_dane);
+            codigoPredio = (AutoResizeTextView) itemView.findViewById(R.id.codigo_predio);
+            clasePredio = (AutoResizeTextView) itemView.findViewById(R.id.clase_predio);
+            tenencia = (AutoResizeTextView) itemView.findViewById(R.id.tenencia);
+            distanciaPoblado = (AutoResizeTextView) itemView.findViewById(R.id.distancia_poblado);
+            tipoDocumento = (AutoResizeTextView) itemView.findViewById(R.id.tipo_documento);
+            topografia = (AutoResizeTextView) itemView.findViewById(R.id.topografia);
+            estado = (AutoResizeTextView) itemView.findViewById(R.id.estado);
         }
     }
 

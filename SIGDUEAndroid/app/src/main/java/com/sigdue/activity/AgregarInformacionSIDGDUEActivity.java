@@ -2,28 +2,21 @@ package com.sigdue.activity;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.res.AssetFileDescriptor;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.SurfaceTexture;
 import android.graphics.drawable.Drawable;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.FileUtils;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
@@ -44,46 +37,25 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SpinnerAdapter;
+import android.widget.Toast;
 
 import com.iangclifton.android.floatlabel.FloatLabel;
 import com.sigdue.BuildConfig;
 import com.sigdue.R;
 import com.sigdue.aplication.AplicacionSIGDUE;
-import com.sigdue.db.ClaseVehiculo;
-import com.sigdue.db.ClaseVehiculoDao;
-import com.sigdue.db.Color;
-import com.sigdue.db.ColorDao;
 import com.sigdue.db.DaoSession;
-import com.sigdue.db.Departamento;
-import com.sigdue.db.DepartamentoDao;
-import com.sigdue.db.Grua;
-import com.sigdue.db.GruaDao;
-import com.sigdue.db.Infraccion;
-import com.sigdue.db.InfraccionDao;
-import com.sigdue.db.Inmovilizacion;
-import com.sigdue.db.InmovilizacionDao;
-import com.sigdue.db.Municipio;
-import com.sigdue.db.MunicipioDao;
-import com.sigdue.db.Parqueadero;
-import com.sigdue.db.ParqueaderoDao;
-import com.sigdue.db.Persona;
-import com.sigdue.db.PersonaDao;
-import com.sigdue.db.TipoIdentificacion;
-import com.sigdue.db.TipoIdentificacionDao;
-import com.sigdue.db.TipoServicio;
-import com.sigdue.db.TipoServicioDao;
-import com.sigdue.db.Vehiculo;
-import com.sigdue.db.VehiculoDao;
-import com.sigdue.db.Zonas;
-import com.sigdue.db.ZonasDao;
+import com.sigdue.db.ParametroDao;
+import com.sigdue.db.Predial;
+import com.sigdue.db.PredialDao;
 import com.sigdue.service.EnviarInformacionSIGDUEService;
+import com.sigdue.service.LocationTrack;
 import com.sigdue.ui.MoviePlayer;
 import com.sigdue.ui.SearchableSpinner;
 import com.sigdue.ui.SpeedControlCallback;
 import com.sigdue.utilidadesgenerales.UtilidadesGenerales;
-import com.sigdue.webservice.api.WSGruparClient;
-import com.sigdue.webservice.api.WSGruparInterface;
-import com.sigdue.webservice.modelo.WSGruparResult;
+import com.sigdue.webservice.api.WSSIGDUEClient;
+import com.sigdue.webservice.api.WSSIGDUEInterface;
+import com.sigdue.webservice.modelo.WSSIGDUEResult;
 
 import org.greenrobot.greendao.query.QueryBuilder;
 
@@ -104,7 +76,7 @@ import uk.co.senab.photoview.PhotoViewAttacher;
 
 import static com.sigdue.Constants.CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE;
 import static com.sigdue.Constants.CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE;
-import static com.sigdue.Constants.RUTAMULTIMEDIAINMOVILIZACION;
+import static com.sigdue.Constants.RUTAMULTIMEDIASIGDUE;
 
 public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity implements TextureView.SurfaceTextureListener, MoviePlayer.PlayerFeedback {
 
@@ -121,7 +93,6 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
     private Button btnSiguiente;
     private Button btnTomarFoto;
     private LinearLayout buscarInfractor;
-    private ClaseVehiculoDao claseVehiculoDao;
     private SearchableSpinner cmbAgente;
     private SearchableSpinner cmbClaseVehiculo;
     private SearchableSpinner cmbColor;
@@ -133,20 +104,16 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
     private SearchableSpinner cmbTipoDocumento;
     private SearchableSpinner cmbTipoServicio;
     private SearchableSpinner cmbZona;
-    private ColorDao colorDao;
     private DaoSession daoSession;
-    private DepartamentoDao departamentoDao;
+    private ParametroDao parametroDao;
+    private PredialDao predialDao;
     private SwitchCompat desengancheSiNo;
     private EditText detalleZona;
     private ProgressDialog dialogoBuscando;
     private EditText direccion;
     private EditText fechaHoraComparendo;
     ArrayList<String> fotos;
-    private GruaDao gruaDao;
     private SwitchCompat gruaSiNo;
-    private InfraccionDao infraccionDao;
-    private Inmovilizacion inmovilizacion;
-    private InmovilizacionDao inmovilizacionDao;
     private boolean isBusquedaInfractor;
     private boolean isBusquedaVehiculo;
     private PhotoViewAttacher mAttacher;
@@ -160,7 +127,6 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
     private LinearLayout mostrarCamposVehiculo;
     private LinearLayout mostrarFotos;
     private LinearLayout mostrarVideo;
-    private MunicipioDao municipioDao;
     private EditText nombreDos;
     private EditText nombreUno;
     private EditText numeroChasis;
@@ -171,22 +137,27 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
     private EditText numeroPlaca;
     private EditText numeroSerie;
     private EditText observaciones;
-    private ParqueaderoDao parqueaderoDao;
-    private PersonaDao personaDao;
     int posFoto;
     private SwitchCompat propietarioPresenteSiNo;
     String rutaVideo;
     String rutafoto;
-    private TipoIdentificacionDao tipoIdentificacionDao;
-    private TipoServicioDao tipoServicioDao;
-    private VehiculoDao vehiculoDao;
-    private ZonasDao zonasDao;
-
+    private double longitude;
+    private double latitude;
+    private LocationTrack locationTrack;
+private Predial predial;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
             UtilidadesGenerales.context = this;
+            locationTrack = new LocationTrack(AgregarInformacionSIDGDUEActivity.this);
+
+            if (locationTrack.canGetLocation()) {
+                longitude = locationTrack.getLongitude();
+                latitude = locationTrack.getLatitude();
+                Toast.makeText(getApplicationContext(), "Longitude:" + Double.toString(longitude) + "\nLatitude:" + Double.toString(latitude), Toast.LENGTH_SHORT).show();
+            }
+
             mSurfaceTextureReady = false;
             fotos = new ArrayList();
             numeroFoto = 0;
@@ -198,19 +169,8 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
             isBusquedaVehiculo = false;
             this.app = (AplicacionSIGDUE) getApplication();
             this.daoSession = this.app.getDaoSession();
-            this.inmovilizacionDao = this.daoSession.getInmovilizacionDao();
-            this.infraccionDao = this.daoSession.getInfraccionDao();
-            this.zonasDao = this.daoSession.getZonasDao();
-            this.gruaDao = this.daoSession.getGruaDao();
-            this.parqueaderoDao = this.daoSession.getParqueaderoDao();
-            this.claseVehiculoDao = this.daoSession.getClaseVehiculoDao();
-            this.colorDao = this.daoSession.getColorDao();
-            this.tipoServicioDao = this.daoSession.getTipoServicioDao();
-            this.personaDao = this.daoSession.getPersonaDao();
-            this.tipoIdentificacionDao = this.daoSession.getTipoIdentificacionDao();
-            this.vehiculoDao = this.daoSession.getVehiculoDao();
-            this.departamentoDao = this.daoSession.getDepartamentoDao();
-            this.municipioDao = this.daoSession.getMunicipioDao();
+            this.predialDao = this.daoSession.getPredialDao();
+            this.parametroDao = this.daoSession.getParametroDao();
             setContentView(R.layout.agregar_informacion_sigdue_activity);
             this.cmbInfraccion = (SearchableSpinner) findViewById(R.id.cmbInfraccion);
             this.cmbInfraccion.setTitle("Infracciones");
@@ -373,17 +333,17 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
             this.mImageView.setImageDrawable(bitmap);
             this.mAttacher = new PhotoViewAttacher(this.mImageView);
             this.fotos = new ArrayList();
-            this.inmovilizacion = new Inmovilizacion();
-            this.inmovilizacion.__setDaoSession(this.daoSession);
+            this.predial = new Inmovilizacion();
+            this.predial.__setDaoSession(this.daoSession);
             List<Inmovilizacion> inmovilizaciones = this.inmovilizacionDao.queryBuilder().orderDesc(InmovilizacionDao.Properties.Id_inmovilizacion).list();
             if (inmovilizaciones == null || inmovilizaciones.size() <= 0) {
-                this.inmovilizacion.setId_inmovilizacion(1);
+                this.predial.setId_inmovilizacion(1);
             } else {
-                this.inmovilizacion.setId_inmovilizacion((inmovilizaciones.get(0)).getId_inmovilizacion() + 1);
+                this.predial.setId_inmovilizacion((inmovilizaciones.get(0)).getId_inmovilizacion() + 1);
             }
-            this.inmovilizacion.setFec_ini_inm(new Date());
+            this.predial.setFec_ini_inm(new Date());
             this.fechaHoraComparendo = ((FloatLabel) findViewById(R.id.fecha)).getEditText();
-            String fecha = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(this.inmovilizacion.getFec_ini_inm());
+            String fecha = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(this.predial.getFec_ini_inm());
             this.fechaHoraComparendo.setText(fecha);
             this.fechaHoraComparendo.setClickable(false);
             this.fechaHoraComparendo.setKeyListener(null);
@@ -552,7 +512,7 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                     try {
                         Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
                         intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
-                        intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 60*5);
+                        intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 60 * 5);
                         startActivityForResult(intent, CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE);
                     } catch (Exception ex) {
                         ex.printStackTrace();
@@ -613,9 +573,9 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                     try {
                         if (AgregarInformacionSIDGDUEActivity.this.fotos.size() < 6) {
                             Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                            File imagesFolder = new File(Environment.getExternalStorageDirectory(), RUTAMULTIMEDIAINMOVILIZACION);
+                            File imagesFolder = new File(Environment.getExternalStorageDirectory(), RUTAMULTIMEDIASIGDUE);
                             if (!imagesFolder.exists()) imagesFolder.mkdirs();
-                            rutafoto = inmovilizacion.getId_inmovilizacion() + "_foto_" + numeroFoto + ".jpg";
+                            rutafoto = predial.getId_inmovilizacion() + "_foto_" + numeroFoto + ".jpg";
                             Uri uriSavedImage = null;
                             File image = new File(imagesFolder, rutafoto);
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -733,14 +693,14 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
         protected Object doInBackground(Object... params) {
             Object resultado = null;
             try {
-                WSGruparInterface service = WSGruparClient.getClient();
+                WSSIGDUEInterface service = WSSIGDUEClient.getClient();
                 opcion = (int) params[0];
                 if (opcion == 1) {
                     Persona persona = (Persona) params[1];
-                    Call<WSGruparResult<Persona>> personasCall = service.buscarpersona(persona.getId_tipo_identificacion(), persona.getNo_identificacion());
-                    Response<WSGruparResult<Persona>> response = personasCall.execute();
+                    Call<WSSIGDUEResult<Persona>> personasCall = service.buscarpersona(persona.getId_tipo_identificacion(), persona.getNo_identificacion());
+                    Response<WSSIGDUEResult<Persona>> response = personasCall.execute();
                     if (response != null && response.isSuccessful()) {
-                        WSGruparResult<Persona> result = response.body();
+                        WSSIGDUEResult<Persona> result = response.body();
                         List<Persona> personas = result.getItems();
                         if (personas != null && personas.size() > 0) {
                             resultado = personas.get(0);
@@ -748,10 +708,10 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                     }
                 } else if (opcion == 2) {
                     Vehiculo vehiculo = (Vehiculo) params[1];
-                    Call<WSGruparResult<Vehiculo>> vehiculoCall = service.buscarVehiculo(vehiculo.getPlaca());
-                    Response<WSGruparResult<Vehiculo>> response = vehiculoCall.execute();
+                    Call<WSSIGDUEResult<Vehiculo>> vehiculoCall = service.buscarVehiculo(vehiculo.getPlaca());
+                    Response<WSSIGDUEResult<Vehiculo>> response = vehiculoCall.execute();
                     if (response != null && response.isSuccessful()) {
-                        WSGruparResult<Vehiculo> result = response.body();
+                        WSSIGDUEResult<Vehiculo> result = response.body();
                         List<Vehiculo> vehiculos = result.getItems();
                         if (vehiculos != null && vehiculos.size() > 0) {
                             resultado = vehiculos.get(0);
@@ -786,8 +746,8 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                         List<Departamento> departamentoMuniInfractor;
                         String nombreCompleto = "";
                         Persona infractor = (Persona) resultado;
-                        if (inmovilizacion != null) {
-                            inmovilizacion.setInfractor(infractor);
+                        if (predial != null) {
+                            predial.setInfractor(infractor);
                         }
 
                         nombreUno.setText("");
@@ -857,8 +817,8 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                         SpinnerAdapter adapterComboColor;
 
                         Vehiculo vehiculo = (Vehiculo) resultado;
-                        if (inmovilizacion != null) {
-                            inmovilizacion.setVehiculo(vehiculo);
+                        if (predial != null) {
+                            predial.setVehiculo(vehiculo);
                         }
 
                         numeroChasis.setText("");
@@ -955,8 +915,8 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                 List<Departamento> departamentoMuniInfractor;
                 String nombreCompleto = "";
                 Persona infractor = infractores.get(0);
-                if (this.inmovilizacion != null) {
-                    this.inmovilizacion.setInfractor(infractor);
+                if (this.predial != null) {
+                    this.predial.setInfractor(infractor);
                 }
 
                 nombreUno.setText("");
@@ -1044,8 +1004,8 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                 SpinnerAdapter adapterComboColor;
 
                 Vehiculo vehiculo = (Vehiculo) vehiculos.get(0);
-                if (this.inmovilizacion != null) {
-                    this.inmovilizacion.setVehiculo(vehiculo);
+                if (this.predial != null) {
+                    this.predial.setVehiculo(vehiculo);
                 }
 
                 numeroChasis.setText("");
@@ -1145,24 +1105,24 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
             AlertDialog.Builder builder;
             AlertDialog alert;
 
-            this.inmovilizacion.setNo_comparendo(!this.numeroComparendo.getText().toString().equals("") ? Long.valueOf(Long.parseLong(this.numeroComparendo.getText().toString())) : null);
-            this.inmovilizacion.setDireccion(this.direccion.getText().toString());
-            this.inmovilizacion.setPropietario_presente(this.propietarioPresenteSiNo.isChecked() ? "SI" : "NO");
-            this.inmovilizacion.setDesenganche(this.desengancheSiNo.isChecked() ? "SI" : "NO");
+            this.predial.setNo_comparendo(!this.numeroComparendo.getText().toString().equals("") ? Long.valueOf(Long.parseLong(this.numeroComparendo.getText().toString())) : null);
+            this.predial.setDireccion(this.direccion.getText().toString());
+            this.predial.setPropietario_presente(this.propietarioPresenteSiNo.isChecked() ? "SI" : "NO");
+            this.predial.setDesenganche(this.desengancheSiNo.isChecked() ? "SI" : "NO");
             if (this.cmbInfraccion.getSelectedItem() != null) {
-                this.inmovilizacion.setId_infraccion(((Infraccion) this.cmbInfraccion.getSelectedItem()).getId_infraccion());
+                this.predial.setId_infraccion(((Infraccion) this.cmbInfraccion.getSelectedItem()).getId_infraccion());
             }
             if (this.cmbGrua.getSelectedItem() != null) {
-                this.inmovilizacion.setId_grua(((Grua) this.cmbGrua.getSelectedItem()).getId_grua());
+                this.predial.setId_grua(((Grua) this.cmbGrua.getSelectedItem()).getId_grua());
             }
             if (this.cmbZona.getSelectedItem() != null) {
-                this.inmovilizacion.setId_zona(((Zonas) this.cmbZona.getSelectedItem()).getId_zona());
+                this.predial.setId_zona(((Zonas) this.cmbZona.getSelectedItem()).getId_zona());
             }
             if (this.cmbParqueadero.getSelectedItem() != null) {
-                this.inmovilizacion.setId_parqueadero(((Parqueadero) this.cmbParqueadero.getSelectedItem()).getId_parqueadero());
+                this.predial.setId_parqueadero(((Parqueadero) this.cmbParqueadero.getSelectedItem()).getId_parqueadero());
             }
             if (this.cmbAgente.getSelectedItem() != null) {
-                this.inmovilizacion.setId_agente(((Persona) this.cmbAgente.getSelectedItem()).getId_persona());
+                this.predial.setId_agente(((Persona) this.cmbAgente.getSelectedItem()).getId_persona());
             }
             Vehiculo vehiculo = new Vehiculo();
             List<Vehiculo> verificarVehiculos;
@@ -1196,10 +1156,10 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                             persona.setId_municipio(((Municipio) this.cmbMunicipio.getSelectedItem()).getId_municipio());
                         }
                         if (this.personaDao.insert(persona) > 0) {
-                            this.inmovilizacion.setInfractor(persona);
+                            this.predial.setInfractor(persona);
                         }
                     } else if (verificarPersonas != null && verificarPersonas.size() > 0) {
-                        this.inmovilizacion.setInfractor(verificarPersonas.get(0));
+                        this.predial.setInfractor(verificarPersonas.get(0));
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -1230,19 +1190,19 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                         vehiculo.setId_tipo_servicio(((TipoServicio) this.cmbTipoServicio.getSelectedItem()).getId_tipo_servicio());
                     }
                     if (this.vehiculoDao.insert(vehiculo) > 0) {
-                        this.inmovilizacion.setVehiculo(vehiculo);
+                        this.predial.setVehiculo(vehiculo);
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
             } else if (verificarVehiculos != null && verificarVehiculos.size() > 0) {
-                this.inmovilizacion.setVehiculo(verificarVehiculos.get(0));
+                this.predial.setVehiculo(verificarVehiculos.get(0));
             }
 
-            this.inmovilizacion.setObservacion(this.observaciones.getText().toString());
-            this.inmovilizacion.setEstado("G");
-            this.inmovilizacion.setId_usuario(Long.valueOf(this.app.getIdPersona()));
-            long idInmovilizacion = inmovilizacionDao.insert(this.inmovilizacion);
+            this.predial.setObservacion(this.observaciones.getText().toString());
+            this.predial.setEstado("G");
+            this.predial.setId_usuario(Long.valueOf(this.app.getIdUsuario()));
+            long idInmovilizacion = inmovilizacionDao.insert(this.predial);
             if (idInmovilizacion < 0) {
                 builder = new AlertDialog.Builder(AgregarInformacionSIDGDUEActivity.this);
                 builder.setTitle("Información");
@@ -1315,7 +1275,7 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 try {
-                    File image = new File(Environment.getExternalStorageDirectory() + "/" + RUTAMULTIMEDIAINMOVILIZACION + "/" + this.rutafoto);
+                    File image = new File(Environment.getExternalStorageDirectory() + "/" + RUTAMULTIMEDIASIGDUE + "/" + this.rutafoto);
                     Bitmap bMap = BitmapFactory.decodeFile(image.getAbsolutePath());
                     try {
                         OutputStream stream = new FileOutputStream(image);
@@ -1326,7 +1286,7 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    this.fotos.add(Environment.getExternalStorageDirectory() + "/" + RUTAMULTIMEDIAINMOVILIZACION + "/" + this.rutafoto);
+                    this.fotos.add(Environment.getExternalStorageDirectory() + "/" + RUTAMULTIMEDIASIGDUE + "/" + this.rutafoto);
                     this.posFoto = this.fotos.size() - 1;
                     this.numeroFoto++;
                     desplegarFoto(this.posFoto);
@@ -1344,9 +1304,9 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
 
     private void guardarVideo(Intent data) {
         try {
-            File videosFolder = new File(Environment.getExternalStorageDirectory(), RUTAMULTIMEDIAINMOVILIZACION);
+            File videosFolder = new File(Environment.getExternalStorageDirectory(), RUTAMULTIMEDIASIGDUE);
             if (!videosFolder.exists()) videosFolder.mkdirs();
-            rutaVideo = videosFolder.getPath() + "/" + inmovilizacion.getId_inmovilizacion() + "_video_" + ".mp4";
+            rutaVideo = videosFolder.getPath() + "/" + predial.getId_inmovilizacion() + "_video_" + ".mp4";
             Uri videoUri = data.getData();
             AssetFileDescriptor videoAsset = getContentResolver().openAssetFileDescriptor(videoUri, "r");
             FileInputStream fis = videoAsset.createInputStream();
@@ -1483,5 +1443,11 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        locationTrack.stopListener();
     }
 }

@@ -12,14 +12,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import static com.sigdue.Constants.BASE_URL_API;
 
 
-public class WSGruparClient
+public class WSSIGDUEClient
 {
     private static OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
     public static Retrofit retrofit;
-    private static WSGruparInterface wsGruparApiInterface;
+    private static WSSIGDUEInterface wssigdueInterface;
 
-    public static WSGruparInterface getClient() {
-        if (wsGruparApiInterface == null) {
+    public static WSSIGDUEInterface getClient() {
+        if (wssigdueInterface == null) {
             Retrofit.Builder builder = new Retrofit.Builder().baseUrl(BASE_URL_API).addConverterFactory(GsonConverterFactory.create());
             httpClient.readTimeout(5, TimeUnit.MINUTES);
             httpClient.connectTimeout(5, TimeUnit.MINUTES);
@@ -31,9 +31,9 @@ public class WSGruparClient
                 }
             });
             retrofit = builder.client(httpClient.build()).build();
-            wsGruparApiInterface = (WSGruparInterface) builder.client(httpClient.build()).build().create(WSGruparInterface.class);
+            wssigdueInterface = (WSSIGDUEInterface) builder.client(httpClient.build()).build().create(WSSIGDUEInterface.class);
         }
-        return wsGruparApiInterface;
+        return wssigdueInterface;
     }
 
 

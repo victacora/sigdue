@@ -36,15 +36,13 @@ import android.widget.Toast;
 import com.sigdue.Constants;
 import com.sigdue.R;
 import com.sigdue.db.DaoSession;
-import com.sigdue.db.Inmovilizacion;
-import com.sigdue.db.InmovilizacionDao;
-import com.sigdue.db.Persona;
-import com.sigdue.db.Vehiculo;
+import com.sigdue.db.PredialDao;
 import com.sigdue.utilidadesgenerales.DBConnection;
 import com.sigdue.utilidadesgenerales.Filtro;
 import com.sigdue.utilidadesgenerales.UtilidadesGenerales;
-import com.sigdue.webservice.api.WSGruparClient;
-import com.sigdue.webservice.api.WSGruparInterface;
+import com.sigdue.webservice.api.WSSIGDUEClient;
+import com.sigdue.webservice.api.WSSIGDUEInterface;
+import com.sigdue.db.Predial;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -58,7 +56,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 
-import static com.sigdue.Constants.RUTAMULTIMEDIAINMOVILIZACION;
+import static com.sigdue.Constants.RUTAMULTIMEDIASIGDUE;
 
 public class EnviarInformacionSIGDUEService extends IntentService {
     private DaoSession daoSession;
@@ -75,37 +73,36 @@ public class EnviarInformacionSIGDUEService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         try {
             ResultadoServicio<String> resultado = new ResultadoServicio("OK");
-            InmovilizacionDao inmovilizacionDao = this.daoSession.getInmovilizacionDao();
+            PredialDao predialDao = this.daoSession.getPredialDao();
             int totalComparendosEnviados = 0;
             int totalInmovilizacionesProcesadas = 0;
             if (this.daoSession != null) {
-                List<Inmovilizacion> inmovilizaciones = inmovilizacionDao.queryBuilder().where(InmovilizacionDao.Properties.Estado.notEq("E")).list();
-                if (inmovilizaciones != null && inmovilizaciones.size() > 0) {
+                List<Predial> prediales = predialDao.queryBuilder().where(PredialDao.Properties.Estado.notEq("E")).list();
+                if (prediales != null && prediales.size() > 0) {
                     this.mBuilder.setProgress(100, 0, false);
                     this.mBuilder.setVibrate(new long[]{1000, 1000, 1000, 1000, 1000});
                     this.mBuilder.setDefaults(1);
                     this.mNotifyManager.notify(Constants.NOTIFICACIONES_ID, this.mBuilder.build());
-                    for (Inmovilizacion inmovilizacion : inmovilizaciones) {
-                        inmovilizacion.__setDaoSession(this.daoSession);
-                        resultado = enviarInmovilizacion(inmovilizacion);
+                    for (Predial predial : prediales) {
+                        resultado = enviarIndormacionSIGDUE(predial);
                         if (resultado.getError() == null && resultado.getResult() != null && resultado.getResult().equals("ok")) {
                             this.mBuilder.setVibrate(null);
                             this.mBuilder.setContentText("Inmovilizacion enviada: " + (totalComparendosEnviados + 1));
                             this.mBuilder.setSound(null);
-                            this.mBuilder.setProgress(100, ((totalInmovilizacionesProcesadas + 1) * 100) / inmovilizaciones.size(), false);
+                            this.mBuilder.setProgress(100, ((totalInmovilizacionesProcesadas + 1) * 100) / prediales.size(), false);
                             this.mNotifyManager.notify(Constants.NOTIFICACIONES_ID, this.mBuilder.build());
                             Thread.sleep(1500);
                             totalComparendosEnviados++;
                             try {
-                                inmovilizacionDao.delete(inmovilizacion);
+                                predialDao.delete(predial);
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
                         } else {
                             this.mBuilder.setVibrate(null);
-                            this.mBuilder.setContentText("La inmovilizacion no pudo ser enviada: " + (totalComparendosEnviados + 1));
+                            this.mBuilder.setContentText("La predial no pudo ser enviada: " + (totalComparendosEnviados + 1));
                             this.mBuilder.setSound(null);
-                            this.mBuilder.setProgress(100, ((totalInmovilizacionesProcesadas + 1) * 100) / inmovilizaciones.size(), false);
+                            this.mBuilder.setProgress(100, ((totalInmovilizacionesProcesadas + 1) * 100) / prediales.size(), false);
                             this.mNotifyManager.notify(Constants.NOTIFICACIONES_ID, this.mBuilder.build());
                             Thread.sleep(1500);
                         }
@@ -123,64 +120,55 @@ public class EnviarInformacionSIGDUEService extends IntentService {
         }
     }
 
-    private ResultadoServicio<String> enviarInmovilizacion(Inmovilizacion inmovilizacion) {
+    private ResultadoServicio<String> enviarIndormacionSIGDUE(Predial predio) {
         ResultadoServicio<String> resultado = new ResultadoServicio<String>("false");
         try {
-            SimpleDateFormat formatFecha = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-            WSGruparInterface service = WSGruparClient.getClient();
-            com.sigdue.webservice.modelo.Inmovilizacion inmovilizacionJSON = new com.sigdue.webservice.modelo.Inmovilizacion();
-            inmovilizacionJSON.setNo_comparendo(inmovilizacion.getNo_comparendo());
-            inmovilizacionJSON.setFec_ini_inm(formatFecha.format(inmovilizacion.getFec_ini_inm()));
-            inmovilizacionJSON.setDesenganche(inmovilizacion.getDesenganche());
-            inmovilizacionJSON.setPropietario_presente(inmovilizacion.getPropietario_presente());
-            inmovilizacionJSON.setId_grua(inmovilizacion.getId_grua());
-            inmovilizacionJSON.setId_parqueadero(inmovilizacion.getId_parqueadero());
-            inmovilizacionJSON.setId_zona(inmovilizacion.getId_zona());
-            inmovilizacionJSON.setId_infraccion(inmovilizacion.getId_infraccion());
-            inmovilizacionJSON.setDireccion(inmovilizacion.getDireccion());
-            inmovilizacionJSON.setObservacion(inmovilizacion.getObservacion());
-            Vehiculo vehiculo = inmovilizacion.getVehiculo();
-            if (vehiculo != null) {
-                inmovilizacionJSON.setPlaca(vehiculo.getPlaca());
-                inmovilizacionJSON.setNo_motor(vehiculo.getNo_motor());
-                inmovilizacionJSON.setNo_chasis(vehiculo.getNo_chasis());
-                inmovilizacionJSON.setNo_serie(vehiculo.getNo_serie());
-                inmovilizacionJSON.setId_color(vehiculo.getId_color());
-                inmovilizacionJSON.setId_clase_vehiculo(vehiculo.getId_clase_vehiculo());
-                inmovilizacionJSON.setId_tipo_servicio(vehiculo.getId_tipo_servicio());
-            }
-            Persona infractor = inmovilizacion.getInfractor();
-            if (infractor != null) {
-                inmovilizacionJSON.setId_tipo_identificacion(infractor.getId_tipo_identificacion());
-                inmovilizacionJSON.setNo_identificacion(infractor.getNo_identificacion());
-                inmovilizacionJSON.setNombre1(infractor.getNombre1());
-                inmovilizacionJSON.setNombre2(infractor.getNombre2());
-                inmovilizacionJSON.setApellido1(infractor.getApellido1());
-                inmovilizacionJSON.setApellido2(infractor.getApellido2());
-                inmovilizacionJSON.setId_municipio(infractor.getId_municipio());
-            }
-            Persona usuario = inmovilizacion.getUsuario();
-            if (usuario != null) {
-                inmovilizacionJSON.setId_usuario(usuario.getId_persona());
-                inmovilizacionJSON.setId_dispositivo(usuario.getId_dispositivo());
-            }
-            Persona agente = inmovilizacion.getAgente();
-            if (agente != null) {
-                inmovilizacionJSON.setId_agente(agente.getId_persona());
-            }
-            Call<ResponseBody> crearinmovilizacionCall = service.crearinmovilizacion(inmovilizacionJSON);
+            SimpleDateFormat formatFecha = new SimpleDateFormat("MM/dd/yyyy");
+            WSSIGDUEInterface service = WSSIGDUEClient.getClient();
+            com.sigdue.webservice.modelo.Predial predialJSON = new com.sigdue.webservice.modelo.Predial();
+            predialJSON.setP_DANE_SEDE(predio.getDane_sede());
+            predialJSON.setP_COD_PREDIO(predio.getCod_predio());
+            predialJSON.setP_CLIMA(predio.getClima());
+            predialJSON.setP_DISTANCIA_MTS_SEDE_PPAL(predio.getDistancia_mts_sede_ppal());
+            predialJSON.setP_DIST_KM_CENTRO_POBLADO(predio.getDist_km_centro_poblado());
+            predialJSON.setP_CLASE_PREDIO(predio.getClase_predio());
+            predialJSON.setP_AVALUO_CATASTRAL(predio.getAvaluo_catastral());
+            predialJSON.setpP_FEC_AVALUO_CATASTRAL(formatFecha.format(predio.getFec_avaluo_catastral()));
+            predialJSON.setP_AVALUO_COMERCIAL(predio.getFec_avaluo_comercial());
+            predialJSON.setpP_FEC_AVALUO_COMERCIAL(formatFecha.format(predio.getFec_avaluo_comercial()));
+            predialJSON.setP_AVALUO_COMERCIAL(predio.getFec_avaluo_comercial());
+            predialJSON.setP_ZONA_AISLAMIENTO(predio.getZona_aislamiento());
+            predialJSON.setP_ZONA_ALTO_RIESGO(predio.getZona_alto_riesgo());
+            predialJSON.setP_ZONA_PROTECCION(predio.getZona_proteccion());
+            predialJSON.setP_TOPOGRAFIA(predio.getTopografia());
+            predialJSON.setP_PROPIEDAD_LOTE(predio.getPropiedad_lote());
+            predialJSON.setP_TIPO_DOCUMENTO(predio.getTipo_documento());
+            predialJSON.setP_CUAL_TIPO_DOCUMENTO(predio.getCual_tipo_documento());
+            predialJSON.setP_NRO_DOCUMENTO_LEGALIZACION(predio.getNro_documento_legalizacion());
+            predialJSON.setpP_FEC_EXPEDICION(formatFecha.format(predio.getFec_expedicion()));
+            predialJSON.setP_NOTARIA_DEPENDENCIA_ORIGEN(predio.getNotaria_dependencia_origen());
+            predialJSON.setP_LUGAR_EXPEDICION(predio.getLugar_expedicion());
+            predialJSON.setP_REGISTRO_CATASTRAL(predio.getRegistro_catastral());
+            predialJSON.setP_MATRICULA_INMOBILIARIA(predio.getMatricula_inmobiliaria());
+            predialJSON.setP_PROPIETARIOS(predio.getPropietarios());
+            predialJSON.setP_TENENCIA(predio.getTenencia());
+            predialJSON.setP_CON_QUIEN_TENENCIA(predio.getCon_quien_tenencia());
+            predialJSON.setP_NOM_QUIEN_TENENCIA(predio.getNom_quien_tenencia());
+            predialJSON.setpP_FECHA_TENENCIA_LOTE(formatFecha.format(predio.getFecha_tenencia_lote()));
+
+            Call<ResponseBody> crearinmovilizacionCall = service.crearpredial(predialJSON);
             Response<ResponseBody> response = crearinmovilizacionCall.execute();
             if (response != null) {
                 int codigo = response.code();
-                int idInmovilizacion = 0;
+                int idPredial = 0;
                 String error = "";
                 Headers headers = response.headers();
                 if (headers != null && headers.size() > 0) {
                     try {
                         String valor = headers.get("Id-Inmovilizacion");
-                        idInmovilizacion = Integer.parseInt(valor);
+                        idPredial = Integer.parseInt(valor);
                     } catch (Exception ex) {
-                        idInmovilizacion = -1;
+                        idPredial = -1;
                     }
                     try {
                         error = headers.get("Error");
@@ -189,10 +177,10 @@ public class EnviarInformacionSIGDUEService extends IntentService {
                     }
                 }
                 if (codigo == 200) {
-                    if (idInmovilizacion > 0) {
+                    if (idPredial > 0) {
                         resultado = new ResultadoServicio<String>("ok");
-                        File rutaArchivos = new File(Environment.getExternalStorageDirectory(), RUTAMULTIMEDIAINMOVILIZACION);
-                        String inicio = inmovilizacion.getId_inmovilizacion() + "_foto_";
+                        File rutaArchivos = new File(Environment.getExternalStorageDirectory(), RUTAMULTIMEDIASIGDUE);
+                        String inicio = predio.getId_predial() + "_foto_";
                         String fin = ".jpg";
                         File[] archivos = rutaArchivos.listFiles(new Filtro(inicio, fin));
                         if (archivos != null && archivos.length > 0) {
@@ -208,7 +196,7 @@ public class EnviarInformacionSIGDUEService extends IntentService {
                                     RequestBody requestBody = RequestBody.create(mediaType, archivo);
                                     MultipartBody.Part multimedia = okhttp3.MultipartBody.Part.createFormData("imagen", archivo.getName(), requestBody);
 
-                                    Call<ResponseBody> crearMultimediaCall = service.crearmultimedia(idInmovilizacion, archivo.getName(), multimedia, "", formatFecha.format(inmovilizacion.getFec_ini_inm()));
+                                    Call<ResponseBody> crearMultimediaCall = service.crearmultimedia(idPredial, archivo.getName(), multimedia);
                                     response = crearMultimediaCall.execute();
                                     if (response != null) {
                                         headers = response.headers();
@@ -229,7 +217,7 @@ public class EnviarInformacionSIGDUEService extends IntentService {
                             }
                         }
 
-                        inicio = inmovilizacion.getId_inmovilizacion() + "_video_";
+                        inicio = predio.getId_predial() + "_video_";
                         fin = ".mp4";
                         archivos = rutaArchivos.listFiles(new Filtro(inicio, fin));
                         if (archivos != null && archivos.length > 0) {
@@ -245,7 +233,7 @@ public class EnviarInformacionSIGDUEService extends IntentService {
                                     RequestBody requestBody = RequestBody.create(mediaType, archivo);
                                     MultipartBody.Part multimedia = okhttp3.MultipartBody.Part.createFormData("video", archivo.getName(), requestBody);
 
-                                    Call<ResponseBody> crearMultimediaCall = service.crearmultimedia(idInmovilizacion, archivo.getName(), multimedia, "", formatFecha.format(inmovilizacion.getFec_ini_inm()));
+                                    Call<ResponseBody> crearMultimediaCall = service.crearmultimedia(idPredial, archivo.getName(), multimedia);
                                     response = crearMultimediaCall.execute();
                                     if (response != null) {
                                         headers = response.headers();
@@ -266,7 +254,7 @@ public class EnviarInformacionSIGDUEService extends IntentService {
                             }
                         }
                     } else {
-                        throw new Exception("Error al enviar inmovilizacion: " + error);
+                        throw new Exception("Error al enviar predio: " + error);
                     }
                 } else if (codigo == 500) {
                     throw new Exception("Ocurrio un error al procesar la solicitud en el servidor codigo 500.");

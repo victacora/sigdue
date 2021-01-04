@@ -2,8 +2,8 @@ package com.sigdue.utilidadesgenerales;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+
 import com.sigdue.db.DaoMaster;
-import com.sigdue.db.DaoMaster.DevOpenHelper;
 import com.sigdue.db.DaoSession;
 
 public class DBConnection {
@@ -15,7 +15,7 @@ public class DBConnection {
     public DBConnection(Context context) {
         try {
             this.context = context;
-            this.db = new DevOpenHelper(context, "inmovilizaciones-db", null).getWritableDatabase();
+            this.db = new DaoMaster.DevOpenHelper(context, "inmovilizaciones-db", null).getWritableDatabase();
             this.daoMaster = new DaoMaster(this.db);
             this.daoSession = this.daoMaster.newSession();
         } catch (Exception ex) {

@@ -15,7 +15,7 @@
             android:padding="16dp">
 
             <com.sigdue.ui.AutoResizeTextView
-                android:id="@+id/numeroInmovilizacion"
+                android:id="@+id/codigo_dane"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
@@ -23,58 +23,58 @@
                 android:textStyle="bold" />
 
             <com.sigdue.ui.AutoResizeTextView
-                android:id="@+id/fechaComparendo"
+                android:id="@+id/codigo_predio"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/numeroInmovilizacion"
+                android:layout_below="@+id/codigo_dane"
                 android:textSize="17sp" />
 
             <com.sigdue.ui.AutoResizeTextView
-                android:id="@+id/vehiculo"
+                android:id="@+id/clase_predio"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/fechaComparendo"
+                android:layout_below="@+id/codigo_predio"
                 android:textSize="17sp" />
 
             <com.sigdue.ui.AutoResizeTextView
-                android:id="@+id/documentoInfractor"
+                android:id="@+id/tenencia"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/vehiculo"
+                android:layout_below="@+id/clase_predio"
                 android:textSize="17sp" />
 
             <com.sigdue.ui.AutoResizeTextView
-                android:id="@+id/nombreInfractor"
+                android:id="@+id/distancia_poblado"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/documentoInfractor"
+                android:layout_below="@+id/tenencia"
                 android:textSize="17sp" />
 
             <com.sigdue.ui.AutoResizeTextView
-                android:id="@+id/placaAgente"
+                android:id="@+id/tipo_documento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/nombreInfractor"
+                android:layout_below="@+id/distancia_poblado"
                 android:textSize="17sp" />
 
             <com.sigdue.ui.AutoResizeTextView
-                android:id="@+id/usuario"
+                android:id="@+id/topografia"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/placaAgente"
+                android:layout_below="@+id/tipo_documento"
                 android:textSize="17sp" />
 
             <com.sigdue.ui.AutoResizeTextView
                 android:id="@+id/estado"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/usuario"
+                android:layout_below="@+id/topografia"
                 android:textSize="17sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/usuario"
+                android:layout_below="@+id/estado"
                 android:orientation="horizontal">
 
                 <Button
