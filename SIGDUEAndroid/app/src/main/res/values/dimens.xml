@@ -7,7 +7,7 @@
     <dimen name="add_switch_margin_right">0dp</dimen>
     <dimen name="action_bar_width">265dp</dimen>
 
-    <dimen name="add_inmovilizacion_padding">16dp</dimen>
+    <dimen name="add_predio_padding">16dp</dimen>
     <dimen name="add_inmovilizacion_section_padding">12dp</dimen>
     <integer name="add_bookmark_note_lines">2</integer>
     <dimen name="add_bookmark_form_padding">0dp</dimen>
@@ -27,7 +27,7 @@
     <dimen name="view_note_padding">16dp</dimen>
     <dimen name="view_note_title_text">18sp</dimen>
     <dimen name="view_note_body_text">16sp</dimen>
-    <dimen name="view_inmovilizacion_padding">12dp</dimen>
+    <dimen name="view_predio_padding">12dp</dimen>
     <dimen name="view_note_body_margin_left">32dp</dimen>
     <dimen name="view_note_icon_size">24dp</dimen>
 

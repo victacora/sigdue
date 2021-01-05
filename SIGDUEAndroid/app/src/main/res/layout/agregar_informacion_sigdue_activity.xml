@@ -18,17 +18,17 @@
             android:layout_height="match_parent"
             android:background="@color/add_comparendo_background"
             android:orientation="vertical"
-            android:paddingBottom="@dimen/add_inmovilizacion_padding"
-            android:paddingTop="@dimen/add_inmovilizacion_padding">
+            android:paddingBottom="@dimen/add_predio_padding"
+            android:paddingTop="@dimen/add_predio_padding">
 
             <TextView
                 android:id="@+id/datosInmovilizacion"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
                 android:gravity="center_horizontal"
-                android:paddingLeft="@dimen/add_inmovilizacion_padding"
-                android:paddingRight="@dimen/add_inmovilizacion_padding"
+                android:paddingLeft="@dimen/add_predio_padding"
+                android:paddingRight="@dimen/add_predio_padding"
                 android:text="Registrar información"
                 android:textSize="20sp" />
 
@@ -38,42 +38,21 @@
                 android:src="@color/drawer_divider" />
 
             <com.iangclifton.android.floatlabel.FloatLabel
-                android:id="@+id/fecha"
+                android:id="@+id/dane_sede"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
                 android:background="@null"
                 android:gravity="top|left"
-                android:hint="Fecha"
-                android:inputType="textMultiLine"
-                android:layout="@layout/float_label"
-                android:lines="1"
-                android:maxLines="1"
-                android:paddingLeft="@dimen/add_inmovilizacion_padding"
-                android:paddingRight="@dimen/add_inmovilizacion_padding"
-                android:textSize="26sp" />
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:src="@color/drawer_divider" />
-
-            <com.iangclifton.android.floatlabel.FloatLabel
-                android:id="@+id/numeroInmovilizacion"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
-                android:background="@null"
-                android:gravity="top|left"
-                android:hint="N° comparendo"
+                android:hint="DANE sede"
                 android:imeOptions="actionNext"
                 android:inputType="textMultiLine|number"
                 android:layout="@layout/float_label"
                 android:lines="1"
                 android:maxLines="1"
-                android:nextFocusForward="@+id/direccion"
-                android:paddingLeft="@dimen/add_inmovilizacion_padding"
-                android:paddingRight="@dimen/add_inmovilizacion_padding"
+                android:nextFocusForward="@+id/codigo_predio"
+                android:paddingLeft="@dimen/add_predio_padding"
+                android:paddingRight="@dimen/add_predio_padding"
                 android:textSize="26sp" />
 
             <ImageView
@@ -82,21 +61,478 @@
                 android:src="@color/drawer_divider" />
 
             <com.iangclifton.android.floatlabel.FloatLabel
-                android:id="@+id/direccion"
+                android:id="@+id/codigo_predio"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
                 android:background="@null"
                 android:gravity="top|left"
-                android:hint="Direccion"
+                android:hint="Código predio"
+                android:imeOptions="actionNext"
+                android:inputType="textMultiLine|number"
+                android:layout="@layout/float_label"
+                android:lines="1"
+                android:maxLines="1"
+                android:nextFocusForward="@+id/avaluo_catastral"
+                android:paddingLeft="@dimen/add_predio_padding"
+                android:paddingRight="@dimen/add_predio_padding"
+                android:textSize="26sp" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:src="@color/drawer_divider" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/view_predio_padding"
+                android:paddingLeft="@dimen/add_predio_padding"
+                android:paddingRight="@dimen/add_predio_padding"
+                android:paddingTop="@dimen/view_predio_padding">
+
+                <com.sigdue.ui.SearchableSpinner
+                    android:id="@+id/cmbClima"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    app:hintText="Seleccione clima" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:src="@color/drawer_divider" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/view_predio_padding"
+                android:paddingLeft="@dimen/add_predio_padding"
+                android:paddingRight="@dimen/add_predio_padding"
+                android:paddingTop="@dimen/view_predio_padding">
+
+                <com.sigdue.ui.SearchableSpinner
+                    android:id="@+id/cmbDitanciaSedePrincipal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    app:hintText="Seleccione distancia sede principal" />
+            </LinearLayout>
+
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:src="@color/drawer_divider" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/view_predio_padding"
+                android:paddingLeft="@dimen/add_predio_padding"
+                android:paddingRight="@dimen/add_predio_padding"
+                android:paddingTop="@dimen/view_predio_padding">
+
+                <com.sigdue.ui.SearchableSpinner
+                    android:id="@+id/cmbDistanciaPoblado"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    app:hintText="Seleccione distancia poblado" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:src="@color/drawer_divider" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/view_predio_padding"
+                android:paddingLeft="@dimen/add_predio_padding"
+                android:paddingRight="@dimen/add_predio_padding"
+                android:paddingTop="@dimen/view_predio_padding">
+
+                <com.sigdue.ui.SearchableSpinner
+                    android:id="@+id/cmbClasePredio"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    app:hintText="Seleccione clase predio" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:src="@color/drawer_divider" />
+
+
+            <com.iangclifton.android.floatlabel.FloatLabel
+                android:id="@+id/avaluo_catastral"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
+                android:background="@null"
+                android:gravity="top|left"
+                android:hint="Avalúo catastral"
+                android:imeOptions="actionNext"
+                android:inputType="textMultiLine|number"
+                android:layout="@layout/float_label"
+                android:lines="1"
+                android:maxLines="1"
+                android:nextFocusForward="@+id/avaluo_comercial"
+                android:paddingLeft="@dimen/add_predio_padding"
+                android:paddingRight="@dimen/add_predio_padding"
+                android:textSize="26sp" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:src="@color/drawer_divider" />
+
+            <com.iangclifton.android.floatlabel.FloatLabel
+                android:id="@+id/fecha_avaluo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
+                android:background="@null"
+                android:gravity="top|left"
+                android:hint="Fecha avalúo"
+                android:inputType="textMultiLine"
+                android:layout="@layout/float_label"
+                android:lines="1"
+                android:maxLines="1"
+                android:paddingLeft="@dimen/add_predio_padding"
+                android:paddingRight="@dimen/add_predio_padding"
+                android:textSize="26sp" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:src="@color/drawer_divider" />
+
+
+            <com.iangclifton.android.floatlabel.FloatLabel
+                android:id="@+id/avaluo_comercial"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
+                android:background="@null"
+                android:gravity="top|left"
+                android:hint="Avalúo comercial"
+                android:imeOptions="actionNext"
+                android:inputType="textMultiLine|number"
+                android:layout="@layout/float_label"
+                android:lines="1"
+                android:maxLines="1"
+                android:nextFocusForward="@+id/cual_tipo_documento"
+                android:paddingLeft="@dimen/add_predio_padding"
+                android:paddingRight="@dimen/add_predio_padding"
+                android:textSize="26sp" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:src="@color/drawer_divider" />
+
+            <com.iangclifton.android.floatlabel.FloatLabel
+                android:id="@+id/fecha_avaluo_comercial"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
+                android:background="@null"
+                android:gravity="top|left"
+                android:hint="Fecha avalúo comercial"
+                android:inputType="textMultiLine"
+                android:layout="@layout/float_label"
+                android:lines="1"
+                android:maxLines="1"
+                android:paddingLeft="@dimen/add_predio_padding"
+                android:paddingRight="@dimen/add_predio_padding"
+                android:textSize="26sp" />
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:src="@color/drawer_divider" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/view_predio_padding"
+                android:paddingLeft="@dimen/add_predio_padding"
+                android:paddingRight="@dimen/add_predio_padding"
+                android:paddingTop="@dimen/view_predio_padding">
+
+                <com.sigdue.ui.SearchableSpinner
+                    android:id="@+id/cmbZonaAislamiento"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    app:hintText="Seleccione zona aislamiento" />
+            </LinearLayout>
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:src="@color/drawer_divider" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/view_predio_padding"
+                android:paddingLeft="@dimen/add_predio_padding"
+                android:paddingRight="@dimen/add_predio_padding"
+                android:paddingTop="@dimen/view_predio_padding">
+
+                <com.sigdue.ui.SearchableSpinner
+                    android:id="@+id/cmbZonaAltoRiesgo"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    app:hintText="Seleccione zona alto riesgo" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:src="@color/drawer_divider" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/view_predio_padding"
+                android:paddingLeft="@dimen/add_predio_padding"
+                android:paddingRight="@dimen/add_predio_padding"
+                android:paddingTop="@dimen/view_predio_padding">
+
+                <com.sigdue.ui.SearchableSpinner
+                    android:id="@+id/cmbZonaProteccion"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    app:hintText="Seleccione zona protección" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:src="@color/drawer_divider" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/view_predio_padding"
+                android:paddingLeft="@dimen/add_predio_padding"
+                android:paddingRight="@dimen/add_predio_padding"
+                android:paddingTop="@dimen/view_predio_padding">
+
+                <com.sigdue.ui.SearchableSpinner
+                    android:id="@+id/cmbTopografia"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    app:hintText="Seleccione topografía" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:src="@color/drawer_divider" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/view_predio_padding"
+                android:paddingLeft="@dimen/add_predio_padding"
+                android:paddingRight="@dimen/add_predio_padding"
+                android:paddingTop="@dimen/view_predio_padding">
+
+                <com.sigdue.ui.SearchableSpinner
+                    android:id="@+id/cmbPropiedadLote"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    app:hintText="Seleccione zona propiedad lote" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:src="@color/drawer_divider" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/view_predio_padding"
+                android:paddingLeft="@dimen/add_predio_padding"
+                android:paddingRight="@dimen/add_predio_padding"
+                android:paddingTop="@dimen/view_predio_padding">
+
+                <com.sigdue.ui.SearchableSpinner
+                    android:id="@+id/cmbTipoDocumento"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    app:hintText="Seleccione tipo documento" />
+            </LinearLayout>
+
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:src="@color/drawer_divider" />
+
+            <com.iangclifton.android.floatlabel.FloatLabel
+                android:id="@+id/cual_tipo_documento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
+                android:background="@null"
+                android:gravity="top|left"
+                android:hint="Cual tipo documento"
+                android:imeOptions="actionNext"
+                android:inputType="textMultiLine"
+                android:layout="@layout/float_label"
+                android:lines="1"
+                android:maxLines="1"
+                android:nextFocusForward="@+id/nro_documento_legalizacion"
+                android:paddingLeft="@dimen/add_predio_padding"
+                android:paddingRight="@dimen/add_predio_padding"
+                android:textSize="26sp" />
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:src="@color/drawer_divider" />
+
+            <com.iangclifton.android.floatlabel.FloatLabel
+                android:id="@+id/nro_documento_legalizacion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
+                android:background="@null"
+                android:gravity="top|left"
+                android:hint="N° documento legalización"
                 android:imeOptions="actionNext"
                 android:inputType="textMultiLine"
                 android:layout="@layout/float_label"
                 android:lines="1"
                 android:maxLines="1"
                 android:nextFocusForward="@+id/placaVehiculo"
-                android:paddingLeft="@dimen/add_inmovilizacion_padding"
-                android:paddingRight="@dimen/add_inmovilizacion_padding"
+                android:paddingLeft="@dimen/add_predio_padding"
+                android:paddingRight="@dimen/add_predio_padding"
+                android:textSize="26sp" />
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:src="@color/drawer_divider" />
+
+            <com.iangclifton.android.floatlabel.FloatLabel
+                android:id="@+id/fecha_expedicion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
+                android:background="@null"
+                android:gravity="top|left"
+                android:hint="Fecha expedición"
+                android:inputType="textMultiLine"
+                android:layout="@layout/float_label"
+                android:lines="1"
+                android:maxLines="1"
+                android:paddingLeft="@dimen/add_predio_padding"
+                android:paddingRight="@dimen/add_predio_padding"
+                android:textSize="26sp" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:src="@color/drawer_divider" />
+
+            <com.iangclifton.android.floatlabel.FloatLabel
+                android:id="@+id/notaria_dependencia_origen"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
+                android:background="@null"
+                android:gravity="top|left"
+                android:hint="Notaría dependencia origen"
+                android:inputType="textMultiLine"
+                android:layout="@layout/float_label"
+                android:lines="1"
+                android:maxLines="1"
+                android:paddingLeft="@dimen/add_predio_padding"
+                android:paddingRight="@dimen/add_predio_padding"
+                android:textSize="26sp" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:src="@color/drawer_divider" />
+
+            <com.iangclifton.android.floatlabel.FloatLabel
+                android:id="@+id/lugar_expedicion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
+                android:background="@null"
+                android:gravity="top|left"
+                android:hint="Lugar expedición"
+                android:inputType="textMultiLine"
+                android:layout="@layout/float_label"
+                android:lines="1"
+                android:maxLines="1"
+                android:paddingLeft="@dimen/add_predio_padding"
+                android:paddingRight="@dimen/add_predio_padding"
+                android:textSize="26sp" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:src="@color/drawer_divider" />
+
+            <com.iangclifton.android.floatlabel.FloatLabel
+                android:id="@+id/registro_catastral"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
+                android:background="@null"
+                android:gravity="top|left"
+                android:hint="Registro catastral"
+                android:inputType="textMultiLine"
+                android:layout="@layout/float_label"
+                android:lines="1"
+                android:maxLines="1"
+                android:paddingLeft="@dimen/add_predio_padding"
+                android:paddingRight="@dimen/add_predio_padding"
+                android:textSize="26sp" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:src="@color/drawer_divider" />
+
+            <com.iangclifton.android.floatlabel.FloatLabel
+                android:id="@+id/matricula_inmobiliaria"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
+                android:background="@null"
+                android:gravity="top|left"
+                android:hint="Matrícula inmobiliaria"
+                android:inputType="textMultiLine"
+                android:layout="@layout/float_label"
+                android:lines="1"
+                android:maxLines="1"
+                android:paddingLeft="@dimen/add_predio_padding"
+                android:paddingRight="@dimen/add_predio_padding"
                 android:textSize="26sp" />
 
             <ImageView
@@ -106,19 +542,19 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingBottom="@dimen/view_inmovilizacion_padding"
-                android:paddingLeft="@dimen/add_inmovilizacion_padding"
-                android:paddingRight="@dimen/add_inmovilizacion_padding"
-                android:paddingTop="@dimen/view_inmovilizacion_padding">
+                android:paddingBottom="@dimen/view_predio_padding"
+                android:paddingLeft="@dimen/add_predio_padding"
+                android:paddingRight="@dimen/add_predio_padding"
+                android:paddingTop="@dimen/view_predio_padding">
 
                 <com.sigdue.ui.SearchableSpinner
-                    android:id="@+id/cmbInfraccion"
+                    android:id="@+id/cmbPropetario"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    app:hintText="Seleccione infraccion" />
+                    app:hintText="Seleccione propietario lote" />
             </LinearLayout>
 
             <ImageView
@@ -128,19 +564,19 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingBottom="@dimen/view_inmovilizacion_padding"
-                android:paddingLeft="@dimen/add_inmovilizacion_padding"
-                android:paddingRight="@dimen/add_inmovilizacion_padding"
-                android:paddingTop="@dimen/view_inmovilizacion_padding">
+                android:paddingBottom="@dimen/view_predio_padding"
+                android:paddingLeft="@dimen/add_predio_padding"
+                android:paddingRight="@dimen/add_predio_padding"
+                android:paddingTop="@dimen/view_predio_padding">
 
                 <com.sigdue.ui.SearchableSpinner
-                    android:id="@+id/cmbZona"
+                    android:id="@+id/cmbTenencia"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    app:hintText="Seleccione zona" />
+                    app:hintText="Seleccione tenencia" />
             </LinearLayout>
 
             <ImageView
@@ -150,639 +586,43 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:paddingBottom="@dimen/add_inmovilizacion_padding"
-                android:paddingTop="@dimen/add_inmovilizacion_padding">
-
-                <com.iangclifton.android.floatlabel.FloatLabel
-                    android:id="@+id/detalleZona"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@null"
-                    android:clickable="false"
-                    android:cursorVisible="false"
-                    android:focusable="false"
-                    android:focusableInTouchMode="false"
-                    android:gravity="top|left"
-                    android:hint="Detalle zona"
-                    android:inputType="textMultiLine|textNoSuggestions|textCapCharacters"
-                    android:layout="@layout/float_label"
-                    android:lines="20"
-                    android:paddingLeft="@dimen/add_inmovilizacion_padding"
-                    android:paddingRight="@dimen/add_inmovilizacion_padding"
-                    android:textColor="#000000"
-                    android:textSize="26sp" />
-            </LinearLayout>
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:src="@color/drawer_divider" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingBottom="@dimen/view_inmovilizacion_padding"
-                android:paddingLeft="@dimen/add_inmovilizacion_padding"
-                android:paddingRight="@dimen/add_inmovilizacion_padding">
+                android:paddingBottom="@dimen/view_predio_padding"
+                android:paddingLeft="@dimen/add_predio_padding"
+                android:paddingRight="@dimen/add_predio_padding"
+                android:paddingTop="@dimen/view_predio_padding">
 
-                <android.support.v7.widget.SwitchCompat
-                    android:id="@+id/propietarioPresenteSiNo"
+                <com.sigdue.ui.SearchableSpinner
+                    android:id="@+id/cmbConQuienTenencia"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:checked="false"
-                    android:padding="5dp"
-                    android:text="Propietario presente (S/N)" />
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    app:hintText="Seleccione con quien tiene tenencia" />
             </LinearLayout>
-
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:src="@color/drawer_divider" />
 
-            <LinearLayout
+
+            <com.iangclifton.android.floatlabel.FloatLabel
+                android:id="@+id/nombre_tiene_tenencia"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:paddingBottom="@dimen/view_inmovilizacion_padding"
-                android:paddingLeft="@dimen/add_inmovilizacion_padding"
-                android:paddingRight="@dimen/add_inmovilizacion_padding">
-
-                <android.support.v7.widget.SwitchCompat
-                    android:id="@+id/gruaSiNo"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:checked="false"
-                    android:padding="5dp"
-                    android:text="Grua (S/N)" />
-            </LinearLayout>
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:src="@color/drawer_divider" />
-
-            <LinearLayout
-                android:id="@+id/otrosCamposGrua"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:paddingBottom="@dimen/view_inmovilizacion_padding"
-                    android:paddingLeft="@dimen/add_inmovilizacion_padding"
-                    android:paddingRight="@dimen/add_inmovilizacion_padding"
-                    android:paddingTop="@dimen/view_inmovilizacion_padding">
-
-                    <com.sigdue.ui.SearchableSpinner
-                        android:id="@+id/cmbGrua"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        app:hintText="Seleccione grua" />
-                </LinearLayout>
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:src="@color/drawer_divider" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:paddingBottom="@dimen/view_inmovilizacion_padding"
-                    android:paddingLeft="@dimen/add_inmovilizacion_padding"
-                    android:paddingRight="@dimen/add_inmovilizacion_padding"
-                    android:paddingTop="@dimen/view_inmovilizacion_padding">
-
-                    <com.sigdue.ui.SearchableSpinner
-                        android:id="@+id/cmbParqueadero"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        app:hintText="Seleccione parqueadero" />
-                </LinearLayout>
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:src="@color/drawer_divider" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:paddingBottom="@dimen/view_inmovilizacion_padding"
-                android:paddingLeft="@dimen/add_inmovilizacion_padding"
-                android:paddingRight="@dimen/add_inmovilizacion_padding">
-
-                <android.support.v7.widget.SwitchCompat
-                    android:id="@+id/desengancheSiNo"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:checked="false"
-                    android:padding="5dp"
-                    android:text="Desenganche(S/N)" />
-            </LinearLayout>
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:src="@color/drawer_divider" />
-
-            <TextView
-                android:id="@+id/datosVehiculo"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
-                android:layout_marginTop="@dimen/add_inmovilizacion_section_padding"
-                android:gravity="center_horizontal"
-                android:paddingLeft="@dimen/add_inmovilizacion_padding"
-                android:paddingRight="@dimen/add_inmovilizacion_padding"
-                android:text="Datos vehiculo"
-                android:textSize="20sp" />
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:src="@color/drawer_divider" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <com.iangclifton.android.floatlabel.FloatLabel
-                    android:id="@+id/placaVehiculo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
-                    android:layout_weight="1"
-                    android:background="@null"
-                    android:gravity="top|left"
-                    android:hint="Numero placa"
-                    android:imeOptions="actionNext"
-                    android:inputType="textCapCharacters"
-                    android:layout="@layout/float_label"
-                    android:lines="1"
-                    android:maxLength="8"
-                    android:maxLines="1"
-                    android:nextFocusForward="@+id/numSerie"
-                    android:paddingLeft="@dimen/add_inmovilizacion_padding"
-                    android:paddingRight="@dimen/add_inmovilizacion_padding"
-                    android:textAllCaps="true"
-                    android:textSize="26sp" />
-
-                <ImageButton
-                    android:id="@+id/btnBuscarVehiculo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_weight="0"
-                    android:background="@color/actionbar_background"
-                    android:clickable="true"
-                    android:minHeight="36dp"
-                    android:minWidth="36dp"
-                    android:src="@drawable/ic_menu_search" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/otrosCamposVehiculo"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:src="@color/drawer_divider" />
-
-                <com.iangclifton.android.floatlabel.FloatLabel
-                    android:id="@+id/numSerie"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
-                    android:background="@null"
-                    android:gravity="top|left"
-                    android:hint="Numero serie"
-                    android:imeOptions="actionNext"
-                    android:inputType="textMultiLine"
-                    android:layout="@layout/float_label"
-                    android:lines="1"
-                    android:maxLength="20"
-                    android:maxLines="1"
-                    android:nextFocusForward="@+id/numMotor"
-                    android:paddingLeft="@dimen/add_inmovilizacion_padding"
-                    android:paddingRight="@dimen/add_inmovilizacion_padding"
-                    android:textSize="26sp" />
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:src="@color/drawer_divider" />
-
-                <com.iangclifton.android.floatlabel.FloatLabel
-                    android:id="@+id/numMotor"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
-                    android:background="@null"
-                    android:gravity="top|left"
-                    android:hint="Numero motor"
-                    android:imeOptions="actionNext"
-                    android:inputType="textMultiLine"
-                    android:layout="@layout/float_label"
-                    android:lines="1"
-                    android:maxLength="20"
-                    android:maxLines="1"
-                    android:nextFocusForward="@+id/numChasis"
-                    android:paddingLeft="@dimen/add_inmovilizacion_padding"
-                    android:paddingRight="@dimen/add_inmovilizacion_padding"
-                    android:textSize="26sp" />
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:src="@color/drawer_divider" />
-
-                <com.iangclifton.android.floatlabel.FloatLabel
-                    android:id="@+id/numChasis"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
-                    android:background="@null"
-                    android:gravity="top|left"
-                    android:hint="Numero chasis"
-                    android:imeOptions="actionNext"
-                    android:inputType="textMultiLine"
-                    android:layout="@layout/float_label"
-                    android:lines="1"
-                    android:maxLength="20"
-                    android:maxLines="1"
-                    android:nextFocusForward="@+id/documentoInfractor"
-                    android:paddingLeft="@dimen/add_inmovilizacion_padding"
-                    android:paddingRight="@dimen/add_inmovilizacion_padding"
-                    android:textSize="26sp" />
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:src="@color/drawer_divider" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:paddingBottom="@dimen/view_inmovilizacion_padding"
-                    android:paddingLeft="@dimen/add_inmovilizacion_padding"
-                    android:paddingRight="@dimen/add_inmovilizacion_padding"
-                    android:paddingTop="@dimen/view_inmovilizacion_padding">
-
-                    <com.sigdue.ui.SearchableSpinner
-                        android:id="@+id/cmbColor"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        app:hintText="Seleccione color vehículo" />
-                </LinearLayout>
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:src="@color/drawer_divider" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:paddingBottom="@dimen/view_inmovilizacion_padding"
-                    android:paddingLeft="@dimen/add_inmovilizacion_padding"
-                    android:paddingRight="@dimen/add_inmovilizacion_padding"
-                    android:paddingTop="@dimen/view_inmovilizacion_padding">
-
-                    <com.sigdue.ui.SearchableSpinner
-                        android:id="@+id/cmbClase"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        app:hintText="Seleccione clase vehículo" />
-                </LinearLayout>
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:src="@color/drawer_divider" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:paddingBottom="@dimen/view_inmovilizacion_padding"
-                    android:paddingLeft="@dimen/add_inmovilizacion_padding"
-                    android:paddingRight="@dimen/add_inmovilizacion_padding"
-                    android:paddingTop="@dimen/view_inmovilizacion_padding">
-
-                    <com.sigdue.ui.SearchableSpinner
-                        android:id="@+id/cmbServicio"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        app:hintText="Seleccione tipo servicio" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/buscarInfractor"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:src="@color/drawer_divider" />
-
-                <TextView
-                    android:id="@+id/datosInfractor"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
-                    android:layout_marginTop="@dimen/add_inmovilizacion_section_padding"
-                    android:gravity="center_horizontal"
-                    android:paddingLeft="@dimen/add_inmovilizacion_padding"
-                    android:paddingRight="@dimen/add_inmovilizacion_padding"
-                    android:text="Datos infractor"
-                    android:textSize="20sp" />
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:src="@color/drawer_divider" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:paddingBottom="@dimen/view_inmovilizacion_padding"
-                    android:paddingLeft="@dimen/add_inmovilizacion_padding"
-                    android:paddingRight="@dimen/add_inmovilizacion_padding"
-                    android:paddingTop="@dimen/view_inmovilizacion_padding">
-
-                    <com.sigdue.ui.SearchableSpinner
-                        android:id="@+id/cmbTipoIdentificacion"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        app:hintText="Tipo de identificación" />
-                </LinearLayout>
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:src="@color/drawer_divider" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
-
-                    <com.iangclifton.android.floatlabel.FloatLabel
-                        android:id="@+id/documentoInfractor"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
-                        android:layout_weight="1"
-                        android:background="@null"
-                        android:gravity="top|left"
-                        android:hint="Numero documento"
-                        android:imeOptions="actionNext"
-                        android:inputType="textMultiLine|number"
-                        android:layout="@layout/float_label"
-                        android:lines="1"
-                        android:maxLength="8"
-                        android:maxLines="1"
-                        android:nextFocusForward="@+id/nombreUno"
-                        android:paddingLeft="@dimen/add_inmovilizacion_padding"
-                        android:paddingRight="@dimen/add_inmovilizacion_padding"
-                        android:textAllCaps="true"
-                        android:textSize="26sp" />
-
-                    <ImageButton
-                        android:id="@+id/btnBuscarInfractor"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerHorizontal="true"
-                        android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginRight="10dp"
-                        android:layout_weight="0"
-                        android:background="@color/actionbar_background"
-                        android:clickable="true"
-                        android:minHeight="36dp"
-                        android:minWidth="36dp"
-                        android:src="@drawable/ic_menu_search" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/otrosCamposInfractor"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:visibility="gone">
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:src="@color/drawer_divider" />
-
-                    <com.iangclifton.android.floatlabel.FloatLabel
-                        android:id="@+id/nombreUno"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
-                        android:background="@null"
-                        android:gravity="top|left"
-                        android:hint="Primer nombre"
-                        android:imeOptions="actionNext"
-                        android:inputType="textMultiLine"
-                        android:layout="@layout/float_label"
-                        android:lines="1"
-                        android:maxLength="20"
-                        android:maxLines="1"
-                        android:nextFocusForward="@+id/nombreDos"
-                        android:paddingLeft="@dimen/add_inmovilizacion_padding"
-                        android:paddingRight="@dimen/add_inmovilizacion_padding"
-                        android:textSize="26sp" />
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:src="@color/drawer_divider" />
-
-                    <com.iangclifton.android.floatlabel.FloatLabel
-                        android:id="@+id/nombreDos"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
-                        android:background="@null"
-                        android:gravity="top|left"
-                        android:hint="Segundo nombre"
-                        android:imeOptions="actionNext"
-                        android:inputType="textMultiLine"
-                        android:layout="@layout/float_label"
-                        android:lines="1"
-                        android:maxLength="20"
-                        android:maxLines="1"
-                        android:nextFocusForward="@+id/apellidoUno"
-                        android:paddingLeft="@dimen/add_inmovilizacion_padding"
-                        android:paddingRight="@dimen/add_inmovilizacion_padding"
-                        android:textSize="26sp" />
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:src="@color/drawer_divider" />
-
-                    <com.iangclifton.android.floatlabel.FloatLabel
-                        android:id="@+id/apellidoUno"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
-                        android:background="@null"
-                        android:gravity="top|left"
-                        android:hint="Primer apellido"
-                        android:imeOptions="actionNext"
-                        android:inputType="textMultiLine"
-                        android:layout="@layout/float_label"
-                        android:lines="1"
-                        android:maxLength="20"
-                        android:maxLines="1"
-                        android:nextFocusForward="@+id/apellidoDos"
-                        android:paddingLeft="@dimen/add_inmovilizacion_padding"
-                        android:paddingRight="@dimen/add_inmovilizacion_padding"
-                        android:textSize="26sp" />
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:src="@color/drawer_divider" />
-
-                    <com.iangclifton.android.floatlabel.FloatLabel
-                        android:id="@+id/apellidoDos"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
-                        android:background="@null"
-                        android:gravity="top|left"
-                        android:hint="Segundo apellido"
-                        android:imeOptions="actionNext"
-                        android:inputType="textMultiLine"
-                        android:layout="@layout/float_label"
-                        android:lines="1"
-                        android:maxLength="20"
-                        android:maxLines="1"
-                        android:nextFocusForward="@+id/observaciones"
-                        android:paddingLeft="@dimen/add_inmovilizacion_padding"
-                        android:paddingRight="@dimen/add_inmovilizacion_padding"
-                        android:textSize="26sp" />
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:src="@color/drawer_divider" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="horizontal"
-                        android:paddingBottom="@dimen/view_inmovilizacion_padding"
-                        android:paddingLeft="@dimen/add_inmovilizacion_padding"
-                        android:paddingRight="@dimen/add_inmovilizacion_padding"
-                        android:paddingTop="@dimen/view_inmovilizacion_padding">
-
-                        <com.sigdue.ui.SearchableSpinner
-                            android:id="@+id/cmbDepartamento"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:textAppearance="?android:attr/textAppearanceLarge"
-                            app:hintText="Seleccione departamento" />
-                    </LinearLayout>
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:src="@color/drawer_divider" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="horizontal"
-                        android:paddingBottom="@dimen/view_inmovilizacion_padding"
-                        android:paddingLeft="@dimen/add_inmovilizacion_padding"
-                        android:paddingRight="@dimen/add_inmovilizacion_padding"
-                        android:paddingTop="@dimen/view_inmovilizacion_padding">
-
-                        <com.sigdue.ui.SearchableSpinner
-                            android:id="@+id/cmbMunicipio"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:textAppearance="?android:attr/textAppearanceLarge"
-                            app:hintText="Seleccione municipio" />
-                    </LinearLayout>
-                </LinearLayout>
-            </LinearLayout>
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:src="@color/drawer_divider" />
-
-            <TextView
-                android:id="@+id/datosAgente"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
-                android:layout_marginTop="@dimen/add_inmovilizacion_section_padding"
-                android:gravity="center_horizontal"
-                android:paddingLeft="@dimen/add_inmovilizacion_padding"
-                android:paddingRight="@dimen/add_inmovilizacion_padding"
-                android:text="Datos agente"
-                android:textSize="20sp" />
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:src="@color/drawer_divider" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:paddingBottom="@dimen/view_inmovilizacion_padding"
-                android:paddingLeft="@dimen/add_inmovilizacion_padding"
-                android:paddingRight="@dimen/add_inmovilizacion_padding"
-                android:paddingTop="@dimen/view_inmovilizacion_padding">
-
-                <com.sigdue.ui.SearchableSpinner
-                    android:id="@+id/cmbAgente"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    app:hintText="Seleccione agente" />
-            </LinearLayout>
+                android:background="@null"
+                android:gravity="top|left"
+                android:hint="Nombre tenencia"
+                android:imeOptions="actionNext"
+                android:inputType="textMultiLine|number"
+                android:layout="@layout/float_label"
+                android:lines="1"
+                android:maxLines="1"
+                android:nextFocusForward="@+id/avaluo_comercial"
+                android:paddingLeft="@dimen/add_predio_padding"
+                android:paddingRight="@dimen/add_predio_padding"
+                android:textSize="26sp" />
 
             <ImageView
                 android:layout_width="match_parent"
@@ -790,18 +630,19 @@
                 android:src="@color/drawer_divider" />
 
             <com.iangclifton.android.floatlabel.FloatLabel
-                android:id="@+id/observaciones"
+                android:id="@+id/fecha_tenencia"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
                 android:background="@null"
                 android:gravity="top|left"
-                android:hint="Observaciones"
-                android:imeOptions="actionDone"
+                android:hint="Fecha tenencia"
                 android:inputType="textMultiLine"
                 android:layout="@layout/float_label"
-                android:lines="50"
-                android:paddingLeft="@dimen/add_inmovilizacion_padding"
-                android:paddingRight="@dimen/add_inmovilizacion_padding"
+                android:lines="1"
+                android:maxLines="1"
+                android:paddingLeft="@dimen/add_predio_padding"
+                android:paddingRight="@dimen/add_predio_padding"
                 android:textSize="26sp" />
 
             <ImageView
@@ -812,7 +653,7 @@
             <Button
                 android:id="@+id/btnTomarFoto"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:background="#339933"
                 android:layout_marginBottom="5dp"
@@ -828,7 +669,7 @@
             <LinearLayout
                 android:id="@+id/mostrarFotos"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_marginBottom="5dp"
                 android:visibility="gone">
@@ -847,7 +688,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:orientation="horizontal"
@@ -892,7 +733,7 @@
             <Button
                 android:id="@+id/btnGrabarVideo"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginBottom="5dp"
                 android:gravity="center"
@@ -908,7 +749,7 @@
             <LinearLayout
                 android:id="@+id/mostrarVideo"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:visibility="gone">
 
@@ -926,7 +767,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:orientation="horizontal"
