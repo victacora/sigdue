@@ -49,6 +49,9 @@ import android.view.View;
 
 import com.sigdue.R;
 import com.sigdue.aplication.AplicacionSIGDUE;
+import com.sigdue.asynctask.AsyncTaskSIGDUE;
+import com.sigdue.asynctask.ParametrosAsyncTask;
+import com.sigdue.asynctask.ProgressDialogFragment;
 import com.sigdue.db.DaoSession;
 import com.sigdue.db.Predial;
 import com.sigdue.db.PredialDao;
@@ -65,17 +68,18 @@ import java.util.List;
 import static com.sigdue.Constants.NOTIFICACIONES_ID;
 import static com.sigdue.Constants.RESPUESTA_SERVICIO;
 
-public class ListarInformacionSIGDUEActivity extends AppCompatActivity {
+public class ListarInformacionSIGDUEActivity extends AppCompatActivity implements AsyncTaskSIGDUE {
 
     private static final String TAG = "ListarInmActivity";
     private AplicacionSIGDUE app;
     private FloatingActionButton btnAgregarComparendo;
     private DaoSession daoSession;
     private ProgressDialog dialogoBuscando;
+    private AsyncTask asyncTask = null;
+    private ProgressDialogFragment mProgressDialog = null;
     LinearLayoutManager llm;
     private InformacionSIGDUERecyclerView mAdapter;
     private EjecutarConsultarServiciosAsyncTask mConsultarInmovilizacionesTask;
-    private ProgressDialogFragment mProgressDialog;
     RecyclerView rv;
     private PredialDao predialDao;
 
@@ -137,6 +141,15 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity {
                     }
                 }
             });
+
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(RESPUESTA_SERVICIO);
+            registerReceiver(mActualizarListaComparendosBroadcastReceiver, filter);
+
+            filter = new IntentFilter();
+            filter.addAction("android.location.PROVIDERS_CHANGED");
+            registerReceiver(mHabilitarGPS, filter);
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -187,7 +200,8 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(this.mActualizarListaComparendosBroadcastReceiver);
+        unregisterReceiver(mHabilitarGPS);
+        unregisterReceiver(mActualizarListaComparendosBroadcastReceiver);
     }
 
     @Override
@@ -262,6 +276,17 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onPostExecute(Object result) {
+
+    }
+
+    @Override
+    public void onCancelled() {
+        asyncTask = null;
+        hideProgress();
+    }
+
 
     public class EjecutarConsultarServiciosAsyncTask extends AsyncTask<Object, String, List<Predial>> {
         private int opcion = -1;
@@ -293,8 +318,9 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity {
                         }
                         break;
                     case 4:
-                        if (UtilidadesGenerales.isOnline()) {
-                        }
+                        showProgress("Actualizando maestros...");
+                        asyncTask = new ParametrosAsyncTask(ListarInformacionSIGDUEActivity.this, daoSession, mProgressDialog);
+                        asyncTask.execute();
                         break;
                 }
                 return prediales;
@@ -362,7 +388,7 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity {
     }
 
     protected void showProgress(String mensaje) {
-        this.mProgressDialog = ProgressDialogFragment.newInstance(mensaje);
+        mProgressDialog = ProgressDialogFragment.newInstance(asyncTask, ListarInformacionSIGDUEActivity.this, mensaje);
         this.mProgressDialog.show(getSupportFragmentManager(), "dialog_loading");
     }
 
@@ -455,56 +481,6 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity {
         return parametrosComparendos;
     }
 
-    public static class ProgressDialogFragment extends DialogFragment {
-
-        private ProgressDialog dialog;
-        private String mensaje;
-
-        public static ProgressDialogFragment newInstance() {
-            ProgressDialogFragment frag = new ProgressDialogFragment();
-            return frag;
-        }
-
-        public void inicializarMensaje(String mensaje) {
-            try {
-                this.mensaje = mensaje;
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-
-        public void actualizarMensaje(String mensaje) {
-            try {
-                if (this.dialog != null) {
-                    this.dialog.setMessage(mensaje);
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-
-        public static ProgressDialogFragment newInstance(String mensaje) {
-            ProgressDialogFragment frag = new ProgressDialogFragment();
-            frag.inicializarMensaje(mensaje);
-            return frag;
-        }
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            dialog = new ProgressDialog(getActivity());
-            dialog.setMessage(this.mensaje);
-            dialog.setIndeterminate(true);
-            dialog.setCancelable(true);
-            dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                public void onCancel(DialogInterface dialog) {
-                    Log.i(TAG, "Cargando inmovilizaciones fue cancelado por el usuario.");
-                    ((ListarInformacionSIGDUEActivity) getActivity()).cancel();
-                }
-            });
-            return dialog;
-        }
-    }
-
     @Override
     public void onResume() {
         super.onResume();
@@ -514,15 +490,6 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity {
                 this.daoSession = this.app.getDaoSession();
             }
             ejecutarConsultaServicios(0, "");
-
-            IntentFilter filter = new IntentFilter();
-            filter.addAction(RESPUESTA_SERVICIO);
-            registerReceiver(mActualizarListaComparendosBroadcastReceiver, filter);
-
-            filter = new IntentFilter();
-            filter.addAction("android.location.PROVIDERS_CHANGED");
-            registerReceiver(mHabilitarGPS, filter);
-
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -531,8 +498,6 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(mHabilitarGPS);
-        unregisterReceiver(mActualizarListaComparendosBroadcastReceiver);
     }
 
 

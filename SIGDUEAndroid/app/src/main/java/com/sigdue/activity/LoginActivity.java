@@ -43,6 +43,7 @@ import com.sigdue.R;
 import com.sigdue.aplication.AplicacionSIGDUE;
 import com.sigdue.asynctask.AsyncTaskSIGDUE;
 import com.sigdue.asynctask.AutenticarUsuarioAsyncTask;
+import com.sigdue.asynctask.ParametrosAsyncTask;
 import com.sigdue.asynctask.ProgressDialogFragment;
 import com.sigdue.db.DaoSession;
 import com.sigdue.db.Usuario;
@@ -54,6 +55,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncTaskSIGDUE 
     private static final String TAG = "LoginActivity";
     private AplicacionSIGDUE app;
     private AutenticarUsuarioAsyncTask mAuthTask = null;
+    private ParametrosAsyncTask parametrosAsyncTask = null;
     private ProgressDialogFragment mProgressDialog = null;
     private TextView mMessage;
     private String mPassword;
@@ -123,6 +125,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncTaskSIGDUE 
             } else {
                 mMessage.setText("");
                 showProgress(getString(R.string.ui_activity_authenticating));
+                parametrosAsyncTask = null;
                 mAuthTask = new AutenticarUsuarioAsyncTask(LoginActivity.this, daoSession, mProgressDialog);
                 mAuthTask.execute(mUsername, mPassword);
             }
@@ -133,7 +136,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncTaskSIGDUE 
 
 
     protected void showProgress(String mensaje) {
-        mProgressDialog = ProgressDialogFragment.newInstance(mensaje);
+        mProgressDialog = ProgressDialogFragment.newInstance(mAuthTask != null ? mAuthTask : parametrosAsyncTask, LoginActivity.this, mensaje);
         mProgressDialog.show(getSupportFragmentManager(), "dialog_authetication");
     }
 
@@ -144,15 +147,9 @@ public class LoginActivity extends AppCompatActivity implements AsyncTaskSIGDUE 
         }
     }
 
-    public void cancel() {
-        if (mAuthTask != null) {
-            mAuthTask.cancel(true);
-            finish();
-        }
-    }
-
     public void onAuthenticationCancel() {
         mAuthTask = null;
+        parametrosAsyncTask = null;
         hideProgress();
     }
 
@@ -419,7 +416,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncTaskSIGDUE 
         hideProgress();
         if (result != null) {
             try {
-                Usuario usuario=(Usuario) result;
+                Usuario usuario = (Usuario) result;
                 UtilidadesGenerales.escribirSharedPreferences(R.string.pref_usuario_key, String.valueOf(usuario.getId_usuario()), UtilidadesGenerales.STRING_TYPE);
                 app.setUsuario(usuario.getUsuario());
                 app.setIdUsuario(usuario.getId_usuario());
@@ -430,7 +427,9 @@ public class LoginActivity extends AppCompatActivity implements AsyncTaskSIGDUE 
                     public void onClick(DialogInterface dialog, int which) {
                         try {
                             showProgress("Actualizando maestros...");
-
+                            mAuthTask = null;
+                            parametrosAsyncTask = new ParametrosAsyncTask(LoginActivity.this, daoSession, mProgressDialog);
+                            parametrosAsyncTask.execute();
                             dialog.dismiss();
                         } catch (Exception ex) {
                             ex.printStackTrace();
@@ -440,14 +439,8 @@ public class LoginActivity extends AppCompatActivity implements AsyncTaskSIGDUE 
                 builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        try {
-                            limpiarFormulario();
-                            Intent listarInmovilizaciones = new Intent(LoginActivity.this, ListarInformacionSIGDUEActivity.class);
-                            startActivity(listarInmovilizaciones);
-                            dialog.dismiss();
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
+                        irAListarInformacionSIGDUE();
+                        dialog.dismiss();
                     }
                 });
                 AlertDialog alert = builder.create();
@@ -455,8 +448,20 @@ public class LoginActivity extends AppCompatActivity implements AsyncTaskSIGDUE 
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-        } else {
+        } else if (mAuthTask != null) {
             mMessage.setText(getText(R.string.login_activity_loginfail_text_both));
+        } else if (parametrosAsyncTask != null) {
+            irAListarInformacionSIGDUE();
+        }
+    }
+
+    private void irAListarInformacionSIGDUE() {
+        try {
+            limpiarFormulario();
+            Intent listarInmovilizaciones = new Intent(LoginActivity.this, ListarInformacionSIGDUEActivity.class);
+            startActivity(listarInmovilizaciones);
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -468,6 +473,6 @@ public class LoginActivity extends AppCompatActivity implements AsyncTaskSIGDUE 
 
     @Override
     public void onCancelled() {
-
+        onAuthenticationCancel();
     }
 }

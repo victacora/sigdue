@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -30,6 +31,10 @@ public class WSSIGDUEClient
                     return response;
                 }
             });
+            HttpLoggingInterceptor interceptorLogging = new HttpLoggingInterceptor();
+            interceptorLogging.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+            httpClient.interceptors().add(interceptorLogging);
             retrofit = builder.client(httpClient.build()).build();
             wssigdueInterface = (WSSIGDUEInterface) builder.client(httpClient.build()).build().create(WSSIGDUEInterface.class);
         }

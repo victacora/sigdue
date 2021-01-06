@@ -15,7 +15,7 @@ public class MainGenerator {
 
 
     public static void main(String[] args) {
-        Schema schema = new Schema(1, "com.sigdue.db");
+        Schema schema = new Schema(2, "com.sigdue.db");
         schema.enableKeepSectionsByDefault();
         addTables(schema);
         try {
@@ -34,8 +34,8 @@ public class MainGenerator {
     private static Entity addParametro(Schema schema) {
         Entity parametro = schema.addEntity("Parametro");
         parametro.addLongProperty("id_parametro").primaryKey().notNull().autoincrement();
-        parametro.addStringProperty("tipo");
-        parametro.addStringProperty("valor");
+        parametro.addIntProperty("tipo");
+        parametro.addStringProperty("parametro");
         return parametro;
     }
 

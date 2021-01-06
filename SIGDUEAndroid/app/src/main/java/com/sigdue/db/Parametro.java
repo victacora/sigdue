@@ -15,8 +15,8 @@ public class Parametro {
 
     @Id(autoincrement = true)
     private long id_parametro;
-    private String tipo;
-    private String valor;
+    private Integer tipo;
+    private String parametro;
 
     // KEEP FIELDS - put your custom fields here
     // KEEP FIELDS END
@@ -30,10 +30,10 @@ public class Parametro {
     }
 
     @Generated
-    public Parametro(long id_parametro, String tipo, String valor) {
+    public Parametro(long id_parametro, Integer tipo, String parametro) {
         this.id_parametro = id_parametro;
         this.tipo = tipo;
-        this.valor = valor;
+        this.parametro = parametro;
     }
 
     public long getId_parametro() {
@@ -44,20 +44,20 @@ public class Parametro {
         this.id_parametro = id_parametro;
     }
 
-    public String getTipo() {
+    public Integer getTipo() {
         return tipo;
     }
 
-    public void setTipo(String tipo) {
+    public void setTipo(Integer tipo) {
         this.tipo = tipo;
     }
 
-    public String getValor() {
-        return valor;
+    public String getParametro() {
+        return parametro;
     }
 
-    public void setValor(String valor) {
-        this.valor = valor;
+    public void setParametro(String parametro) {
+        this.parametro = parametro;
     }
 
     // KEEP METHODS - put your custom methods here

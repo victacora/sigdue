@@ -194,9 +194,9 @@ public class EnviarInformacionSIGDUEService extends IntentService {
                                         mediaType = MediaType.parse(mimeType);
                                     }
                                     RequestBody requestBody = RequestBody.create(mediaType, archivo);
-                                    MultipartBody.Part multimedia = okhttp3.MultipartBody.Part.createFormData("imagen", archivo.getName(), requestBody);
+                                    MultipartBody.Part multimedia = okhttp3.MultipartBody.Part.createFormData("body", archivo.getName(), requestBody);
 
-                                    Call<ResponseBody> crearMultimediaCall = service.crearmultimedia(idPredial, archivo.getName(), multimedia);
+                                    Call<ResponseBody> crearMultimediaCall = service.crearmultimedia(predio.getDane_sede(), archivo.getName(), "Imagen", multimedia, mimeType);
                                     response = crearMultimediaCall.execute();
                                     if (response != null) {
                                         headers = response.headers();
@@ -233,7 +233,7 @@ public class EnviarInformacionSIGDUEService extends IntentService {
                                     RequestBody requestBody = RequestBody.create(mediaType, archivo);
                                     MultipartBody.Part multimedia = okhttp3.MultipartBody.Part.createFormData("video", archivo.getName(), requestBody);
 
-                                    Call<ResponseBody> crearMultimediaCall = service.crearmultimedia(idPredial, archivo.getName(), multimedia);
+                                    Call<ResponseBody> crearMultimediaCall = service.crearmultimedia(predio.getDane_sede(), archivo.getName(), "Video", multimedia, mimeType);
                                     response = crearMultimediaCall.execute();
                                     if (response != null) {
                                         headers = response.headers();

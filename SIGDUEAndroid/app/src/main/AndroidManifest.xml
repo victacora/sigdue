@@ -30,6 +30,7 @@
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_main"
         android:label="@string/titleApp"
+        android:usesCleartextTraffic="true"
         android:theme="@style/InmovilizacionesMoviles"
         tools:replace="android:theme, android:label, android:icon">
 

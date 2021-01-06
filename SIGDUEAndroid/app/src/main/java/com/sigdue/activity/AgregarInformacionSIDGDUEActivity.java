@@ -107,7 +107,7 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
     private double longitude;
     private double latitude;
     private LocationTrack locationTrack;
-private Predial predial;
+    private Predial predial;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -407,7 +407,6 @@ private Predial predial;
             ex.printStackTrace();
         }
     }
-
 
 
     @Override

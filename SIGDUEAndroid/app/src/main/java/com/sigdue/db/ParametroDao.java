@@ -23,8 +23,8 @@ public class ParametroDao extends AbstractDao<Parametro, Long> {
      */
     public static class Properties {
         public final static Property Id_parametro = new Property(0, long.class, "id_parametro", true, "ID_PARAMETRO");
-        public final static Property Tipo = new Property(1, String.class, "tipo", false, "TIPO");
-        public final static Property Valor = new Property(2, String.class, "valor", false, "VALOR");
+        public final static Property Tipo = new Property(1, Integer.class, "tipo", false, "TIPO");
+        public final static Property Parametro = new Property(2, String.class, "parametro", false, "PARAMETRO");
     }
 
 
@@ -41,8 +41,8 @@ public class ParametroDao extends AbstractDao<Parametro, Long> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"PARAMETRO\" (" + //
                 "\"ID_PARAMETRO\" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL ," + // 0: id_parametro
-                "\"TIPO\" TEXT," + // 1: tipo
-                "\"VALOR\" TEXT);"); // 2: valor
+                "\"TIPO\" INTEGER," + // 1: tipo
+                "\"PARAMETRO\" TEXT);"); // 2: parametro
     }
 
     /** Drops the underlying database table. */
@@ -56,14 +56,14 @@ public class ParametroDao extends AbstractDao<Parametro, Long> {
         stmt.clearBindings();
         stmt.bindLong(1, entity.getId_parametro());
  
-        String tipo = entity.getTipo();
+        Integer tipo = entity.getTipo();
         if (tipo != null) {
-            stmt.bindString(2, tipo);
+            stmt.bindLong(2, tipo);
         }
  
-        String valor = entity.getValor();
-        if (valor != null) {
-            stmt.bindString(3, valor);
+        String parametro = entity.getParametro();
+        if (parametro != null) {
+            stmt.bindString(3, parametro);
         }
     }
 
@@ -72,14 +72,14 @@ public class ParametroDao extends AbstractDao<Parametro, Long> {
         stmt.clearBindings();
         stmt.bindLong(1, entity.getId_parametro());
  
-        String tipo = entity.getTipo();
+        Integer tipo = entity.getTipo();
         if (tipo != null) {
-            stmt.bindString(2, tipo);
+            stmt.bindLong(2, tipo);
         }
  
-        String valor = entity.getValor();
-        if (valor != null) {
-            stmt.bindString(3, valor);
+        String parametro = entity.getParametro();
+        if (parametro != null) {
+            stmt.bindString(3, parametro);
         }
     }
 
@@ -92,8 +92,8 @@ public class ParametroDao extends AbstractDao<Parametro, Long> {
     public Parametro readEntity(Cursor cursor, int offset) {
         Parametro entity = new Parametro( //
             cursor.getLong(offset + 0), // id_parametro
-            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // tipo
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2) // valor
+            cursor.isNull(offset + 1) ? null : cursor.getInt(offset + 1), // tipo
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2) // parametro
         );
         return entity;
     }
@@ -101,8 +101,8 @@ public class ParametroDao extends AbstractDao<Parametro, Long> {
     @Override
     public void readEntity(Cursor cursor, Parametro entity, int offset) {
         entity.setId_parametro(cursor.getLong(offset + 0));
-        entity.setTipo(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
-        entity.setValor(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setTipo(cursor.isNull(offset + 1) ? null : cursor.getInt(offset + 1));
+        entity.setParametro(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
      }
     
     @Override
