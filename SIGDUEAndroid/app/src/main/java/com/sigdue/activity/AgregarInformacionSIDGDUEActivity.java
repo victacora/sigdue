@@ -34,7 +34,9 @@ import com.sigdue.Constants;
 import com.sigdue.R;
 import com.sigdue.aplication.AplicacionSIGDUE;
 import com.sigdue.db.Archivo;
+import com.sigdue.db.ArchivoDao;
 import com.sigdue.db.DaoSession;
+import com.sigdue.db.Parametro;
 import com.sigdue.db.ParametroDao;
 import com.sigdue.db.Predial;
 import com.sigdue.db.PredialDao;
@@ -43,8 +45,6 @@ import com.sigdue.service.LocationTrack;
 import com.sigdue.ui.SearchableSpinner;
 import com.sigdue.utilidadesgenerales.Filtro;
 import com.sigdue.utilidadesgenerales.UtilidadesGenerales;
-
-import org.greenrobot.greendao.query.QueryBuilder;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -60,7 +60,6 @@ import java.util.List;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
 import static com.sigdue.Constants.CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE;
-import static com.sigdue.Constants.CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE;
 import static com.sigdue.Constants.RUTAMULTIMEDIASIGDUE;
 
 public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
@@ -78,7 +77,7 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
     private SearchableSpinner cmbConQuienTieneTenencia;
     private SearchableSpinner cmbDistanciaMetrosSedePrincipal;
     private SearchableSpinner cmbDistanciaKilometrosCentroPoblado;
-    private SearchableSpinner cmbDPropiedadLote;
+    private SearchableSpinner cmbPropiedadLote;
     private SearchableSpinner cmbTenencia;
     private SearchableSpinner cmbTipoDocumento;
     private SearchableSpinner cmbTopografia;
@@ -88,6 +87,7 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
     private DaoSession daoSession;
     private ParametroDao parametroDao;
     private PredialDao predialDao;
+    private ArchivoDao archivoDao;
     private EditText fechaAvaluoCatastral;
     private DatePicker dp;
     ArrayList<String> fotos;
@@ -141,6 +141,8 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
             this.daoSession = this.app.getDaoSession();
             this.predialDao = this.daoSession.getPredialDao();
             this.parametroDao = this.daoSession.getParametroDao();
+            this.archivoDao = this.daoSession.getArchivoDao();
+
             setContentView(R.layout.agregar_informacion_sigdue_activity);
 
             cmbClasePredio = (SearchableSpinner) findViewById(R.id.cmbClasePredio);
@@ -158,8 +160,8 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
             cmbDistanciaKilometrosCentroPoblado = (SearchableSpinner) findViewById(R.id.cmbDistanciaPoblado);
             setComboConf(cmbDistanciaKilometrosCentroPoblado, "Distancia en kilometros centro poblado", Constants.DISTANCIA_EN_KILOMETROS_CENTRO_POBLADO);
 
-            cmbDPropiedadLote = (SearchableSpinner) findViewById(R.id.cmbPropiedadLote);
-            setComboConf(cmbDPropiedadLote, "Propiedad del lote", Constants.PROPIEDAD_LOTE);
+            cmbPropiedadLote = (SearchableSpinner) findViewById(R.id.cmbPropiedadLote);
+            setComboConf(cmbPropiedadLote, "Propiedad del lote", Constants.PROPIEDAD_LOTE);
 
             cmbTenencia = (SearchableSpinner) findViewById(R.id.cmbTenencia);
             setComboConf(cmbTenencia, "Tenencia", Constants.TENENCIA);
@@ -193,6 +195,11 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
                 this.predial.setId_predial((inmovilizaciones.get(0)).getId_predial() + 1);
             }
             codigoDane = ((FloatLabel) findViewById(R.id.dane_sede)).getEditText();
+            codigoDane.setText(app.getUsuario());
+            codigoDane.setClickable(false);
+            codigoDane.setKeyListener(null);
+            codigoDane.setFocusable(false);
+            codigoDane.setError(null);
             codigoPredio = ((FloatLabel) findViewById(R.id.codigo_predio)).getEditText();
             avaluoCatastral = ((FloatLabel) findViewById(R.id.avaluo_catastral)).getEditText();
             avaluoComercial = ((FloatLabel) findViewById(R.id.avaluo_comercial)).getEditText();
@@ -461,19 +468,73 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
     }
 
 
-    public void almacenarInmovilizacion() {
+    public void almacenarInformacionSIGDUE() {
         try {
-            QueryBuilder queryBuilder;
-
             AlertDialog.Builder builder;
             AlertDialog alert;
+            this.predial.setDane_sede(this.codigoDane.getText().toString());
+            this.predial.setCod_predio(this.codigoPredio.getText().toString());
+            if (this.cmbClima.getSelectedItem() != null) {
+                this.predial.setClima(((Parametro) this.cmbClima.getSelectedItem()).getParametro());
+            }
+            if (this.cmbDistanciaMetrosSedePrincipal.getSelectedItem() != null) {
+                this.predial.setDistancia_mts_sede_ppal(((Parametro) this.cmbDistanciaMetrosSedePrincipal.getSelectedItem()).getParametro());
+            }
+            if (this.cmbDistanciaKilometrosCentroPoblado.getSelectedItem() != null) {
+                this.predial.setDist_km_centro_poblado(((Parametro) this.cmbDistanciaKilometrosCentroPoblado.getSelectedItem()).getParametro());
+            }
+            if (this.cmbClasePredio.getSelectedItem() != null) {
+                this.predial.setClase_predio(((Parametro) this.cmbClasePredio.getSelectedItem()).getParametro());
+            }
+            this.predial.setAvaluo_catastral(this.avaluoCatastral.getText().toString());
+            this.predial.setFec_avaluo_catastral(this.fechaAvaluoCatastral.getText().toString());
+            this.predial.setAvaluo_comercial(this.avaluoComercial.getText().toString());
+            this.predial.setFec_avaluo_comercial(this.fechaAvaluoComercial.getText().toString());
 
+            if (this.cmbZonaAislamiento.getSelectedItem() != null) {
+                this.predial.setZona_aislamiento(((Parametro) this.cmbZonaAislamiento.getSelectedItem()).getParametro());
+            }
+            if (this.cmbZonaAltoRiesgo.getSelectedItem() != null) {
+                this.predial.setZona_alto_riesgo(((Parametro) this.cmbZonaAltoRiesgo.getSelectedItem()).getParametro());
+            }
+            if (this.cmbZonaProteccion.getSelectedItem() != null) {
+                this.predial.setZona_proteccion(((Parametro) this.cmbZonaProteccion.getSelectedItem()).getParametro());
+            }
+            if (this.cmbTopografia.getSelectedItem() != null) {
+                this.predial.setTopografia(((Parametro) this.cmbTopografia.getSelectedItem()).getParametro());
+            }
+            if (this.cmbPropiedadLote.getSelectedItem() != null) {
+                this.predial.setPropiedad_lote(((Parametro) this.cmbPropiedadLote.getSelectedItem()).getParametro());
+            }
+            if (this.cmbTipoDocumento.getSelectedItem() != null) {
+                this.predial.setTipo_documento(((Parametro) this.cmbTipoDocumento.getSelectedItem()).getParametro());
+            }
+            this.predial.setCual_tipo_documento(this.cualTipoDocumento.getText().toString());
+            this.predial.setNro_documento_legalizacion(this.numeroDocumentoLegalizacion.getText().toString());
+            this.predial.setFec_expedicion(this.fechaExpedicion.getText().toString());
+            this.predial.setNotaria_dependencia_origen(this.notariaDependenciaOrigen.getText().toString());
+            this.predial.setLugar_expedicion(this.lugarExpedicion.getText().toString());
+            this.predial.setRegistro_catastral(this.registroCatastral.getText().toString());
+            this.predial.setMatricula_inmobiliaria(this.matriculaInmobiliaria.getText().toString());
+            this.predial.setPropietarios(this.propietarios.getText().toString());
+            if (this.cmbTenencia.getSelectedItem() != null) {
+                this.predial.setTenencia(((Parametro) this.cmbTenencia.getSelectedItem()).getParametro());
+            }
+            if (this.cmbConQuienTieneTenencia.getSelectedItem() != null) {
+                this.predial.setCon_quien_tenencia(((Parametro) this.cmbConQuienTieneTenencia.getSelectedItem()).getParametro());
+            }
+            this.predial.setFecha_tenencia_lote(this.fechaTenencia.getText().toString());
+            this.predial.setUrl_video(this.urlVideo.getText().toString());
+            this.predial.setLongitude(String.valueOf(longitude));
+            this.predial.setLatitude(String.valueOf(latitude));
             this.predial.setEstado("G");
-            long idInmovilizacion = predialDao.insert(this.predial);
-            if (idInmovilizacion < 0) {
+
+            long idPredial = predialDao.insert(this.predial);
+            if (idPredial < 0) {
+                archivoDao.insertInTx(archivos);
                 builder = new AlertDialog.Builder(AgregarInformacionSIDGDUEActivity.this);
                 builder.setTitle("Información");
-                builder.setMessage("La inmovilizacion no pudo ser almacenada correctamente.");
+                builder.setMessage("La información no pudo ser almacenada correctamente.");
                 builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
@@ -485,7 +546,7 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
             } else {
                 builder = new AlertDialog.Builder(AgregarInformacionSIDGDUEActivity.this);
                 builder.setTitle("Información");
-                builder.setMessage("Inmovilizacion almacenada correctamente.");
+                builder.setMessage("Información almacenada correctamente.");
                 builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         AgregarInformacionSIDGDUEActivity.this.setResult(-1, new Intent());
@@ -503,7 +564,6 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
                 alert = builder.create();
                 alert.show();
             }
-
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -515,7 +575,7 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.menu_comparendo_save:
-                almacenarInmovilizacion();
+                almacenarInformacionSIGDUE();
                 return true;
             case R.id.menu_comparendo_cancel:
                 confirmarSalida();
@@ -539,18 +599,6 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
                         String inicio = predial.getId_predial() + "_foto_";
                         String fin = ".jpg";
                         File[] archivos = carpetaArchivos.listFiles(new Filtro(inicio, fin));
-                        if (archivos != null && archivos.length > 0) {
-                            for (int i = 0; i < archivos.length && i < 3; i++) {
-                                File tempf = archivos[i];
-                                if (tempf.exists()) {
-                                    tempf.delete();
-                                }
-                            }
-                        }
-                        //borrar videos
-                        inicio = predial.getId_predial() + "_video_";
-                        fin = ".mp4";
-                        archivos = carpetaArchivos.listFiles(new Filtro(inicio, fin));
                         if (archivos != null && archivos.length > 0) {
                             for (int i = 0; i < archivos.length && i < 3; i++) {
                                 File tempf = archivos[i];
@@ -625,10 +673,10 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
         } else if (requestCode == PICK_FILES) {
             if (null != data) {
                 if (null != data.getClipData()) {
-                    archivos=new ArrayList<>();
+                    archivos = new ArrayList<>();
                     for (int i = 0; i < data.getClipData().getItemCount(); i++) {
                         Uri uri = data.getClipData().getItemAt(i).getUri();
-                        Archivo archivo=new Archivo();
+                        Archivo archivo = new Archivo();
                         archivo.setId_predial(predial.getId_predial());
                         archivo.setRuta(uri.getPath());
                         archivos.add(archivo);
@@ -637,18 +685,18 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
                 } else if (data.getData() != null) {
                     Uri uri = data.getData();
                     this.btnCargarArchivos.setText("Adjuntar archivos (1)");
-                    archivos=new ArrayList<>();
-                    Archivo archivo=new Archivo();
+                    archivos = new ArrayList<>();
+                    Archivo archivo = new Archivo();
                     archivo.setId_predial(predial.getId_predial());
                     archivo.setRuta(uri.getPath());
                     archivos.add(archivo);
                 } else {
                     this.btnCargarArchivos.setText("Adjuntar archivos");
-                    archivos=new ArrayList<>();
+                    archivos = new ArrayList<>();
                 }
             } else {
                 this.btnCargarArchivos.setText("Adjuntar archivos");
-                archivos=new ArrayList<>();
+                archivos = new ArrayList<>();
             }
         }
     }

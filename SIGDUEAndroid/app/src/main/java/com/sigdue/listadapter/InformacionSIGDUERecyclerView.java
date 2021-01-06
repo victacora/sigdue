@@ -41,11 +41,11 @@ public class InformacionSIGDUERecyclerView extends RecyclerView.Adapter<Informac
         holder.topografia.setText("Topografía: " + (this.data.get(position).getTopografia() == null || (this.data.get(position)).getTopografia().equals("") ? "" : this.data.get(position).getTopografia()));
 
         if ((this.data.get(position)).getEstado() == null || !(this.data.get(position)).getEstado().equals("E")) {
-            holder.estado.setText("Inmovilizacion no enviada.");
+            holder.estado.setText("Información no enviada.");
             holder.estado.setTextColor(this.mContext.getResources().getColor(R.color.primary_color));
             return;
         }
-        holder.estado.setText("Inmovilizacion enviada");
+        holder.estado.setText("Información enviada");
         holder.estado.setTextColor(this.mContext.getResources().getColor(R.color.primary_color));
 
     }
