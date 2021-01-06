@@ -21,8 +21,6 @@
 
 package com.sigdue.activity;
 
-import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -34,7 +32,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -47,19 +44,19 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.sigdue.Constants;
 import com.sigdue.R;
 import com.sigdue.aplication.AplicacionSIGDUE;
 import com.sigdue.asynctask.AsyncTaskSIGDUE;
 import com.sigdue.asynctask.ParametrosAsyncTask;
 import com.sigdue.asynctask.ProgressDialogFragment;
 import com.sigdue.db.DaoSession;
+import com.sigdue.db.ParametroDao;
 import com.sigdue.db.Predial;
 import com.sigdue.db.PredialDao;
 import com.sigdue.listadapter.InformacionSIGDUERecyclerView;
 import com.sigdue.service.EnviarInformacionSIGDUEService;
 import com.sigdue.utilidadesgenerales.UtilidadesGenerales;
-import com.sigdue.webservice.api.WSSIGDUEClient;
-import com.sigdue.webservice.api.WSSIGDUEInterface;
 
 import org.greenrobot.greendao.query.QueryBuilder;
 
@@ -74,14 +71,14 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity implement
     private AplicacionSIGDUE app;
     private FloatingActionButton btnAgregarComparendo;
     private DaoSession daoSession;
-    private ProgressDialog dialogoBuscando;
-    private AsyncTask asyncTask = null;
-    private ProgressDialogFragment mProgressDialog = null;
+    private ParametrosAsyncTask asyncTask = null;
+    private ProgressDialogFragment mProgressDialogConsultaInfoSIGDUE = null;
     LinearLayoutManager llm;
     private InformacionSIGDUERecyclerView mAdapter;
-    private EjecutarConsultarServiciosAsyncTask mConsultarInmovilizacionesTask;
+    private EjecutarConsultarServiciosAsyncTask mConsultarinformacionSIGDUETask;
     RecyclerView rv;
     private PredialDao predialDao;
+    private ParametroDao parametroDao;
 
     private BroadcastReceiver mHabilitarGPS = new BroadcastReceiver() {
         @Override
@@ -122,6 +119,8 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity implement
             this.app = (AplicacionSIGDUE) getApplication();
             this.daoSession = this.app.getDaoSession();
             this.predialDao = this.daoSession.getPredialDao();
+            this.parametroDao = this.daoSession.getParametroDao();
+
             this.rv = (RecyclerView) findViewById(R.id.rv);
             this.rv.setHasFixedSize(true);
             this.llm = new LinearLayoutManager(this);
@@ -187,10 +186,10 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity implement
     public void ejecutarConsultaServicios(int parametro, String consulta) {
         String mensaje;
         try {
-            mensaje = parametro == 4 ? "Actualizando maestros..." : getString(R.string.ui_listar_inmovilizaciones);
+            mensaje = parametro == 4 ? "Actualizando maestros..." : getString(R.string.ui_listar_informacion);
             showProgress(mensaje);
-            mConsultarInmovilizacionesTask = new EjecutarConsultarServiciosAsyncTask();
-            mConsultarInmovilizacionesTask.execute(parametro, consulta);
+            mConsultarinformacionSIGDUETask = new EjecutarConsultarServiciosAsyncTask();
+            mConsultarinformacionSIGDUETask.execute(parametro, consulta);
         } catch (Exception ex) {
             ex.printStackTrace();
             return;
@@ -235,7 +234,9 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity implement
                     result = true;
                     break;
                 case R.id.menu_inm_sincronizar_maestros:
-                    ejecutarConsultaServicios(4, "");
+                    showProgress("Actualizando maestros...");
+                    asyncTask = new ParametrosAsyncTask(ListarInformacionSIGDUEActivity.this, daoSession, mProgressDialogConsultaInfoSIGDUE);
+                    asyncTask.execute();
                     result = true;
                     break;
                 case R.id.menu_inm_sincronizar:
@@ -278,7 +279,7 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity implement
 
     @Override
     public void onPostExecute(Object result) {
-
+        onConsultarInmovilizacionFinish(null, 4);
     }
 
     @Override
@@ -297,35 +298,26 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity implement
                 List<Predial> prediales = null;
                 opcion = (int) params[0];
                 String consulta = (String) params[1];
-                WSSIGDUEInterface service = WSSIGDUEClient.getClient();
                 switch (opcion) {
                     case 0://listar todos los prediales
-                        prediales = predialDao.queryBuilder().orderAsc(PredialDao.Properties.Id_predial).list();
+                        prediales = predialDao.queryBuilder().orderDesc(PredialDao.Properties.Id_predial).list();
                         break;
                     case 1:
-                        //ordenar ascendentemente por fecha
+                        //ordenar ascendentemente por id
                         prediales = predialDao.queryBuilder().orderAsc(PredialDao.Properties.Id_predial).list();
                         break;
                     case 2:
-                        //ordenar descendentemente por fecha
+                        //ordenar descendentemente por id
                         prediales = predialDao.queryBuilder().orderDesc(PredialDao.Properties.Id_predial).list();
                         break;
                     case 3:
                         //aplicar filtro
-                        QueryBuilder qb = predialDao.queryBuilder();
-                        QueryBuilder.LOG_SQL = true;
-                        if (UtilidadesGenerales.isOnline()) {
-                        }
-                        break;
-                    case 4:
-                        showProgress("Actualizando maestros...");
-                        asyncTask = new ParametrosAsyncTask(ListarInformacionSIGDUEActivity.this, daoSession, mProgressDialog);
-                        asyncTask.execute();
+                        prediales = predialDao.queryBuilder().where(PredialDao.Properties.Dane_sede.like(consulta)).list();
                         break;
                 }
                 return prediales;
             } catch (Exception ex) {
-                Log.e(TAG, "ListarInmovilizaciones.doInBackground: fallo consultar comparendos");
+                Log.e(TAG, "ListarinformacionSIGDUE.doInBackground: fallo consultar comparendos");
                 Log.e(TAG, "", ex);
                 return null;
             }
@@ -335,7 +327,8 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity implement
         protected void onProgressUpdate(String... values) {
             super.onProgressUpdate(values);
             try {
-                if (mProgressDialog != null) mProgressDialog.actualizarMensaje(values[0]);
+                if (mProgressDialogConsultaInfoSIGDUE != null)
+                    mProgressDialogConsultaInfoSIGDUE.actualizarMensaje(values[0]);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -343,29 +336,29 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity implement
 
 
         @Override
-        protected void onPostExecute(final List<Predial> inmovilizaciones) {
-            onConsultarInmovilizacionFinish(inmovilizaciones, opcion);
+        protected void onPostExecute(final List<Predial> informacionSIGDUE) {
+            onConsultarInmovilizacionFinish(informacionSIGDUE, opcion);
         }
 
         @Override
         protected void onCancelled() {
-            onConsultarInmovilizacionesCancel();
+            onConsultarinformacionSIGDUECancel();
         }
     }
 
 
-    private void onConsultarInmovilizacionFinish(List<Predial> inmovilizaciones, int opcion) {
-        this.mConsultarInmovilizacionesTask = null;
+    private void onConsultarInmovilizacionFinish(List<Predial> informacionSIGDUE, int opcion) {
+        this.mConsultarinformacionSIGDUETask = null;
         hideProgress();
         if (opcion != 4) {
-            this.mAdapter = new InformacionSIGDUERecyclerView(inmovilizaciones, this);
+            this.mAdapter = new InformacionSIGDUERecyclerView(informacionSIGDUE, this);
             this.rv.setAdapter(this.mAdapter);
         }
         AlertDialog.Builder builder;
-        if ((inmovilizaciones == null || (inmovilizaciones != null && inmovilizaciones.size() == 0)) && opcion == 3) {
+        if ((informacionSIGDUE == null || (informacionSIGDUE != null && informacionSIGDUE.size() == 0)) && opcion == 3) {
             builder = new AlertDialog.Builder(ListarInformacionSIGDUEActivity.this);
             builder.setTitle("Información");
-            builder.setMessage("No se encontraron inmovilizaciones.");
+            builder.setMessage("No se encontraron registros.");
             builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
@@ -373,10 +366,10 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity implement
             });
             AlertDialog alert = builder.create();
             alert.show();
-        } else if (inmovilizaciones != null && inmovilizaciones.size() > 0 && opcion == 3) {
+        } else if (informacionSIGDUE != null && informacionSIGDUE.size() > 0 && opcion == 3) {
             builder = new AlertDialog.Builder(ListarInformacionSIGDUEActivity.this);
             builder.setTitle("Información");
-            builder.setMessage("Se encontraron " + inmovilizaciones.size() + " inmovilizaciones.");
+            builder.setMessage("Se encontraron " + informacionSIGDUE.size() + " registros.");
             builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
@@ -388,28 +381,28 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity implement
     }
 
     protected void showProgress(String mensaje) {
-        mProgressDialog = ProgressDialogFragment.newInstance(asyncTask, ListarInformacionSIGDUEActivity.this, mensaje);
-        this.mProgressDialog.show(getSupportFragmentManager(), "dialog_loading");
+        mProgressDialogConsultaInfoSIGDUE = ProgressDialogFragment.newInstance(asyncTask, ListarInformacionSIGDUEActivity.this, mensaje);
+        this.mProgressDialogConsultaInfoSIGDUE.show(getSupportFragmentManager(), "dialog_loading");
     }
 
     private void hideProgress() {
         try {
-            if (this.mProgressDialog != null) {
-                this.mProgressDialog.dismissAllowingStateLoss();
-                this.mProgressDialog = null;
+            if (this.mProgressDialogConsultaInfoSIGDUE != null) {
+                this.mProgressDialogConsultaInfoSIGDUE.dismissAllowingStateLoss();
+                this.mProgressDialogConsultaInfoSIGDUE = null;
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
-    private void onConsultarInmovilizacionesCancel() {
+    private void onConsultarinformacionSIGDUECancel() {
         cancel();
     }
 
     public void cancel() {
-        if (this.mConsultarInmovilizacionesTask != null) {
-            this.mConsultarInmovilizacionesTask.cancel(true);
+        if (this.mConsultarinformacionSIGDUETask != null) {
+            this.mConsultarinformacionSIGDUETask.cancel(true);
         }
     }
 
@@ -426,43 +419,13 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity implement
 
     public String validarParametrizacion() {
         String parametrosComparendos = "";
-        try {/*
-            if (this.departamentosDao.queryBuilder().count() == 0) {
-                parametrosComparendos = parametrosComparendos + "-No existen departamentos registrados.\n";
+        try {
+            for (Integer tipoParametro = 1; tipoParametro <= 12; tipoParametro++) {
+                if (this.parametroDao.queryBuilder().where(ParametroDao.Properties.Tipo.eq(tipoParametro)).count() == 0) {
+                    parametrosComparendos = parametrosComparendos + "-No existen " + Constants.tiposParametros.get(tipoParametro) + " registrados.\n";
+                }
             }
-            if (this.municipioDao.queryBuilder().count() == 0) {
-                parametrosComparendos = parametrosComparendos + "-No existen municipios registrados.\n";
-            }
-            if (this.infraccionDao.queryBuilder().count() == 0) {
-                parametrosComparendos = parametrosComparendos + "-No existen infracciones registradas.\n";
-            }
-            if (this.zonasDao.queryBuilder().count() == 0) {
-                parametrosComparendos = parametrosComparendos + "-No existen zonas registradas.\n";
-            }
-            if (this.parqueaderoDao.queryBuilder().count() == 0) {
-                parametrosComparendos = parametrosComparendos + "-No existen parqueaderos registrados.\n";
-            }
-            if (this.personasDao.queryBuilder().count() == 0) {
-                parametrosComparendos = parametrosComparendos + "-No existen usuarios y agentes de tr\u00e1nsito registrados.\n";
-            }
-            if (this.tipoIdentificacionDao.queryBuilder().count() == 0) {
-                parametrosComparendos = parametrosComparendos + "-No existen tipo documentos registrados.\n";
-            }
-            if (this.gruasDao.queryBuilder().count() == 0) {
-                parametrosComparendos = parametrosComparendos + "-No existen gruas registradas.\n";
-            }
-            if (this.coloresDao.queryBuilder().count() == 0) {
-                parametrosComparendos = parametrosComparendos + "-No existen colores registrados.\n";
-            }
-            if (this.tipoServicioDao.queryBuilder().count() == 0) {
-                parametrosComparendos = parametrosComparendos + "-No existen tipo de servicios registrados.\n";
-            }
-            if (this.claseVehiculoDao.queryBuilder().count() == 0) {
-                parametrosComparendos = parametrosComparendos + "-No existen clases de vehiculos registrados.\n";
-            }
-            if (!parametrosComparendos.equals("")) {
-                parametrosComparendos = parametrosComparendos + "\nEjecute la opci\u00f3n: sincronizar maestros.";
-            }
+
             if (!parametrosComparendos.equals("")) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(ListarInformacionSIGDUEActivity.this);
                 builder.setTitle("Información");
@@ -474,7 +437,7 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity implement
                 });
                 AlertDialog alert = builder.create();
                 alert.show();
-            }*/
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }

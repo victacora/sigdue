@@ -5,8 +5,8 @@
     <string name="login_activity_loginfail_text_pwmissing">Ingrese una contraseña.</string>
     <string name="drawer_open">Abrir menu</string>
     <string name="drawer_close">Cerrar menu</string>
-    <string name="inm_sort_date_asc">Fecha (Mas antiguo)</string>
-    <string name="inm_sort_date_desc">Fecha (Mas reciente)</string>
+    <string name="inm_sort_date_asc">Orden de registro (Mas antiguo)</string>
+    <string name="inm_sort_date_desc">Orden de registro (Mas reciente)</string>
     <string name="add_comparendo_add_title">Agregar Comparendo</string>
     <string name="add_comparendo_edit_title">Editar Comparendo</string>
     <string name="add_button_save">Guardar</string>
@@ -28,10 +28,10 @@
     <string name="login_activity_password_label">Contraseña</string>
     <string name="login_activity_username_label">Usuario</string>
     <string name="login_main_text">Secretaría de Educación y Cultura del Cauca\nSIGDUE</string>
-    <string name="main_menu_titulo">Sistema de Inmovilización Móviles</string>
-    <string name="main_search_description">Fecha, Infraccion, Cedula, Placa agente, Placa grua</string>
-    <string name="main_search_hint">Fecha, Infraccion, Cedula, Placa agente</string>
-    <string name="main_search_label">Comparendos</string>
+    <string name="main_menu_titulo">Secretaría de Educación y Cultura del Cauca\nSIGDUE</string>
+    <string name="main_search_description">Codigo DANE</string>
+    <string name="main_search_hint">Codigo DANE</string>
+    <string name="main_search_label">Información SIGDUE</string>
     <string name="main_search_results_title">Buscar resultados</string>
     <string name="menu_search_title">Buscar</string>
     <string name="menu_settings_title">Configuracion</string>
@@ -121,7 +121,7 @@
     <string name="ui_activity_authenticating">Autenticando usuario</string>
     <string name="ui_activity_sincronizando">Sincronizando maestros</string>
     <string name="ui_activity_sincronizando_summary">Espere un momento por favor...</string>
-    <string name="ui_listar_inmovilizaciones">Listando información...</string>
+    <string name="ui_listar_informacion">Listando información...</string>
     <string name="vacio" />
     <string name="inm_sincronizar_maestros">Sincronizar maestros</string>
     <string name="informacion_title">SIGDUE Móvil</string>
