@@ -14,19 +14,30 @@ public class Constants {
     public static final int SLEEP_PROGRESS_MAESTROS = 2500;
     public static final int SLEEP_PROGRESS_NOTIFICACION = 1500;
 
+    public static final int CLASE_PREDIO = 1;
+    public static final int CLIMA = 2;
+    public static final int CON_QUIEN_TIENE_TENENCIA = 3;
+    public static final int DISTANCIA_METROS_SEDE_PRINCIPAL = 4;
+    public static final int DISTANCIA_EN_KILOMETROS_CENTRO_POBLADO = 5;
+    public static final int PROPIEDAD_LOTE = 6;
+    public static final int TENENCIA = 7;
+    public static final int TIPO_DOCUMENTO = 8;
+    public static final int TOPOGRAFIA = 9;
+    public static final int ZONA_AISLAMIENTO = 10;
+    public static final int ZONA_ALTO_RIESGO = 11;
+    public static final int ZONA_PROTECCION = 12;
     public static Map tiposParametros=new HashMap<Integer, String>() {{
-        put(1, "clase predio");
-        put(2, "clima");
-        put(3, "con quien tiene tenencia");
-        put(4, "distancia metros sede principal");
-        put(5, "distancia en kilometros centro poblado");
-        put(6, "propiedad lote");
-        put(7, "tenencia");
-        put(8, "tipo documento");
-        put(9, "topografia");
-        put(10, "zona aislamiento");
-        put(11, "zona alto riesgo");
-        put(12, "Zona proteccion");
-
+        put(CLASE_PREDIO, "clase predio");
+        put(CLIMA, "clima");
+        put(CON_QUIEN_TIENE_TENENCIA, "con quien tiene tenencia");
+        put(DISTANCIA_METROS_SEDE_PRINCIPAL, "distancia metros sede principal");
+        put(DISTANCIA_EN_KILOMETROS_CENTRO_POBLADO, "distancia en kilometros centro poblado");
+        put(PROPIEDAD_LOTE, "propiedad lote");
+        put(TENENCIA, "tenencia");
+        put(TIPO_DOCUMENTO, "tipo documento");
+        put(TOPOGRAFIA, "topografia");
+        put(ZONA_AISLAMIENTO, "zona aislamiento");
+        put(ZONA_ALTO_RIESGO, "zona alto riesgo");
+        put(ZONA_PROTECCION, "zona proteccion");
     }};
 }

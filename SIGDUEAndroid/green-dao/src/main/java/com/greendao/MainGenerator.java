@@ -3,7 +3,6 @@ package com.greendao;
 
 import org.greenrobot.greendao.generator.DaoGenerator;
 import org.greenrobot.greendao.generator.Entity;
-import org.greenrobot.greendao.generator.Property;
 import org.greenrobot.greendao.generator.Schema;
 
 public class MainGenerator {
@@ -11,11 +10,11 @@ public class MainGenerator {
     private static final String PROJECT_DIR = System.getProperty("user.dir");
     private static Entity parametro;
     private static Entity predial;
-    private static Entity usuarios;
-
+    private static Entity usuario;
+    private static Entity archivo;
 
     public static void main(String[] args) {
-        Schema schema = new Schema(2, "com.sigdue.db");
+        Schema schema = new Schema(4, "com.sigdue.db");
         schema.enableKeepSectionsByDefault();
         addTables(schema);
         try {
@@ -28,7 +27,8 @@ public class MainGenerator {
     private static void addTables(final Schema schema) {
         parametro = addParametro(schema);
         predial = addPredial(schema);
-        usuarios = addUsuarios(schema);
+        archivo = addArchivos(schema);
+        usuario = addUsuarios(schema);
     }
 
     private static Entity addParametro(Schema schema) {
@@ -70,6 +70,9 @@ public class MainGenerator {
         predial.addStringProperty("con_quien_tenencia");
         predial.addStringProperty("nom_quien_tenencia");
         predial.addStringProperty("fecha_tenencia_lote");
+        predial.addStringProperty("url_video");
+        predial.addStringProperty("longitude");
+        predial.addStringProperty("latitude");
         predial.addStringProperty("estado");
         predial.addStringProperty("id_bd");
         return predial;
@@ -83,4 +86,10 @@ public class MainGenerator {
         return usuario;
     }
 
+    private static Entity addArchivos(Schema schema) {
+        Entity archivo = schema.addEntity("Archivo");
+        archivo.addLongProperty("id_predial").primaryKey().notNull();
+        archivo.addStringProperty("ruta");
+        return archivo;
+    }
 }

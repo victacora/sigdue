@@ -96,7 +96,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    app:hintText="Seleccione clima" />
+                    app:hintText="Seleccione el clima" />
             </LinearLayout>
 
             <ImageView
@@ -140,7 +140,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    app:hintText="Seleccione distancia poblado" />
+                    app:hintText="Seleccione distancia en kilometros centro poblado" />
             </LinearLayout>
 
             <ImageView
@@ -162,7 +162,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    app:hintText="Seleccione clase predio" />
+                    app:hintText="Seleccione clase de predio" />
             </LinearLayout>
 
             <ImageView
@@ -201,7 +201,7 @@
                 android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
                 android:background="@null"
                 android:gravity="top|left"
-                android:hint="Fecha avalúo"
+                android:hint="Fecha avalúo catastral"
                 android:inputType="textMultiLine"
                 android:layout="@layout/float_label"
                 android:lines="1"
@@ -273,7 +273,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    app:hintText="Seleccione zona aislamiento" />
+                    app:hintText="Seleccione zona de aislamiento" />
             </LinearLayout>
             <ImageView
                 android:layout_width="match_parent"
@@ -294,7 +294,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    app:hintText="Seleccione zona alto riesgo" />
+                    app:hintText="Seleccione zona de alto riesgo" />
             </LinearLayout>
 
             <ImageView
@@ -316,7 +316,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    app:hintText="Seleccione zona protección" />
+                    app:hintText="Seleccione zona de protección" />
             </LinearLayout>
 
             <ImageView
@@ -338,7 +338,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    app:hintText="Seleccione topografía" />
+                    app:hintText="Seleccione la topografía" />
             </LinearLayout>
 
             <ImageView
@@ -360,7 +360,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    app:hintText="Seleccione zona propiedad lote" />
+                    app:hintText="Seleccione la propiedad del lote" />
             </LinearLayout>
 
             <ImageView
@@ -382,7 +382,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    app:hintText="Seleccione tipo documento" />
+                    app:hintText="Seleccione el tipo documento" />
             </LinearLayout>
 
 
@@ -426,7 +426,7 @@
                 android:layout="@layout/float_label"
                 android:lines="1"
                 android:maxLines="1"
-                android:nextFocusForward="@+id/placaVehiculo"
+                android:nextFocusForward="@+id/fecha_expedicion"
                 android:paddingLeft="@dimen/add_predio_padding"
                 android:paddingRight="@dimen/add_predio_padding"
                 android:textSize="26sp" />
@@ -444,6 +444,8 @@
                 android:gravity="top|left"
                 android:hint="Fecha expedición"
                 android:inputType="textMultiLine"
+                android:imeOptions="actionNext"
+                android:nextFocusForward="@+id/notaria_dependencia_origen"
                 android:layout="@layout/float_label"
                 android:lines="1"
                 android:maxLines="1"
@@ -468,7 +470,9 @@
                 android:layout="@layout/float_label"
                 android:lines="1"
                 android:maxLines="1"
+                android:nextFocusForward="@+id/lugar_expedicion"
                 android:paddingLeft="@dimen/add_predio_padding"
+                android:imeOptions="actionNext"
                 android:paddingRight="@dimen/add_predio_padding"
                 android:textSize="26sp" />
 
@@ -486,9 +490,11 @@
                 android:gravity="top|left"
                 android:hint="Lugar expedición"
                 android:inputType="textMultiLine"
+                android:nextFocusForward="@+id/registro_catastral"
                 android:layout="@layout/float_label"
                 android:lines="1"
                 android:maxLines="1"
+                android:imeOptions="actionNext"
                 android:paddingLeft="@dimen/add_predio_padding"
                 android:paddingRight="@dimen/add_predio_padding"
                 android:textSize="26sp" />
@@ -509,8 +515,10 @@
                 android:inputType="textMultiLine"
                 android:layout="@layout/float_label"
                 android:lines="1"
+                android:imeOptions="actionNext"
                 android:maxLines="1"
                 android:paddingLeft="@dimen/add_predio_padding"
+                android:nextFocusForward="@+id/matricula_inmobiliaria"
                 android:paddingRight="@dimen/add_predio_padding"
                 android:textSize="26sp" />
 
@@ -526,7 +534,9 @@
                 android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
                 android:background="@null"
                 android:gravity="top|left"
+                android:imeOptions="actionNext"
                 android:hint="Matrícula inmobiliaria"
+                android:nextFocusForward="@+id/propietarios"
                 android:inputType="textMultiLine"
                 android:layout="@layout/float_label"
                 android:lines="1"
@@ -540,22 +550,24 @@
                 android:layout_height="1dp"
                 android:src="@color/drawer_divider" />
 
-            <LinearLayout
+
+            <com.iangclifton.android.floatlabel.FloatLabel
+                android:id="@+id/propietarios"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingBottom="@dimen/view_predio_padding"
+                android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
+                android:background="@null"
+                android:gravity="top|left"
+                android:hint="Propietarios"
+                android:imeOptions="actionNext"
+                android:inputType="textMultiLine"
+                android:layout="@layout/float_label"
+                android:lines="1"
+                android:maxLines="1"
+                android:nextFocusForward="@+id/fecha_tenencia"
                 android:paddingLeft="@dimen/add_predio_padding"
                 android:paddingRight="@dimen/add_predio_padding"
-                android:paddingTop="@dimen/view_predio_padding">
-
-                <com.sigdue.ui.SearchableSpinner
-                    android:id="@+id/cmbPropetario"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    app:hintText="Seleccione propietario lote" />
-            </LinearLayout>
+                android:textSize="26sp" />
 
             <ImageView
                 android:layout_width="match_parent"
@@ -600,6 +612,7 @@
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     app:hintText="Seleccione con quien tiene tenencia" />
             </LinearLayout>
+
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
@@ -615,11 +628,11 @@
                 android:gravity="top|left"
                 android:hint="Nombre tenencia"
                 android:imeOptions="actionNext"
-                android:inputType="textMultiLine|number"
+                android:inputType="textMultiLine"
                 android:layout="@layout/float_label"
                 android:lines="1"
                 android:maxLines="1"
-                android:nextFocusForward="@+id/avaluo_comercial"
+                android:nextFocusForward="@+id/fecha_tenencia"
                 android:paddingLeft="@dimen/add_predio_padding"
                 android:paddingRight="@dimen/add_predio_padding"
                 android:textSize="26sp" />
@@ -638,6 +651,29 @@
                 android:gravity="top|left"
                 android:hint="Fecha tenencia"
                 android:inputType="textMultiLine"
+                android:layout="@layout/float_label"
+                android:lines="1"
+                android:maxLines="1"
+                android:paddingLeft="@dimen/add_predio_padding"
+                android:paddingRight="@dimen/add_predio_padding"
+                android:textSize="26sp" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:src="@color/drawer_divider" />
+
+
+            <com.iangclifton.android.floatlabel.FloatLabel
+                android:id="@+id/url_video"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
+                android:background="@null"
+                android:gravity="top|left"
+                android:hint="Url video"
+                android:imeOptions="actionDone"
+                android:inputType="text"
                 android:layout="@layout/float_label"
                 android:lines="1"
                 android:maxLines="1"
@@ -731,7 +767,7 @@
             </LinearLayout>
 
             <Button
-                android:id="@+id/btnGrabarVideo"
+                android:id="@+id/btnCargarArchivos"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -739,64 +775,9 @@
                 android:gravity="center"
                 android:background="#339933"
                 android:textColor="#FFFFFF"
-                android:text="Grabar video" />
+                android:text="Adjuntar archivos" />
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:src="@color/drawer_divider" />
 
-            <LinearLayout
-                android:id="@+id/mostrarVideo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <TextureView
-                    android:id="@+id/video"
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_centerVertical="true" />
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:src="@color/drawer_divider" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    android:weightSum="2">
-
-                    <Button
-                        android:id="@+id/btnReproducirDetener"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:background="#339933"
-                        android:textColor="#FFFFFF"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginBottom="5dp"
-                        android:layout_marginRight="5dp"
-                        android:onClick="clickPlayStop" />
-
-                    <Button
-                        android:id="@+id/btnEliminarVideo"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="#339933"
-                        android:textColor="#FFFFFF"
-                        android:layout_weight="1"
-                        android:layout_marginBottom="5dp"
-                        android:layout_marginRight="5dp"
-                        android:text="Eliminar video" />
-                </LinearLayout>
-            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

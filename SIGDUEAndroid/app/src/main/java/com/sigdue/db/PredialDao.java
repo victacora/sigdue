@@ -51,8 +51,11 @@ public class PredialDao extends AbstractDao<Predial, Long> {
         public final static Property Con_quien_tenencia = new Property(26, String.class, "con_quien_tenencia", false, "CON_QUIEN_TENENCIA");
         public final static Property Nom_quien_tenencia = new Property(27, String.class, "nom_quien_tenencia", false, "NOM_QUIEN_TENENCIA");
         public final static Property Fecha_tenencia_lote = new Property(28, String.class, "fecha_tenencia_lote", false, "FECHA_TENENCIA_LOTE");
-        public final static Property Estado = new Property(29, String.class, "estado", false, "ESTADO");
-        public final static Property Id_bd = new Property(30, String.class, "id_bd", false, "ID_BD");
+        public final static Property Url_video = new Property(29, String.class, "url_video", false, "URL_VIDEO");
+        public final static Property Longitude = new Property(30, String.class, "longitude", false, "LONGITUDE");
+        public final static Property Latitude = new Property(31, String.class, "latitude", false, "LATITUDE");
+        public final static Property Estado = new Property(32, String.class, "estado", false, "ESTADO");
+        public final static Property Id_bd = new Property(33, String.class, "id_bd", false, "ID_BD");
     }
 
 
@@ -97,8 +100,11 @@ public class PredialDao extends AbstractDao<Predial, Long> {
                 "\"CON_QUIEN_TENENCIA\" TEXT," + // 26: con_quien_tenencia
                 "\"NOM_QUIEN_TENENCIA\" TEXT," + // 27: nom_quien_tenencia
                 "\"FECHA_TENENCIA_LOTE\" TEXT," + // 28: fecha_tenencia_lote
-                "\"ESTADO\" TEXT," + // 29: estado
-                "\"ID_BD\" TEXT);"); // 30: id_bd
+                "\"URL_VIDEO\" TEXT," + // 29: url_video
+                "\"LONGITUDE\" TEXT," + // 30: longitude
+                "\"LATITUDE\" TEXT," + // 31: latitude
+                "\"ESTADO\" TEXT," + // 32: estado
+                "\"ID_BD\" TEXT);"); // 33: id_bd
     }
 
     /** Drops the underlying database table. */
@@ -252,14 +258,29 @@ public class PredialDao extends AbstractDao<Predial, Long> {
             stmt.bindString(29, fecha_tenencia_lote);
         }
  
+        String url_video = entity.getUrl_video();
+        if (url_video != null) {
+            stmt.bindString(30, url_video);
+        }
+ 
+        String longitude = entity.getLongitude();
+        if (longitude != null) {
+            stmt.bindString(31, longitude);
+        }
+ 
+        String latitude = entity.getLatitude();
+        if (latitude != null) {
+            stmt.bindString(32, latitude);
+        }
+ 
         String estado = entity.getEstado();
         if (estado != null) {
-            stmt.bindString(30, estado);
+            stmt.bindString(33, estado);
         }
  
         String id_bd = entity.getId_bd();
         if (id_bd != null) {
-            stmt.bindString(31, id_bd);
+            stmt.bindString(34, id_bd);
         }
     }
 
@@ -408,14 +429,29 @@ public class PredialDao extends AbstractDao<Predial, Long> {
             stmt.bindString(29, fecha_tenencia_lote);
         }
  
+        String url_video = entity.getUrl_video();
+        if (url_video != null) {
+            stmt.bindString(30, url_video);
+        }
+ 
+        String longitude = entity.getLongitude();
+        if (longitude != null) {
+            stmt.bindString(31, longitude);
+        }
+ 
+        String latitude = entity.getLatitude();
+        if (latitude != null) {
+            stmt.bindString(32, latitude);
+        }
+ 
         String estado = entity.getEstado();
         if (estado != null) {
-            stmt.bindString(30, estado);
+            stmt.bindString(33, estado);
         }
  
         String id_bd = entity.getId_bd();
         if (id_bd != null) {
-            stmt.bindString(31, id_bd);
+            stmt.bindString(34, id_bd);
         }
     }
 
@@ -456,8 +492,11 @@ public class PredialDao extends AbstractDao<Predial, Long> {
             cursor.isNull(offset + 26) ? null : cursor.getString(offset + 26), // con_quien_tenencia
             cursor.isNull(offset + 27) ? null : cursor.getString(offset + 27), // nom_quien_tenencia
             cursor.isNull(offset + 28) ? null : cursor.getString(offset + 28), // fecha_tenencia_lote
-            cursor.isNull(offset + 29) ? null : cursor.getString(offset + 29), // estado
-            cursor.isNull(offset + 30) ? null : cursor.getString(offset + 30) // id_bd
+            cursor.isNull(offset + 29) ? null : cursor.getString(offset + 29), // url_video
+            cursor.isNull(offset + 30) ? null : cursor.getString(offset + 30), // longitude
+            cursor.isNull(offset + 31) ? null : cursor.getString(offset + 31), // latitude
+            cursor.isNull(offset + 32) ? null : cursor.getString(offset + 32), // estado
+            cursor.isNull(offset + 33) ? null : cursor.getString(offset + 33) // id_bd
         );
         return entity;
     }
@@ -493,8 +532,11 @@ public class PredialDao extends AbstractDao<Predial, Long> {
         entity.setCon_quien_tenencia(cursor.isNull(offset + 26) ? null : cursor.getString(offset + 26));
         entity.setNom_quien_tenencia(cursor.isNull(offset + 27) ? null : cursor.getString(offset + 27));
         entity.setFecha_tenencia_lote(cursor.isNull(offset + 28) ? null : cursor.getString(offset + 28));
-        entity.setEstado(cursor.isNull(offset + 29) ? null : cursor.getString(offset + 29));
-        entity.setId_bd(cursor.isNull(offset + 30) ? null : cursor.getString(offset + 30));
+        entity.setUrl_video(cursor.isNull(offset + 29) ? null : cursor.getString(offset + 29));
+        entity.setLongitude(cursor.isNull(offset + 30) ? null : cursor.getString(offset + 30));
+        entity.setLatitude(cursor.isNull(offset + 31) ? null : cursor.getString(offset + 31));
+        entity.setEstado(cursor.isNull(offset + 32) ? null : cursor.getString(offset + 32));
+        entity.setId_bd(cursor.isNull(offset + 33) ? null : cursor.getString(offset + 33));
      }
     
     @Override

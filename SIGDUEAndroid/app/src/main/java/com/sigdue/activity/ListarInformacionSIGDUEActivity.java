@@ -89,7 +89,6 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity implement
                 ex.printStackTrace();
             }
         }
-
     };
 
     private BroadcastReceiver mActualizarListaComparendosBroadcastReceiver = new BroadcastReceiver() {
@@ -141,14 +140,6 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity implement
                 }
             });
 
-            IntentFilter filter = new IntentFilter();
-            filter.addAction(RESPUESTA_SERVICIO);
-            registerReceiver(mActualizarListaComparendosBroadcastReceiver, filter);
-
-            filter = new IntentFilter();
-            filter.addAction("android.location.PROVIDERS_CHANGED");
-            registerReceiver(mHabilitarGPS, filter);
-
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -199,8 +190,6 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity implement
     @Override
     public void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(mHabilitarGPS);
-        unregisterReceiver(mActualizarListaComparendosBroadcastReceiver);
     }
 
     @Override
@@ -312,7 +301,7 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity implement
                         break;
                     case 3:
                         //aplicar filtro
-                        prediales = predialDao.queryBuilder().where(PredialDao.Properties.Dane_sede.like(consulta)).list();
+                        prediales = predialDao.queryBuilder().where(PredialDao.Properties.Dane_sede.like("%"+consulta+"%")).list();
                         break;
                 }
                 return prediales;
@@ -453,6 +442,15 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity implement
                 this.daoSession = this.app.getDaoSession();
             }
             ejecutarConsultaServicios(0, "");
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(RESPUESTA_SERVICIO);
+            registerReceiver(mActualizarListaComparendosBroadcastReceiver, filter);
+
+            filter = new IntentFilter();
+            filter.addAction("android.location.PROVIDERS_CHANGED");
+            registerReceiver(mHabilitarGPS, filter);
+
+            habilitarGPS();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -461,13 +459,13 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity implement
     @Override
     protected void onPause() {
         super.onPause();
+        unregisterReceiver(mHabilitarGPS);
+        unregisterReceiver(mActualizarListaComparendosBroadcastReceiver);
     }
 
 
     public void habilitarGPS() {
         try {
-            String tiempoSincronizacion = (String) UtilidadesGenerales.leerSharedPreferences(R.string.pref_tiempo_sincronizacion_gps_key, R.string.vacio, UtilidadesGenerales.STRING_TYPE);
-            long time = (tiempoSincronizacion != null && !tiempoSincronizacion.equals("") ? Long.parseLong(tiempoSincronizacion) : 0);
             LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
             if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) && !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
                 android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(this);

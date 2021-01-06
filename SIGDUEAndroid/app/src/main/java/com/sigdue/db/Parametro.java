@@ -61,6 +61,9 @@ public class Parametro {
     }
 
     // KEEP METHODS - put your custom methods here
+    public String toString() {
+        return this.getParametro();
+    }
     // KEEP METHODS END
 
 }
