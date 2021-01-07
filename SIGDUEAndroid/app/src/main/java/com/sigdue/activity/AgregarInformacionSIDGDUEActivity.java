@@ -528,10 +528,9 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
             this.predial.setLongitude(String.valueOf(longitude));
             this.predial.setLatitude(String.valueOf(latitude));
             this.predial.setEstado("G");
-
+            archivoDao.insertInTx(archivos);
             long idPredial = predialDao.insert(this.predial);
             if (idPredial < 0) {
-                archivoDao.insertInTx(archivos);
                 builder = new AlertDialog.Builder(AgregarInformacionSIDGDUEActivity.this);
                 builder.setTitle("Información");
                 builder.setMessage("La información no pudo ser almacenada correctamente.");
