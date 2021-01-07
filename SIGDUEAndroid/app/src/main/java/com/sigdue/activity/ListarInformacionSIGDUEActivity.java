@@ -414,7 +414,9 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity implement
                     parametrosComparendos = parametrosComparendos + "-No existen " + Constants.tiposParametros.get(tipoParametro) + " registrados.\n";
                 }
             }
-
+            if (!parametrosComparendos.equals("")) {
+                parametrosComparendos = parametrosComparendos + "\nEjecute la opci\u00f3n: sincronizar maestros.";
+            }
             if (!parametrosComparendos.equals("")) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(ListarInformacionSIGDUEActivity.this);
                 builder.setTitle("Información");

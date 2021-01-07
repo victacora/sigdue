@@ -14,7 +14,7 @@ public class MainGenerator {
     private static Entity archivo;
 
     public static void main(String[] args) {
-        Schema schema = new Schema(4, "com.sigdue.db");
+        Schema schema = new Schema(5, "com.sigdue.db");
         schema.enableKeepSectionsByDefault();
         addTables(schema);
         try {
@@ -88,7 +88,8 @@ public class MainGenerator {
 
     private static Entity addArchivos(Schema schema) {
         Entity archivo = schema.addEntity("Archivo");
-        archivo.addLongProperty("id_predial").primaryKey().notNull();
+        archivo.addLongProperty("id_archivo").primaryKey().notNull();
+        archivo.addLongProperty("id_predial");
         archivo.addStringProperty("ruta");
         return archivo;
     }

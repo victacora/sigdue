@@ -188,11 +188,11 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
             this.mAttacher = new PhotoViewAttacher(this.mImageView);
             this.fotos = new ArrayList();
             this.predial = new Predial();
-            List<Predial> inmovilizaciones = this.predialDao.queryBuilder().orderDesc(PredialDao.Properties.Id_predial).list();
-            if (inmovilizaciones == null || inmovilizaciones.size() <= 0) {
+            List<Predial> informacionSIGDUE = this.predialDao.queryBuilder().orderDesc(PredialDao.Properties.Id_predial).list();
+            if (informacionSIGDUE == null || informacionSIGDUE.size() <= 0) {
                 this.predial.setId_predial(1);
             } else {
-                this.predial.setId_predial((inmovilizaciones.get(0)).getId_predial() + 1);
+                this.predial.setId_predial((informacionSIGDUE.get(0)).getId_predial() + 1);
             }
             codigoDane = ((FloatLabel) findViewById(R.id.dane_sede)).getEditText();
             codigoDane.setText(app.getUsuario());
@@ -677,6 +677,7 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
                     for (int i = 0; i < data.getClipData().getItemCount(); i++) {
                         Uri uri = data.getClipData().getItemAt(i).getUri();
                         Archivo archivo = new Archivo();
+                        setIdArchivo(archivo);
                         archivo.setId_predial(predial.getId_predial());
                         archivo.setRuta(uri.getPath());
                         archivos.add(archivo);
@@ -689,6 +690,7 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
                     Archivo archivo = new Archivo();
                     archivo.setId_predial(predial.getId_predial());
                     archivo.setRuta(uri.getPath());
+                    setIdArchivo(archivo);
                     archivos.add(archivo);
                 } else {
                     this.btnCargarArchivos.setText("Adjuntar archivos");
@@ -698,6 +700,15 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
                 this.btnCargarArchivos.setText("Adjuntar archivos");
                 archivos = new ArrayList<>();
             }
+        }
+    }
+
+    public void setIdArchivo(Archivo archivo){
+        List<Archivo> archivos = this.archivoDao.queryBuilder().orderDesc(ArchivoDao.Properties.Id_predial).list();
+        if (archivos == null || archivos.size() <= 0) {
+            archivo.setId_archivo(1);
+        } else {
+            archivo.setId_archivo((archivos.get(0)).getId_predial() + 1);
         }
     }
 }

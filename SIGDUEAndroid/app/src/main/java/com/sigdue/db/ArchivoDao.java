@@ -22,8 +22,9 @@ public class ArchivoDao extends AbstractDao<Archivo, Long> {
      * Can be used for QueryBuilder and for referencing column names.
      */
     public static class Properties {
-        public final static Property Id_predial = new Property(0, long.class, "id_predial", true, "ID_PREDIAL");
-        public final static Property Ruta = new Property(1, String.class, "ruta", false, "RUTA");
+        public final static Property Id_archivo = new Property(0, long.class, "id_archivo", true, "ID_ARCHIVO");
+        public final static Property Id_predial = new Property(1, Long.class, "id_predial", false, "ID_PREDIAL");
+        public final static Property Ruta = new Property(2, String.class, "ruta", false, "RUTA");
     }
 
 
@@ -39,8 +40,9 @@ public class ArchivoDao extends AbstractDao<Archivo, Long> {
     public static void createTable(Database db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"ARCHIVO\" (" + //
-                "\"ID_PREDIAL\" INTEGER PRIMARY KEY NOT NULL ," + // 0: id_predial
-                "\"RUTA\" TEXT);"); // 1: ruta
+                "\"ID_ARCHIVO\" INTEGER PRIMARY KEY NOT NULL ," + // 0: id_archivo
+                "\"ID_PREDIAL\" INTEGER," + // 1: id_predial
+                "\"RUTA\" TEXT);"); // 2: ruta
     }
 
     /** Drops the underlying database table. */
@@ -52,22 +54,32 @@ public class ArchivoDao extends AbstractDao<Archivo, Long> {
     @Override
     protected final void bindValues(DatabaseStatement stmt, Archivo entity) {
         stmt.clearBindings();
-        stmt.bindLong(1, entity.getId_predial());
+        stmt.bindLong(1, entity.getId_archivo());
+ 
+        Long id_predial = entity.getId_predial();
+        if (id_predial != null) {
+            stmt.bindLong(2, id_predial);
+        }
  
         String ruta = entity.getRuta();
         if (ruta != null) {
-            stmt.bindString(2, ruta);
+            stmt.bindString(3, ruta);
         }
     }
 
     @Override
     protected final void bindValues(SQLiteStatement stmt, Archivo entity) {
         stmt.clearBindings();
-        stmt.bindLong(1, entity.getId_predial());
+        stmt.bindLong(1, entity.getId_archivo());
+ 
+        Long id_predial = entity.getId_predial();
+        if (id_predial != null) {
+            stmt.bindLong(2, id_predial);
+        }
  
         String ruta = entity.getRuta();
         if (ruta != null) {
-            stmt.bindString(2, ruta);
+            stmt.bindString(3, ruta);
         }
     }
 
@@ -79,28 +91,30 @@ public class ArchivoDao extends AbstractDao<Archivo, Long> {
     @Override
     public Archivo readEntity(Cursor cursor, int offset) {
         Archivo entity = new Archivo( //
-            cursor.getLong(offset + 0), // id_predial
-            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1) // ruta
+            cursor.getLong(offset + 0), // id_archivo
+            cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1), // id_predial
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2) // ruta
         );
         return entity;
     }
      
     @Override
     public void readEntity(Cursor cursor, Archivo entity, int offset) {
-        entity.setId_predial(cursor.getLong(offset + 0));
-        entity.setRuta(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setId_archivo(cursor.getLong(offset + 0));
+        entity.setId_predial(cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1));
+        entity.setRuta(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
      }
     
     @Override
     protected final Long updateKeyAfterInsert(Archivo entity, long rowId) {
-        entity.setId_predial(rowId);
+        entity.setId_archivo(rowId);
         return rowId;
     }
     
     @Override
     public Long getKey(Archivo entity) {
         if(entity != null) {
-            return entity.getId_predial();
+            return entity.getId_archivo();
         } else {
             return null;
         }

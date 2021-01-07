@@ -38,11 +38,14 @@ public class InformacionSIGDUERecyclerView extends RecyclerView.Adapter<Informac
     public void onBindViewHolder(ComparendoViewHolder holder, final int position) {
         holder.codigoDane.setText("Nº DANE: " + (this.data.get(position).getDane_sede() == null || (this.data.get(position)).getDane_sede().equals("") ? "" : this.data.get(position).getDane_sede()));
         holder.codigoPredio.setText("Cod Predio: " + (this.data.get(position).getCod_predio() == null || (this.data.get(position)).getCod_predio().equals("") ? "" : this.data.get(position).getCod_predio()));
-        holder.clasePredio.setText("Clase Predio: " + (this.data.get(position).getClase_predio() == null || (this.data.get(position)).getCod_predio().equals("") ? "" : this.data.get(position).getCod_predio()));
+        holder.clasePredio.setText("Clase Predio: " + (this.data.get(position).getClase_predio() == null || (this.data.get(position)).getClase_predio().equals("") ? "" : this.data.get(position).getClase_predio()));
         holder.tenencia.setText("Tenencia: " + (this.data.get(position).getTenencia() == null || (this.data.get(position)).getTenencia().equals("") ? "" : this.data.get(position).getTenencia()));
         holder.distanciaPoblado.setText("Distancia poblado: " + (this.data.get(position).getDist_km_centro_poblado() == null || (this.data.get(position)).getDist_km_centro_poblado().equals("") ? "" : this.data.get(position).getDist_km_centro_poblado()));
         holder.tipoDocumento.setText("Tipo documento: " + (this.data.get(position).getTipo_documento() == null || (this.data.get(position)).getTipo_documento().equals("") ? "" : this.data.get(position).getTipo_documento()));
         holder.topografia.setText("Topografía: " + (this.data.get(position).getTopografia() == null || (this.data.get(position)).getTopografia().equals("") ? "" : this.data.get(position).getTopografia()));
+        holder.posicion.setText(String.format("Posición: (%s , %s)",
+                this.data.get(position).getLongitude() == null || (this.data.get(position)).getLongitude().equals("") ? "" : this.data.get(position).getLongitude(),
+                this.data.get(position).getLatitude() == null || (this.data.get(position)).getLatitude().equals("") ? "" : this.data.get(position).getLatitude()));
         holder.archivos.setText("Archivos adjuntos: " + (this.daoSession.getArchivoDao().queryBuilder().where(ArchivoDao.Properties.Id_predial.eq(this.data.get(position).getId_predial())).count()));
 
         if ((this.data.get(position)).getEstado() == null || !(this.data.get(position)).getEstado().equals("E")) {
@@ -75,6 +78,7 @@ public class InformacionSIGDUERecyclerView extends RecyclerView.Adapter<Informac
         AutoResizeTextView tenencia;
         AutoResizeTextView clasePredio;
         AutoResizeTextView topografia;
+        AutoResizeTextView posicion;
         AutoResizeTextView archivos;
 
         ComparendoViewHolder(View itemView) {
@@ -88,6 +92,7 @@ public class InformacionSIGDUERecyclerView extends RecyclerView.Adapter<Informac
             tipoDocumento = (AutoResizeTextView) itemView.findViewById(R.id.tipo_documento);
             topografia = (AutoResizeTextView) itemView.findViewById(R.id.topografia);
             archivos = (AutoResizeTextView) itemView.findViewById(R.id.archivos);
+            posicion = (AutoResizeTextView) itemView.findViewById(R.id.posicion);
             estado = (AutoResizeTextView) itemView.findViewById(R.id.estado);
         }
     }

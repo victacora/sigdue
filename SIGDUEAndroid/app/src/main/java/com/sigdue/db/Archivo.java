@@ -14,7 +14,8 @@ import org.greenrobot.greendao.annotation.*;
 public class Archivo {
 
     @Id
-    private long id_predial;
+    private long id_archivo;
+    private Long id_predial;
     private String ruta;
 
     // KEEP FIELDS - put your custom fields here
@@ -24,21 +25,30 @@ public class Archivo {
     public Archivo() {
     }
 
-    public Archivo(long id_predial) {
-        this.id_predial = id_predial;
+    public Archivo(long id_archivo) {
+        this.id_archivo = id_archivo;
     }
 
     @Generated
-    public Archivo(long id_predial, String ruta) {
+    public Archivo(long id_archivo, Long id_predial, String ruta) {
+        this.id_archivo = id_archivo;
         this.id_predial = id_predial;
         this.ruta = ruta;
     }
 
-    public long getId_predial() {
+    public long getId_archivo() {
+        return id_archivo;
+    }
+
+    public void setId_archivo(long id_archivo) {
+        this.id_archivo = id_archivo;
+    }
+
+    public Long getId_predial() {
         return id_predial;
     }
 
-    public void setId_predial(long id_predial) {
+    public void setId_predial(Long id_predial) {
         this.id_predial = id_predial;
     }
 
