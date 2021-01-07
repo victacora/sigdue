@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.sigdue.R;
+import com.sigdue.db.ArchivoDao;
+import com.sigdue.db.DaoSession;
 import com.sigdue.db.Predial;
 import com.sigdue.ui.AutoResizeTextView;
 
@@ -17,10 +19,12 @@ import java.util.List;
 public class InformacionSIGDUERecyclerView extends RecyclerView.Adapter<InformacionSIGDUERecyclerView.ComparendoViewHolder> {
     private List<Predial> data;
     private Context mContext;
+    private DaoSession daoSession;
 
-    public InformacionSIGDUERecyclerView(List<Predial> data, Context mContext) {
+    public InformacionSIGDUERecyclerView(List<Predial> data, DaoSession daoSession, Context mContext) {
         this.data = data;
         this.mContext = mContext;
+        this.daoSession = daoSession;
     }
 
     @Override
@@ -39,6 +43,7 @@ public class InformacionSIGDUERecyclerView extends RecyclerView.Adapter<Informac
         holder.distanciaPoblado.setText("Distancia poblado: " + (this.data.get(position).getDist_km_centro_poblado() == null || (this.data.get(position)).getDist_km_centro_poblado().equals("") ? "" : this.data.get(position).getDist_km_centro_poblado()));
         holder.tipoDocumento.setText("Tipo documento: " + (this.data.get(position).getTipo_documento() == null || (this.data.get(position)).getTipo_documento().equals("") ? "" : this.data.get(position).getTipo_documento()));
         holder.topografia.setText("Topografía: " + (this.data.get(position).getTopografia() == null || (this.data.get(position)).getTopografia().equals("") ? "" : this.data.get(position).getTopografia()));
+        holder.archivos.setText("Archivos adjuntos: " + (this.daoSession.getArchivoDao().queryBuilder().where(ArchivoDao.Properties.Id_predial.eq(this.data.get(position).getId_predial())).count()));
 
         if ((this.data.get(position)).getEstado() == null || !(this.data.get(position)).getEstado().equals("E")) {
             holder.estado.setText("Información no enviada.");
@@ -70,6 +75,7 @@ public class InformacionSIGDUERecyclerView extends RecyclerView.Adapter<Informac
         AutoResizeTextView tenencia;
         AutoResizeTextView clasePredio;
         AutoResizeTextView topografia;
+        AutoResizeTextView archivos;
 
         ComparendoViewHolder(View itemView) {
             super(itemView);
@@ -81,6 +87,7 @@ public class InformacionSIGDUERecyclerView extends RecyclerView.Adapter<Informac
             distanciaPoblado = (AutoResizeTextView) itemView.findViewById(R.id.distancia_poblado);
             tipoDocumento = (AutoResizeTextView) itemView.findViewById(R.id.tipo_documento);
             topografia = (AutoResizeTextView) itemView.findViewById(R.id.topografia);
+            archivos = (AutoResizeTextView) itemView.findViewById(R.id.archivos);
             estado = (AutoResizeTextView) itemView.findViewById(R.id.estado);
         }
     }

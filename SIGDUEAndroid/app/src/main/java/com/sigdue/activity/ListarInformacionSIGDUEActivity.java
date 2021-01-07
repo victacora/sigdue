@@ -340,7 +340,7 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity implement
         this.mConsultarinformacionSIGDUETask = null;
         hideProgress();
         if (opcion != 4) {
-            this.mAdapter = new InformacionSIGDUERecyclerView(informacionSIGDUE, this);
+            this.mAdapter = new InformacionSIGDUERecyclerView(informacionSIGDUE,daoSession, this);
             this.rv.setAdapter(this.mAdapter);
         }
         AlertDialog.Builder builder;

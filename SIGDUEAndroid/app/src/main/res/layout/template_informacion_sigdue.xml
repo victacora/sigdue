@@ -65,10 +65,17 @@
                 android:textSize="17sp" />
 
             <com.sigdue.ui.AutoResizeTextView
-                android:id="@+id/estado"
+                android:id="@+id/archivos"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/topografia"
+                android:textSize="17sp" />
+
+            <com.sigdue.ui.AutoResizeTextView
+                android:id="@+id/estado"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/archivos"
                 android:textStyle="bold"
                 android:textSize="17sp" />
 
