@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -29,12 +30,17 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SpinnerAdapter;
+import android.widget.TextView;
 
 import com.iangclifton.android.floatlabel.FloatLabel;
 import com.sigdue.BuildConfig;
 import com.sigdue.Constants;
 import com.sigdue.R;
 import com.sigdue.aplication.AplicacionSIGDUE;
+import com.sigdue.asynctask.ActualizarInformacionPredioAsyncTask;
+import com.sigdue.asynctask.ActualizarUbiGeoAsyncTask;
+import com.sigdue.asynctask.AsyncTaskSIGDUE;
+import com.sigdue.asynctask.ProgressDialogFragment;
 import com.sigdue.db.Archivo;
 import com.sigdue.db.ArchivoDao;
 import com.sigdue.db.DaoSession;
@@ -71,10 +77,14 @@ import uk.co.senab.photoview.PhotoViewAttacher;
 
 import static com.sigdue.Constants.CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE;
 import static com.sigdue.Constants.RUTAMULTIMEDIASIGDUE;
+import static com.sigdue.Constants.tiposParametros;
 
-public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
+public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity implements AsyncTaskSIGDUE {
 
     private static final int PICK_FILES = 400;
+    public static final int FORMULARIO_INFO_PREDIO = 3;
+    public static final int FORMULARIO_CARGAR_MULTIMEDIA = 2;
+    public static final int FORMULARIO_ACTUALIZAR_UBICACION = 1;
     private String TAG = "AgregarInmActivity";
     private AplicacionSIGDUE app;
     private Button btnAtras;
@@ -138,6 +148,10 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
     private LinearLayout formularioPredio;
     private LinearLayout formularioMultimedia;
     private LinearLayout formularioFotos;
+    private TextView titluloformulario;
+    private ActualizarUbiGeoAsyncTask actualizarUbiGeoAsyncTask;
+    private ActualizarInformacionPredioAsyncTask actualizarInformacionPredioAsyncTask;
+    private ProgressDialogFragment mProgressDialogConsultaInfoSIGDUE = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -148,15 +162,20 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
             Bundle extras = getIntent().getExtras();
             if (extras != null) {
                 task = extras.getInt(Constants.TASK);
+                titluloformulario = findViewById(R.id.datosInformacion);
                 formularioFotos = findViewById(R.id.formularioFotos);
                 formularioMultimedia = findViewById(R.id.formularioMultimedia);
                 formularioUbicacion = findViewById(R.id.formularioUbicacion);
                 formularioPredio = findViewById(R.id.formularioInfoPredio);
-                if (task == 1) formularioUbicacion.setVisibility(View.VISIBLE);
-                else if (task == 2) {
+                if (task == 1) {
+                    titluloformulario.setText("Actualizar ubicación");
+                    formularioUbicacion.setVisibility(View.VISIBLE);
+                } else if (task == 2) {
+                    titluloformulario.setText("Cargar multimedia");
                     formularioFotos.setVisibility(View.VISIBLE);
                     formularioMultimedia.setVisibility(View.VISIBLE);
                 } else if (task == 3) {
+                    titluloformulario.setText("Información del predio");
                     formularioMultimedia.setVisibility(View.VISIBLE);
                     formularioPredio.setVisibility(View.VISIBLE);
                 }
@@ -250,13 +269,8 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
             this.mImageView.setImageDrawable(bitmap);
             this.mAttacher = new PhotoViewAttacher(this.mImageView);
             this.fotos = new ArrayList();
-            this.predial = new Predial();
-            List<Predial> informacionSIGDUE = this.predialDao.queryBuilder().orderDesc(PredialDao.Properties.Id_predial).list();
-            if (informacionSIGDUE == null || informacionSIGDUE.size() <= 0) {
-                this.predial.setId_predial(1);
-            } else {
-                this.predial.setId_predial((informacionSIGDUE.get(0)).getId_predial() + 1);
-            }
+            this.predial = null;
+
             codigoDane = ((FloatLabel) findViewById(R.id.dane_sede)).getEditText();
             codigoDane.setText(app.getUsuario());
             setSoloLectura(codigoDane, false);
@@ -283,6 +297,8 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
 
             fechaTenencia = ((FloatLabel) findViewById(R.id.fecha_tenencia)).getEditText();
             setFechaConf(fechaTenencia, "Fecha tenencia", urlVideo);
+
+            incializarInformacionDelPredio();
 
             this.btnCargarArchivos = (Button) findViewById(R.id.btnCargarArchivos);
             this.btnCargarArchivos.setOnClickListener(new View.OnClickListener() {
@@ -423,6 +439,53 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
         }
     }
 
+    private void incializarInformacionDelPredio() {
+        List<Predial> infoPredial = predialDao.queryBuilder().where(PredialDao.Properties.Dane_sede.eq(app.getUsuario())).list();
+        if (infoPredial != null && !infoPredial.isEmpty()) {
+            predial = infoPredial.get(0);
+            this.codigoDane.setText(this.predial.getDane_sede() != null ? this.predial.getDane_sede() : "");
+            this.codigoPredio.setText(this.predial.getCod_predio() != null ? this.predial.getCod_predio() : "");
+            setParametroCombo(this.predial.getClima(), cmbClima, Constants.CLIMA);
+            setParametroCombo(this.predial.getDistancia_mts_sede_ppal(), cmbDistanciaMetrosSedePrincipal, Constants.DISTANCIA_METROS_SEDE_PRINCIPAL);
+            setParametroCombo(this.predial.getDist_km_centro_poblado(), cmbDistanciaKilometrosCentroPoblado, Constants.DISTANCIA_EN_KILOMETROS_CENTRO_POBLADO);
+            setParametroCombo(this.predial.getClase_predio(), cmbClasePredio, Constants.CLASE_PREDIO);
+            this.avaluoCatastral.setText(this.predial.getAvaluo_catastral());
+            this.fechaAvaluoCatastral.setText(this.predial.getFec_avaluo_catastral());
+            this.avaluoComercial.setText(this.predial.getAvaluo_comercial());
+            this.fechaAvaluoComercial.setText(this.predial.getFec_avaluo_comercial());
+            setParametroCombo(this.predial.getZona_aislamiento(), cmbZonaAislamiento, Constants.ZONA_AISLAMIENTO);
+            setParametroCombo(this.predial.getZona_alto_riesgo(), cmbZonaAltoRiesgo, Constants.ZONA_ALTO_RIESGO);
+            setParametroCombo(this.predial.getZona_proteccion(), cmbZonaProteccion, Constants.ZONA_PROTECCION);
+            setParametroCombo(this.predial.getTopografia(), cmbTopografia, Constants.TOPOGRAFIA);
+            setParametroCombo(this.predial.getPropiedad_lote(), cmbPropiedadLote, Constants.PROPIEDAD_LOTE);
+            setParametroCombo(this.predial.getTipo_documento(), cmbTipoDocumento, Constants.TIPO_DOCUMENTO);
+            this.cualTipoDocumento.setText(this.predial.getCual_tipo_documento());
+            this.numeroDocumentoLegalizacion.setText(this.predial.getNro_documento_legalizacion());
+            this.fechaExpedicion.setText(this.predial.getFec_expedicion());
+            this.notariaDependenciaOrigen.setText(this.predial.getNotaria_dependencia_origen());
+            this.lugarExpedicion.setText(this.predial.getLugar_expedicion());
+            this.registroCatastral.setText(this.predial.getRegistro_catastral());
+            this.matriculaInmobiliaria.setText(this.predial.getMatricula_inmobiliaria());
+            this.propietarios.setText(this.predial.getPropietarios());
+            this.nombreTenencia.setText(this.predial.getNom_quien_tenencia());
+            setParametroCombo(this.predial.getTenencia(), cmbTenencia, Constants.TENENCIA);
+            setParametroCombo(this.predial.getCon_quien_tenencia(), cmbConQuienTieneTenencia, Constants.CON_QUIEN_TIENE_TENENCIA);
+            this.fechaTenencia.setText(this.predial.getFecha_tenencia_lote());
+        } else {
+            predial = new Predial();
+        }
+    }
+
+    private void setParametroCombo(String parametro, SearchableSpinner searchableSpinner, long tipoParametro) {
+        if (parametro == null) return;
+        List<Parametro> parametros = parametroDao.queryBuilder().where(ParametroDao.Properties.Parametro.eq(parametro), ParametroDao.Properties.Tipo.eq(tipoParametro)).list();
+        Object[] camposCombo = this.parametroDao.queryBuilder().where(ParametroDao.Properties.Tipo.eq(tipoParametro)).list().toArray();
+        SpinnerAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, camposCombo);
+        if (parametros != null && !parametros.isEmpty()) {
+            searchableSpinner.setAdapter(adapter, parametros.get(0));
+        }
+    }
+
     private void setSoloLectura(EditText editText, boolean soloLectura) {
         editText.setClickable(soloLectura);
         editText.setKeyListener(null);
@@ -499,8 +562,8 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
         cmb.setTitle(titulo);
         cmb.setPositiveButton("Cerrar");
         Object[] camposCombo = this.parametroDao.queryBuilder().where(ParametroDao.Properties.Tipo.eq(tipoParametro)).list().toArray();
-        SpinnerAdapter adapterComboZona = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, camposCombo);
-        cmb.setAdapter(adapterComboZona);
+        SpinnerAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, camposCombo);
+        cmb.setAdapter(adapter);
     }
 
 
@@ -538,82 +601,107 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
         AlertDialog.Builder builder;
         AlertDialog alert;
         try {
+            if (task == FORMULARIO_INFO_PREDIO) {
+                boolean actualizar = !(this.predial.getDane_sede() == null || this.predial.getDane_sede().isEmpty());
+                this.predial.setDane_sede(this.codigoDane.getText().toString());
+                this.predial.setCod_predio(this.codigoPredio.getText().toString());
+                if (this.cmbClima.getSelectedItem() != null) {
+                    this.predial.setClima(((Parametro) this.cmbClima.getSelectedItem()).getParametro());
+                }
+                if (this.cmbDistanciaMetrosSedePrincipal.getSelectedItem() != null) {
+                    this.predial.setDistancia_mts_sede_ppal(((Parametro) this.cmbDistanciaMetrosSedePrincipal.getSelectedItem()).getParametro());
+                }
+                if (this.cmbDistanciaKilometrosCentroPoblado.getSelectedItem() != null) {
+                    this.predial.setDist_km_centro_poblado(((Parametro) this.cmbDistanciaKilometrosCentroPoblado.getSelectedItem()).getParametro());
+                }
+                if (this.cmbClasePredio.getSelectedItem() != null) {
+                    this.predial.setClase_predio(((Parametro) this.cmbClasePredio.getSelectedItem()).getParametro());
+                }
+                this.predial.setAvaluo_catastral(this.avaluoCatastral.getText().toString());
+                this.predial.setFec_avaluo_catastral(this.fechaAvaluoCatastral.getText().toString());
+                this.predial.setAvaluo_comercial(this.avaluoComercial.getText().toString());
+                this.predial.setFec_avaluo_comercial(this.fechaAvaluoComercial.getText().toString());
 
-            this.predial.setDane_sede(this.codigoDane.getText().toString());
-            this.predial.setCod_predio(this.codigoPredio.getText().toString());
-            if (this.cmbClima.getSelectedItem() != null) {
-                this.predial.setClima(((Parametro) this.cmbClima.getSelectedItem()).getParametro());
-            }
-            if (this.cmbDistanciaMetrosSedePrincipal.getSelectedItem() != null) {
-                this.predial.setDistancia_mts_sede_ppal(((Parametro) this.cmbDistanciaMetrosSedePrincipal.getSelectedItem()).getParametro());
-            }
-            if (this.cmbDistanciaKilometrosCentroPoblado.getSelectedItem() != null) {
-                this.predial.setDist_km_centro_poblado(((Parametro) this.cmbDistanciaKilometrosCentroPoblado.getSelectedItem()).getParametro());
-            }
-            if (this.cmbClasePredio.getSelectedItem() != null) {
-                this.predial.setClase_predio(((Parametro) this.cmbClasePredio.getSelectedItem()).getParametro());
-            }
-            this.predial.setAvaluo_catastral(this.avaluoCatastral.getText().toString());
-            this.predial.setFec_avaluo_catastral(this.fechaAvaluoCatastral.getText().toString());
-            this.predial.setAvaluo_comercial(this.avaluoComercial.getText().toString());
-            this.predial.setFec_avaluo_comercial(this.fechaAvaluoComercial.getText().toString());
+                if (this.cmbZonaAislamiento.getSelectedItem() != null) {
+                    this.predial.setZona_aislamiento(((Parametro) this.cmbZonaAislamiento.getSelectedItem()).getParametro());
+                }
+                if (this.cmbZonaAltoRiesgo.getSelectedItem() != null) {
+                    this.predial.setZona_alto_riesgo(((Parametro) this.cmbZonaAltoRiesgo.getSelectedItem()).getParametro());
+                }
+                if (this.cmbZonaProteccion.getSelectedItem() != null) {
+                    this.predial.setZona_proteccion(((Parametro) this.cmbZonaProteccion.getSelectedItem()).getParametro());
+                }
+                if (this.cmbTopografia.getSelectedItem() != null) {
+                    this.predial.setTopografia(((Parametro) this.cmbTopografia.getSelectedItem()).getParametro());
+                }
+                if (this.cmbPropiedadLote.getSelectedItem() != null) {
+                    this.predial.setPropiedad_lote(((Parametro) this.cmbPropiedadLote.getSelectedItem()).getParametro());
+                }
+                if (this.cmbTipoDocumento.getSelectedItem() != null) {
+                    this.predial.setTipo_documento(((Parametro) this.cmbTipoDocumento.getSelectedItem()).getParametro());
+                }
+                this.predial.setCual_tipo_documento(this.cualTipoDocumento.getText().toString());
+                this.predial.setNro_documento_legalizacion(this.numeroDocumentoLegalizacion.getText().toString());
+                this.predial.setFec_expedicion(this.fechaExpedicion.getText().toString());
+                this.predial.setNotaria_dependencia_origen(this.notariaDependenciaOrigen.getText().toString());
+                this.predial.setLugar_expedicion(this.lugarExpedicion.getText().toString());
+                this.predial.setRegistro_catastral(this.registroCatastral.getText().toString());
+                this.predial.setMatricula_inmobiliaria(this.matriculaInmobiliaria.getText().toString());
+                this.predial.setPropietarios(this.propietarios.getText().toString());
+                this.predial.setNom_quien_tenencia(this.nombreTenencia.getText().toString());
+                if (this.cmbTenencia.getSelectedItem() != null) {
+                    this.predial.setTenencia(((Parametro) this.cmbTenencia.getSelectedItem()).getParametro());
+                }
+                if (this.cmbConQuienTieneTenencia.getSelectedItem() != null) {
+                    this.predial.setCon_quien_tenencia(((Parametro) this.cmbConQuienTieneTenencia.getSelectedItem()).getParametro());
+                }
+                this.predial.setFecha_tenencia_lote(this.fechaTenencia.getText().toString());
+                if (archivos != null) archivoDao.insertInTx(archivos);
+                if (actualizar) predialDao.update(this.predial);
+                else predialDao.insert(this.predial);
+                showProgress("Actualizando información del predio");
+                actualizarInformacionPredioAsyncTask = new ActualizarInformacionPredioAsyncTask(this, mProgressDialogConsultaInfoSIGDUE);
+                actualizarInformacionPredioAsyncTask.execute(predial);
 
-            if (this.cmbZonaAislamiento.getSelectedItem() != null) {
-                this.predial.setZona_aislamiento(((Parametro) this.cmbZonaAislamiento.getSelectedItem()).getParametro());
+            } else if (task == FORMULARIO_CARGAR_MULTIMEDIA) {
+                if (this.urlVideo.getText() != null && !this.urlVideo.getText().toString().isEmpty()) {
+                    archivos = new ArrayList<>();
+                    Archivo archivo = new Archivo();
+                    archivo.setId_usuario(usuario.getId_usuario());
+                    archivo.setRuta(this.urlVideo.getText().toString());
+                    archivo.setTipo("video");
+                    archivo.setEstado("P");
+                    setIdArchivo(archivo);
+                    archivos.add(archivo);
+                }
+                archivoDao.insertInTx(archivos);
+            } else if (task == FORMULARIO_ACTUALIZAR_UBICACION) {
+                this.usuario.setLongitude(String.valueOf(longitude));
+                this.usuario.setLatitude(String.valueOf(latitude));
+                this.usuarioDao.update(usuario);
+                showProgress("Actualizando ubicación");
+                actualizarUbiGeoAsyncTask = new ActualizarUbiGeoAsyncTask(this, mProgressDialogConsultaInfoSIGDUE);
+                actualizarUbiGeoAsyncTask.execute(usuario);
             }
-            if (this.cmbZonaAltoRiesgo.getSelectedItem() != null) {
-                this.predial.setZona_alto_riesgo(((Parametro) this.cmbZonaAltoRiesgo.getSelectedItem()).getParametro());
-            }
-            if (this.cmbZonaProteccion.getSelectedItem() != null) {
-                this.predial.setZona_proteccion(((Parametro) this.cmbZonaProteccion.getSelectedItem()).getParametro());
-            }
-            if (this.cmbTopografia.getSelectedItem() != null) {
-                this.predial.setTopografia(((Parametro) this.cmbTopografia.getSelectedItem()).getParametro());
-            }
-            if (this.cmbPropiedadLote.getSelectedItem() != null) {
-                this.predial.setPropiedad_lote(((Parametro) this.cmbPropiedadLote.getSelectedItem()).getParametro());
-            }
-            if (this.cmbTipoDocumento.getSelectedItem() != null) {
-                this.predial.setTipo_documento(((Parametro) this.cmbTipoDocumento.getSelectedItem()).getParametro());
-            }
-            this.predial.setCual_tipo_documento(this.cualTipoDocumento.getText().toString());
-            this.predial.setNro_documento_legalizacion(this.numeroDocumentoLegalizacion.getText().toString());
-            this.predial.setFec_expedicion(this.fechaExpedicion.getText().toString());
-            this.predial.setNotaria_dependencia_origen(this.notariaDependenciaOrigen.getText().toString());
-            this.predial.setLugar_expedicion(this.lugarExpedicion.getText().toString());
-            this.predial.setRegistro_catastral(this.registroCatastral.getText().toString());
-            this.predial.setMatricula_inmobiliaria(this.matriculaInmobiliaria.getText().toString());
-            this.predial.setPropietarios(this.propietarios.getText().toString());
-            if (this.cmbTenencia.getSelectedItem() != null) {
-                this.predial.setTenencia(((Parametro) this.cmbTenencia.getSelectedItem()).getParametro());
-            }
-            if (this.cmbConQuienTieneTenencia.getSelectedItem() != null) {
-                this.predial.setCon_quien_tenencia(((Parametro) this.cmbConQuienTieneTenencia.getSelectedItem()).getParametro());
-            }
-            this.predial.setFecha_tenencia_lote(this.fechaTenencia.getText().toString());
-            if (this.urlVideo.getText() != null && !this.urlVideo.getText().toString().isEmpty()) {
-                archivos = new ArrayList<>();
-                Archivo archivo = new Archivo();
-                archivo.setId_usuario(usuario.getId_usuario());
-                archivo.setRuta(this.urlVideo.getText().toString());
-                archivo.setTipo("video");
-                archivo.setEstado("P");
-                setIdArchivo(archivo);
-                archivos.add(archivo);
-            }
-
-            this.usuario.setLongitude(String.valueOf(longitude));
-            this.usuario.setLatitude(String.valueOf(latitude));
-            this.usuarioDao.update(usuario);
-
-            archivoDao.insertInTx(archivos);
-            predialDao.insert(this.predial);
-
-            confirmarAlmacenamientoExitoso();
-
-
         } catch (Exception ex) {
             mostrarError();
+            ex.printStackTrace();
+        }
+    }
+
+    protected void showProgress(String mensaje) {
+        mProgressDialogConsultaInfoSIGDUE = ProgressDialogFragment.newInstance(null, this, mensaje);
+        mProgressDialogConsultaInfoSIGDUE.show(getSupportFragmentManager(), "dialog_loading");
+    }
+
+
+    private void hideProgress() {
+        try {
+            if (this.mProgressDialogConsultaInfoSIGDUE != null) {
+                this.mProgressDialogConsultaInfoSIGDUE.dismissAllowingStateLoss();
+                this.mProgressDialogConsultaInfoSIGDUE = null;
+            }
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
@@ -673,25 +761,7 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
         builder.setMessage("¿Está usted seguro de salir, sin antes almacenar la información?");
         builder.setPositiveButton("Si", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                try {
-                    if (usuario != null) {
-                        File carpetaArchivos = new File(Environment.getExternalStorageDirectory(), RUTAMULTIMEDIASIGDUE);
-                        //borrar fotos
-                        String inicio = usuario.getId_usuario() + "_foto_";
-                        String fin = ".jpg";
-                        File[] archivos = carpetaArchivos.listFiles(new Filtro(inicio, fin));
-                        if (archivos != null && archivos.length > 0) {
-                            for (int i = 0; i < archivos.length && i < 6; i++) {
-                                File tempf = archivos[i];
-                                if (tempf.exists()) {
-                                    tempf.delete();
-                                }
-                            }
-                        }
-                    }
-                } catch (Exception exp) {
-                    exp.printStackTrace();
-                }
+                usuario = null;
                 predial = null;
                 dialog.dismiss();
                 finish();
@@ -796,5 +866,22 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
         } else {
             archivo.setId_archivo((archivosBD.get(0)).getId_archivo() + 1 + archivos.size());
         }
+    }
+
+    @Override
+    public void onPostExecute(Object result) {
+        actualizarUbiGeoAsyncTask = null;
+        actualizarInformacionPredioAsyncTask = null;
+        hideProgress();
+        if (result != null && ((Boolean) result)) {
+            confirmarAlmacenamientoExitoso();
+        } else {
+            mostrarError();
+        }
+    }
+
+    @Override
+    public void onCancelled() {
+        hideProgress();
     }
 }

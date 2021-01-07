@@ -41,8 +41,7 @@ public class MainGenerator {
 
     private static Entity addPredial(Schema schema) {
         Entity predial = schema.addEntity("Predial");
-        predial.addLongProperty("id_predial").primaryKey().notNull();
-        predial.addStringProperty("dane_sede");
+        predial.addStringProperty("dane_sede").primaryKey().notNull();
         predial.addStringProperty("cod_predio");
         predial.addStringProperty("clima");
         predial.addStringProperty("distancia_mts_sede_ppal");

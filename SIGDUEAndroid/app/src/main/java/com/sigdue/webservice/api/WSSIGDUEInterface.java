@@ -1,6 +1,7 @@
 package com.sigdue.webservice.api;
 
 import com.sigdue.webservice.modelo.Predial;
+import com.sigdue.webservice.modelo.UbiGeo;
 import com.sigdue.webservice.modelo.Usuario;
 import com.sigdue.webservice.modelo.WSSIGDUEResult;
 import okhttp3.MultipartBody;
@@ -21,13 +22,17 @@ public interface WSSIGDUEInterface {
     @Headers({"Content-Type: application/json"})
     Call<ResponseBody> loginUsuarios(@Body Usuario usuario);
 
-    @POST("predial")
+    @POST("Predial")
     @Headers({"Content-Type: application/json"})
-    Call<ResponseBody> crearpredial(@Body Predial predialJSON);
+    Call<ResponseBody> crearPredial(@Body Predial predialJSON);
+
+    @POST("ee_geo")
+    @Headers({"Content-Type: application/json"})
+    Call<ResponseBody> actualizarUbiGeo(@Body UbiGeo ubiGeoJSON);
 
     @POST("multimedia")
     @Multipart
-    Call<ResponseBody> crearmultimedia(@Header("DANE_SEDE") String daneSede,@Header("FILE_NAME") String nombre,@Header("TIPO_MULTIMEDIA") String tipoArchivo, @Part MultipartBody.Part archivo, @Header("FILE_MIMETYPE") String fileMimeType);
+    Call<ResponseBody> crearMultimedia(@Header("DANE_SEDE") String daneSede, @Header("FILE_NAME") String nombre, @Header("TIPO_MULTIMEDIA") String tipoArchivo, @Part MultipartBody.Part archivo, @Header("FILE_MIMETYPE") String fileMimeType);
 
     @GET("clase_predio")
     Call<WSSIGDUEResult> listarClasePredio();

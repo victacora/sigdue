@@ -91,9 +91,9 @@ public class AutenticarUsuarioAsyncTask extends AsyncTask<String, String, Usuari
         }
     }
 
-    private String getHeaderParametro(Headers headers, String p_nom_municipio) {
-        String municipio = headers != null && headers.size() > 0 ? headers.get(p_nom_municipio) : "-";
-        return municipio;
+    private String getHeaderParametro(Headers headers, String parametro) {
+        String valor = headers != null && headers.size() > 0 ? headers.get(parametro) : "-";
+        return valor;
     }
 
     private Usuario buscarUsuarioLocalmente(Usuario resultadoAutenticacion, String usuario, String contrasena) throws InterruptedException {

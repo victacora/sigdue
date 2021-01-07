@@ -50,7 +50,7 @@ public class ProgressDialogFragment extends DialogFragment {
         dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             public void onCancel(DialogInterface dialog) {
                 Log.i(TAG, "Dialogo cancelado.");
-                asyncTask.cancel(true);
+                if (asyncTask != null) asyncTask.cancel(true);
             }
         });
         return dialog;

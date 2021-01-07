@@ -14,7 +14,7 @@ import org.greenrobot.greendao.annotation.*;
 public class Predial {
 
     @Id
-    private long id_predial;
+    @NotNull
     private String dane_sede;
     private String cod_predio;
     private String clima;
@@ -51,13 +51,12 @@ public class Predial {
     public Predial() {
     }
 
-    public Predial(long id_predial) {
-        this.id_predial = id_predial;
+    public Predial(String dane_sede) {
+        this.dane_sede = dane_sede;
     }
 
     @Generated
-    public Predial(long id_predial, String dane_sede, String cod_predio, String clima, String distancia_mts_sede_ppal, String dist_km_centro_poblado, String clase_predio, String avaluo_catastral, String fec_avaluo_catastral, String avaluo_comercial, String fec_avaluo_comercial, String zona_aislamiento, String zona_alto_riesgo, String zona_proteccion, String topografia, String propiedad_lote, String tipo_documento, String cual_tipo_documento, String nro_documento_legalizacion, String fec_expedicion, String notaria_dependencia_origen, String lugar_expedicion, String registro_catastral, String matricula_inmobiliaria, String propietarios, String tenencia, String con_quien_tenencia, String nom_quien_tenencia, String fecha_tenencia_lote) {
-        this.id_predial = id_predial;
+    public Predial(String dane_sede, String cod_predio, String clima, String distancia_mts_sede_ppal, String dist_km_centro_poblado, String clase_predio, String avaluo_catastral, String fec_avaluo_catastral, String avaluo_comercial, String fec_avaluo_comercial, String zona_aislamiento, String zona_alto_riesgo, String zona_proteccion, String topografia, String propiedad_lote, String tipo_documento, String cual_tipo_documento, String nro_documento_legalizacion, String fec_expedicion, String notaria_dependencia_origen, String lugar_expedicion, String registro_catastral, String matricula_inmobiliaria, String propietarios, String tenencia, String con_quien_tenencia, String nom_quien_tenencia, String fecha_tenencia_lote) {
         this.dane_sede = dane_sede;
         this.cod_predio = cod_predio;
         this.clima = clima;
@@ -88,19 +87,13 @@ public class Predial {
         this.fecha_tenencia_lote = fecha_tenencia_lote;
     }
 
-    public long getId_predial() {
-        return id_predial;
-    }
-
-    public void setId_predial(long id_predial) {
-        this.id_predial = id_predial;
-    }
-
+    @NotNull
     public String getDane_sede() {
         return dane_sede;
     }
 
-    public void setDane_sede(String dane_sede) {
+    /** Not-null value; ensure this value is available before it is saved to the database. */
+    public void setDane_sede(@NotNull String dane_sede) {
         this.dane_sede = dane_sede;
     }
 
