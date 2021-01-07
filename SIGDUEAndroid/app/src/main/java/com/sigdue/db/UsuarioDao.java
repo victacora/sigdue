@@ -25,6 +25,14 @@ public class UsuarioDao extends AbstractDao<Usuario, Long> {
         public final static Property Id_usuario = new Property(0, long.class, "id_usuario", true, "ID_USUARIO");
         public final static Property Usuario = new Property(1, String.class, "usuario", false, "USUARIO");
         public final static Property Contrasena = new Property(2, String.class, "contrasena", false, "CONTRASENA");
+        public final static Property Nombre_municipio = new Property(3, String.class, "nombre_municipio", false, "NOMBRE_MUNICIPIO");
+        public final static Property Nombre_establecimiento = new Property(4, String.class, "nombre_establecimiento", false, "NOMBRE_ESTABLECIMIENTO");
+        public final static Property Rector_establecimiento = new Property(5, String.class, "rector_establecimiento", false, "RECTOR_ESTABLECIMIENTO");
+        public final static Property Nombre_sede = new Property(6, String.class, "nombre_sede", false, "NOMBRE_SEDE");
+        public final static Property Zona_sede = new Property(7, String.class, "zona_sede", false, "ZONA_SEDE");
+        public final static Property Est_sede = new Property(8, String.class, "est_sede", false, "EST_SEDE");
+        public final static Property Longitude = new Property(9, String.class, "longitude", false, "LONGITUDE");
+        public final static Property Latitude = new Property(10, String.class, "latitude", false, "LATITUDE");
     }
 
 
@@ -42,7 +50,15 @@ public class UsuarioDao extends AbstractDao<Usuario, Long> {
         db.execSQL("CREATE TABLE " + constraint + "\"USUARIO\" (" + //
                 "\"ID_USUARIO\" INTEGER PRIMARY KEY NOT NULL ," + // 0: id_usuario
                 "\"USUARIO\" TEXT UNIQUE ," + // 1: usuario
-                "\"CONTRASENA\" TEXT);"); // 2: contrasena
+                "\"CONTRASENA\" TEXT," + // 2: contrasena
+                "\"NOMBRE_MUNICIPIO\" TEXT," + // 3: nombre_municipio
+                "\"NOMBRE_ESTABLECIMIENTO\" TEXT," + // 4: nombre_establecimiento
+                "\"RECTOR_ESTABLECIMIENTO\" TEXT," + // 5: rector_establecimiento
+                "\"NOMBRE_SEDE\" TEXT," + // 6: nombre_sede
+                "\"ZONA_SEDE\" TEXT," + // 7: zona_sede
+                "\"EST_SEDE\" TEXT," + // 8: est_sede
+                "\"LONGITUDE\" TEXT," + // 9: longitude
+                "\"LATITUDE\" TEXT);"); // 10: latitude
     }
 
     /** Drops the underlying database table. */
@@ -65,6 +81,46 @@ public class UsuarioDao extends AbstractDao<Usuario, Long> {
         if (contrasena != null) {
             stmt.bindString(3, contrasena);
         }
+ 
+        String nombre_municipio = entity.getNombre_municipio();
+        if (nombre_municipio != null) {
+            stmt.bindString(4, nombre_municipio);
+        }
+ 
+        String nombre_establecimiento = entity.getNombre_establecimiento();
+        if (nombre_establecimiento != null) {
+            stmt.bindString(5, nombre_establecimiento);
+        }
+ 
+        String rector_establecimiento = entity.getRector_establecimiento();
+        if (rector_establecimiento != null) {
+            stmt.bindString(6, rector_establecimiento);
+        }
+ 
+        String nombre_sede = entity.getNombre_sede();
+        if (nombre_sede != null) {
+            stmt.bindString(7, nombre_sede);
+        }
+ 
+        String zona_sede = entity.getZona_sede();
+        if (zona_sede != null) {
+            stmt.bindString(8, zona_sede);
+        }
+ 
+        String est_sede = entity.getEst_sede();
+        if (est_sede != null) {
+            stmt.bindString(9, est_sede);
+        }
+ 
+        String longitude = entity.getLongitude();
+        if (longitude != null) {
+            stmt.bindString(10, longitude);
+        }
+ 
+        String latitude = entity.getLatitude();
+        if (latitude != null) {
+            stmt.bindString(11, latitude);
+        }
     }
 
     @Override
@@ -81,6 +137,46 @@ public class UsuarioDao extends AbstractDao<Usuario, Long> {
         if (contrasena != null) {
             stmt.bindString(3, contrasena);
         }
+ 
+        String nombre_municipio = entity.getNombre_municipio();
+        if (nombre_municipio != null) {
+            stmt.bindString(4, nombre_municipio);
+        }
+ 
+        String nombre_establecimiento = entity.getNombre_establecimiento();
+        if (nombre_establecimiento != null) {
+            stmt.bindString(5, nombre_establecimiento);
+        }
+ 
+        String rector_establecimiento = entity.getRector_establecimiento();
+        if (rector_establecimiento != null) {
+            stmt.bindString(6, rector_establecimiento);
+        }
+ 
+        String nombre_sede = entity.getNombre_sede();
+        if (nombre_sede != null) {
+            stmt.bindString(7, nombre_sede);
+        }
+ 
+        String zona_sede = entity.getZona_sede();
+        if (zona_sede != null) {
+            stmt.bindString(8, zona_sede);
+        }
+ 
+        String est_sede = entity.getEst_sede();
+        if (est_sede != null) {
+            stmt.bindString(9, est_sede);
+        }
+ 
+        String longitude = entity.getLongitude();
+        if (longitude != null) {
+            stmt.bindString(10, longitude);
+        }
+ 
+        String latitude = entity.getLatitude();
+        if (latitude != null) {
+            stmt.bindString(11, latitude);
+        }
     }
 
     @Override
@@ -93,7 +189,15 @@ public class UsuarioDao extends AbstractDao<Usuario, Long> {
         Usuario entity = new Usuario( //
             cursor.getLong(offset + 0), // id_usuario
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // usuario
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2) // contrasena
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // contrasena
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // nombre_municipio
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // nombre_establecimiento
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // rector_establecimiento
+            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // nombre_sede
+            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // zona_sede
+            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // est_sede
+            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // longitude
+            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10) // latitude
         );
         return entity;
     }
@@ -103,6 +207,14 @@ public class UsuarioDao extends AbstractDao<Usuario, Long> {
         entity.setId_usuario(cursor.getLong(offset + 0));
         entity.setUsuario(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
         entity.setContrasena(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setNombre_municipio(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setNombre_establecimiento(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setRector_establecimiento(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
+        entity.setNombre_sede(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
+        entity.setZona_sede(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
+        entity.setEst_sede(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
+        entity.setLongitude(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
+        entity.setLatitude(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
      }
     
     @Override

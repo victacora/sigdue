@@ -44,15 +44,26 @@ public class AutenticarUsuarioAsyncTask extends AsyncTask<String, String, Usuari
                 Response<ResponseBody> response = loginUsuariosCall.execute();
                 if (response != null && response.isSuccessful()) {
                     Headers headers = response.headers();
-                    String valor = headers != null && headers.size() > 0? headers.get("r") : null;
+                    String valor = headers != null && headers.size() > 0 ? headers.get("r") : null;
                     if (valor != null && valor.equals(Boolean.TRUE.toString().toUpperCase())) {
                         Usuario u = new Usuario();
+                        u.setNombre_municipio(getHeaderParametro(headers, "p_nom_municipio"));
+                        u.setNombre_establecimiento(getHeaderParametro(headers, "p_nom_establecimiento"));
+                        u.setRector_establecimiento(getHeaderParametro(headers, "p_rec_establecimiento"));
+                        u.setLatitude(getHeaderParametro(headers, "p_latitud"));
+                        u.setLongitude(getHeaderParametro(headers, "p_longitud"));
+                        u.setNombre_sede(getHeaderParametro(headers, "p_nom_sede"));
+                        u.setZona_sede(getHeaderParametro(headers, "p_zon_sede"));
+                        u.setEst_sede(getHeaderParametro(headers, "p_est_sede"));
                         u.setUsuario(usuario);
                         u.setContrasena(contrasena);
                         resultadoAutenticacion = u;
                         List<Usuario> usuarios = usuarioDao.queryBuilder().where(UsuarioDao.Properties.Usuario.eq(usuario)).list();
                         if (usuarios != null && usuarios.isEmpty()) {
                             usuarioDao.insert(u);
+                        } else if (usuarios != null && !usuarios.isEmpty()) {
+                            u.setId_usuario(usuarios.get(0).getId_usuario());
+                            usuarioDao.update(u);
                         }
                         publishProgress("Usuario autenticado remotamente.");
                         Thread.sleep(SLEEP_PROGRESS_MAESTROS);
@@ -78,6 +89,11 @@ public class AutenticarUsuarioAsyncTask extends AsyncTask<String, String, Usuari
             publishProgress("Error general al ejecutar la aplicacion. ");
             return null;
         }
+    }
+
+    private String getHeaderParametro(Headers headers, String p_nom_municipio) {
+        String municipio = headers != null && headers.size() > 0 ? headers.get(p_nom_municipio) : "-";
+        return municipio;
     }
 
     private Usuario buscarUsuarioLocalmente(Usuario resultadoAutenticacion, String usuario, String contrasena) throws InterruptedException {

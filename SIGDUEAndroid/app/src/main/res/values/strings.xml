@@ -35,7 +35,7 @@
     <string name="main_search_results_title">Buscar resultados</string>
     <string name="menu_search_title">Buscar</string>
     <string name="menu_settings_title">Configuracion</string>
-    <string name="menu_sort_comparendo_title">Ordenar Comparendo</string>
+    <string name="menu_sort_comparendo_title">Menú SIGDUE</string>
     <string name="numCopiasDefault">1</string>
     <string name="opcion_menu_cerrar_sesion">Cerrar sesión</string>
     <string name="opcion_menu_comparendos">Comparendos</string>
@@ -121,7 +121,7 @@
     <string name="ui_activity_authenticating">Autenticando usuario</string>
     <string name="ui_activity_sincronizando">Sincronizando maestros</string>
     <string name="ui_activity_sincronizando_summary">Espere un momento por favor...</string>
-    <string name="ui_listar_informacion">Listando información...</string>
+    <string name="ui_listar_informacion">Consultando información...</string>
     <string name="vacio" />
     <string name="inm_sincronizar_maestros">Sincronizar maestros</string>
     <string name="informacion_title">SIGDUE Móvil</string>

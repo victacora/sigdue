@@ -19,6 +19,14 @@ public class Usuario {
     @Unique
     private String usuario;
     private String contrasena;
+    private String nombre_municipio;
+    private String nombre_establecimiento;
+    private String rector_establecimiento;
+    private String nombre_sede;
+    private String zona_sede;
+    private String est_sede;
+    private String longitude;
+    private String latitude;
 
     // KEEP FIELDS - put your custom fields here
     // KEEP FIELDS END
@@ -32,10 +40,18 @@ public class Usuario {
     }
 
     @Generated
-    public Usuario(long id_usuario, String usuario, String contrasena) {
+    public Usuario(long id_usuario, String usuario, String contrasena, String nombre_municipio, String nombre_establecimiento, String rector_establecimiento, String nombre_sede, String zona_sede, String est_sede, String longitude, String latitude) {
         this.id_usuario = id_usuario;
         this.usuario = usuario;
         this.contrasena = contrasena;
+        this.nombre_municipio = nombre_municipio;
+        this.nombre_establecimiento = nombre_establecimiento;
+        this.rector_establecimiento = rector_establecimiento;
+        this.nombre_sede = nombre_sede;
+        this.zona_sede = zona_sede;
+        this.est_sede = est_sede;
+        this.longitude = longitude;
+        this.latitude = latitude;
     }
 
     public long getId_usuario() {
@@ -60,6 +76,70 @@ public class Usuario {
 
     public void setContrasena(String contrasena) {
         this.contrasena = contrasena;
+    }
+
+    public String getNombre_municipio() {
+        return nombre_municipio;
+    }
+
+    public void setNombre_municipio(String nombre_municipio) {
+        this.nombre_municipio = nombre_municipio;
+    }
+
+    public String getNombre_establecimiento() {
+        return nombre_establecimiento;
+    }
+
+    public void setNombre_establecimiento(String nombre_establecimiento) {
+        this.nombre_establecimiento = nombre_establecimiento;
+    }
+
+    public String getRector_establecimiento() {
+        return rector_establecimiento;
+    }
+
+    public void setRector_establecimiento(String rector_establecimiento) {
+        this.rector_establecimiento = rector_establecimiento;
+    }
+
+    public String getNombre_sede() {
+        return nombre_sede;
+    }
+
+    public void setNombre_sede(String nombre_sede) {
+        this.nombre_sede = nombre_sede;
+    }
+
+    public String getZona_sede() {
+        return zona_sede;
+    }
+
+    public void setZona_sede(String zona_sede) {
+        this.zona_sede = zona_sede;
+    }
+
+    public String getEst_sede() {
+        return est_sede;
+    }
+
+    public void setEst_sede(String est_sede) {
+        this.est_sede = est_sede;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
     }
 
     // KEEP METHODS - put your custom methods here

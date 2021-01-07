@@ -22,7 +22,7 @@
             android:paddingTop="@dimen/add_predio_padding">
 
             <TextView
-                android:id="@+id/datosInmovilizacion"
+                android:id="@+id/datosInformacion"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
@@ -54,7 +54,74 @@
                 android:paddingLeft="@dimen/add_predio_padding"
                 android:paddingRight="@dimen/add_predio_padding"
                 android:textSize="26sp" />
+        <LinearLayout
+            android:id="@+id/formularioUbicacion"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone">
 
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:src="@color/drawer_divider" />
+
+            <com.iangclifton.android.floatlabel.FloatLabel
+                android:id="@+id/latitud"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
+                android:background="@null"
+                android:gravity="top|left"
+                android:hint="Latitud"
+                android:imeOptions="actionNext"
+                android:inputType="textMultiLine"
+                android:layout="@layout/float_label"
+                android:lines="1"
+                android:maxLines="1"
+                android:nextFocusForward="@+id/longitud"
+                android:paddingLeft="@dimen/add_predio_padding"
+                android:paddingRight="@dimen/add_predio_padding"
+                android:textSize="26sp" />
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:src="@color/drawer_divider" />
+
+            <com.iangclifton.android.floatlabel.FloatLabel
+                android:id="@+id/longitud"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
+                android:background="@null"
+                android:gravity="top|left"
+                android:hint="Longitud"
+                android:imeOptions="actionNext"
+                android:inputType="textMultiLine"
+                android:layout="@layout/float_label"
+                android:lines="1"
+                android:maxLines="1"
+                android:nextFocusForward="@+id/avaluo_catastral"
+                android:paddingLeft="@dimen/add_predio_padding"
+                android:paddingRight="@dimen/add_predio_padding"
+                android:textSize="26sp" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:src="@color/drawer_divider" />
+
+
+            <org.osmdroid.views.MapView android:id="@+id/map"
+                android:layout_width="match_parent"
+                android:layout_height="350dp" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/formularioInfoPredio"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone">
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
@@ -69,7 +136,7 @@
                 android:gravity="top|left"
                 android:hint="Código predio"
                 android:imeOptions="actionNext"
-                android:inputType="textMultiLine|number"
+                android:inputType="textMultiLine"
                 android:layout="@layout/float_label"
                 android:lines="1"
                 android:maxLines="1"
@@ -82,6 +149,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:src="@color/drawer_divider" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -657,12 +725,17 @@
                 android:paddingLeft="@dimen/add_predio_padding"
                 android:paddingRight="@dimen/add_predio_padding"
                 android:textSize="26sp" />
-
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/formularioFotos"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone">
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:src="@color/drawer_divider" />
-
 
             <com.iangclifton.android.floatlabel.FloatLabel
                 android:id="@+id/url_video"
@@ -765,7 +838,14 @@
                         android:text="Siguiente" />
                 </LinearLayout>
             </LinearLayout>
+        </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/formularioMultimedia"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:visibility="gone">
             <Button
                 android:id="@+id/btnCargarArchivos"
                 android:layout_width="match_parent"
@@ -777,7 +857,7 @@
                 android:textColor="#FFFFFF"
                 android:text="Adjuntar archivos" />
 
-
+        </LinearLayout>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

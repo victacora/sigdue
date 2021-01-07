@@ -26,7 +26,8 @@ public class Constants {
     public static final int ZONA_AISLAMIENTO = 10;
     public static final int ZONA_ALTO_RIESGO = 11;
     public static final int ZONA_PROTECCION = 12;
-    public static Map tiposParametros=new HashMap<Integer, String>() {{
+    public static final String TASK = "TASK";
+    public static Map tiposParametros = new HashMap<Integer, String>() {{
         put(CLASE_PREDIO, "clase predio");
         put(CLIMA, "clima");
         put(CON_QUIEN_TIENE_TENENCIA, "con quien tiene tenencia");

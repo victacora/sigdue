@@ -23,8 +23,10 @@ public class ArchivoDao extends AbstractDao<Archivo, Long> {
      */
     public static class Properties {
         public final static Property Id_archivo = new Property(0, long.class, "id_archivo", true, "ID_ARCHIVO");
-        public final static Property Id_predial = new Property(1, Long.class, "id_predial", false, "ID_PREDIAL");
-        public final static Property Ruta = new Property(2, String.class, "ruta", false, "RUTA");
+        public final static Property Id_usuario = new Property(1, Long.class, "id_usuario", false, "ID_USUARIO");
+        public final static Property Tipo = new Property(2, String.class, "tipo", false, "TIPO");
+        public final static Property Ruta = new Property(3, String.class, "ruta", false, "RUTA");
+        public final static Property Estado = new Property(4, String.class, "estado", false, "ESTADO");
     }
 
 
@@ -41,8 +43,10 @@ public class ArchivoDao extends AbstractDao<Archivo, Long> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"ARCHIVO\" (" + //
                 "\"ID_ARCHIVO\" INTEGER PRIMARY KEY NOT NULL ," + // 0: id_archivo
-                "\"ID_PREDIAL\" INTEGER," + // 1: id_predial
-                "\"RUTA\" TEXT);"); // 2: ruta
+                "\"ID_USUARIO\" INTEGER," + // 1: id_usuario
+                "\"TIPO\" TEXT," + // 2: tipo
+                "\"RUTA\" TEXT," + // 3: ruta
+                "\"ESTADO\" TEXT);"); // 4: estado
     }
 
     /** Drops the underlying database table. */
@@ -56,14 +60,24 @@ public class ArchivoDao extends AbstractDao<Archivo, Long> {
         stmt.clearBindings();
         stmt.bindLong(1, entity.getId_archivo());
  
-        Long id_predial = entity.getId_predial();
-        if (id_predial != null) {
-            stmt.bindLong(2, id_predial);
+        Long id_usuario = entity.getId_usuario();
+        if (id_usuario != null) {
+            stmt.bindLong(2, id_usuario);
+        }
+ 
+        String tipo = entity.getTipo();
+        if (tipo != null) {
+            stmt.bindString(3, tipo);
         }
  
         String ruta = entity.getRuta();
         if (ruta != null) {
-            stmt.bindString(3, ruta);
+            stmt.bindString(4, ruta);
+        }
+ 
+        String estado = entity.getEstado();
+        if (estado != null) {
+            stmt.bindString(5, estado);
         }
     }
 
@@ -72,14 +86,24 @@ public class ArchivoDao extends AbstractDao<Archivo, Long> {
         stmt.clearBindings();
         stmt.bindLong(1, entity.getId_archivo());
  
-        Long id_predial = entity.getId_predial();
-        if (id_predial != null) {
-            stmt.bindLong(2, id_predial);
+        Long id_usuario = entity.getId_usuario();
+        if (id_usuario != null) {
+            stmt.bindLong(2, id_usuario);
+        }
+ 
+        String tipo = entity.getTipo();
+        if (tipo != null) {
+            stmt.bindString(3, tipo);
         }
  
         String ruta = entity.getRuta();
         if (ruta != null) {
-            stmt.bindString(3, ruta);
+            stmt.bindString(4, ruta);
+        }
+ 
+        String estado = entity.getEstado();
+        if (estado != null) {
+            stmt.bindString(5, estado);
         }
     }
 
@@ -92,8 +116,10 @@ public class ArchivoDao extends AbstractDao<Archivo, Long> {
     public Archivo readEntity(Cursor cursor, int offset) {
         Archivo entity = new Archivo( //
             cursor.getLong(offset + 0), // id_archivo
-            cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1), // id_predial
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2) // ruta
+            cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1), // id_usuario
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // tipo
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // ruta
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4) // estado
         );
         return entity;
     }
@@ -101,8 +127,10 @@ public class ArchivoDao extends AbstractDao<Archivo, Long> {
     @Override
     public void readEntity(Cursor cursor, Archivo entity, int offset) {
         entity.setId_archivo(cursor.getLong(offset + 0));
-        entity.setId_predial(cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1));
-        entity.setRuta(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setId_usuario(cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1));
+        entity.setTipo(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setRuta(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setEstado(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
      }
     
     @Override

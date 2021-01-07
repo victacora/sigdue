@@ -2,6 +2,8 @@ package com.sigdue.activity;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -11,6 +13,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
@@ -26,7 +29,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SpinnerAdapter;
-import android.widget.Toast;
 
 import com.iangclifton.android.floatlabel.FloatLabel;
 import com.sigdue.BuildConfig;
@@ -40,11 +42,19 @@ import com.sigdue.db.Parametro;
 import com.sigdue.db.ParametroDao;
 import com.sigdue.db.Predial;
 import com.sigdue.db.PredialDao;
-import com.sigdue.service.EnviarInformacionSIGDUEService;
+import com.sigdue.db.Usuario;
+import com.sigdue.db.UsuarioDao;
 import com.sigdue.service.LocationTrack;
 import com.sigdue.ui.SearchableSpinner;
 import com.sigdue.utilidadesgenerales.Filtro;
 import com.sigdue.utilidadesgenerales.UtilidadesGenerales;
+
+import org.osmdroid.api.IMapController;
+import org.osmdroid.config.Configuration;
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Marker;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -118,18 +128,69 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
     private EditText fechaTenencia;
     private EditText urlVideo;
     private List<Archivo> archivos;
+    private MapView map = null;
+    private UsuarioDao usuarioDao;
+    private Usuario usuario;
+    private int task;
+    private EditText longitudEditext;
+    private EditText latitudEditext;
+    private LinearLayout formularioUbicacion;
+    private LinearLayout formularioPredio;
+    private LinearLayout formularioMultimedia;
+    private LinearLayout formularioFotos;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
             UtilidadesGenerales.context = this;
+            setContentView(R.layout.agregar_informacion_sigdue_activity);
+            Bundle extras = getIntent().getExtras();
+            if (extras != null) {
+                task = extras.getInt(Constants.TASK);
+                formularioFotos = findViewById(R.id.formularioFotos);
+                formularioMultimedia = findViewById(R.id.formularioMultimedia);
+                formularioUbicacion = findViewById(R.id.formularioUbicacion);
+                formularioPredio = findViewById(R.id.formularioInfoPredio);
+                if (task == 1) formularioUbicacion.setVisibility(View.VISIBLE);
+                else if (task == 2) {
+                    formularioFotos.setVisibility(View.VISIBLE);
+                    formularioMultimedia.setVisibility(View.VISIBLE);
+                } else if (task == 3) {
+                    formularioMultimedia.setVisibility(View.VISIBLE);
+                    formularioPredio.setVisibility(View.VISIBLE);
+                }
+            }
+
+            Context ctx = getApplicationContext();
+            Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
+
             locationTrack = new LocationTrack(AgregarInformacionSIDGDUEActivity.this);
+            map = (MapView) findViewById(R.id.map);
+            map.setTileSource(TileSourceFactory.MAPNIK);
+            map.setMultiTouchControls(true);
+
+            latitudEditext = ((FloatLabel) findViewById(R.id.latitud)).getEditText();
+            setSoloLectura(latitudEditext, false);
+
+            longitudEditext = ((FloatLabel) findViewById(R.id.longitud)).getEditText();
+            setSoloLectura(longitudEditext, false);
 
             if (locationTrack.canGetLocation()) {
                 longitude = locationTrack.getLongitude();
                 latitude = locationTrack.getLatitude();
-                Toast.makeText(getApplicationContext(), "Longitude:" + Double.toString(longitude) + "\nLatitude:" + Double.toString(latitude), Toast.LENGTH_SHORT).show();
+
+                latitudEditext.setText(String.valueOf(latitude));
+                longitudEditext.setText(String.valueOf(longitude));
+
+                IMapController mapController = map.getController();
+                mapController.setZoom(19.0);
+                GeoPoint startPoint = new GeoPoint(latitude, longitude);
+                mapController.setCenter(startPoint);
+                Marker startMarker = new Marker(map);
+                startMarker.setPosition(startPoint);
+                startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+                map.getOverlays().add(startMarker);
             }
 
             fotos = new ArrayList();
@@ -142,9 +203,11 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
             this.predialDao = this.daoSession.getPredialDao();
             this.parametroDao = this.daoSession.getParametroDao();
             this.archivoDao = this.daoSession.getArchivoDao();
-
-            setContentView(R.layout.agregar_informacion_sigdue_activity);
-
+            this.usuarioDao = this.daoSession.getUsuarioDao();
+            List<Usuario> usuarios = usuarioDao.queryBuilder().where(UsuarioDao.Properties.Id_usuario.eq(app.getIdUsuario())).list();
+            if (usuarios != null && usuarios.size() > 0) {
+                usuario = usuarios.get(0);
+            }
             cmbClasePredio = (SearchableSpinner) findViewById(R.id.cmbClasePredio);
             setComboConf(cmbClasePredio, "Clase predio", Constants.CLASE_PREDIO);
 
@@ -196,10 +259,7 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
             }
             codigoDane = ((FloatLabel) findViewById(R.id.dane_sede)).getEditText();
             codigoDane.setText(app.getUsuario());
-            codigoDane.setClickable(false);
-            codigoDane.setKeyListener(null);
-            codigoDane.setFocusable(false);
-            codigoDane.setError(null);
+            setSoloLectura(codigoDane, false);
             codigoPredio = ((FloatLabel) findViewById(R.id.codigo_predio)).getEditText();
             avaluoCatastral = ((FloatLabel) findViewById(R.id.avaluo_catastral)).getEditText();
             avaluoComercial = ((FloatLabel) findViewById(R.id.avaluo_comercial)).getEditText();
@@ -253,7 +313,7 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
                             Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                             File imagesFolder = new File(Environment.getExternalStorageDirectory(), RUTAMULTIMEDIASIGDUE);
                             if (!imagesFolder.exists()) imagesFolder.mkdirs();
-                            rutafoto = predial.getId_predial() + "_foto_" + numeroFoto + ".jpg";
+                            rutafoto = usuario.getId_usuario() + "_foto_" + numeroFoto + ".jpg";
                             Uri uriSavedImage = null;
                             File image = new File(imagesFolder, rutafoto);
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -363,14 +423,18 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
         }
     }
 
+    private void setSoloLectura(EditText editText, boolean soloLectura) {
+        editText.setClickable(soloLectura);
+        editText.setKeyListener(null);
+        editText.setFocusable(soloLectura);
+        editText.setError(null);
+    }
+
     private void setFechaConf(final EditText fechaEditText, final String titulo, final EditText editTextNext) {
         final SimpleDateFormat formatFechaHora = new SimpleDateFormat("dd/MM/yyyy");
         String fecha = formatFechaHora.format(new Date());
         fechaEditText.setText(fecha);
-        fechaEditText.setClickable(true);
-        fechaEditText.setKeyListener(null);
-        fechaEditText.setFocusable(true);
-        fechaEditText.setError(null);
+        setSoloLectura(fechaEditText, true);
         fechaEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -443,11 +507,13 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
+        map.onPause();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        map.onResume();
     }
 
     @Override
@@ -469,9 +535,10 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
 
 
     public void almacenarInformacionSIGDUE() {
+        AlertDialog.Builder builder;
+        AlertDialog alert;
         try {
-            AlertDialog.Builder builder;
-            AlertDialog alert;
+
             this.predial.setDane_sede(this.codigoDane.getText().toString());
             this.predial.setCod_predio(this.codigoPredio.getText().toString());
             if (this.cmbClima.getSelectedItem() != null) {
@@ -524,48 +591,63 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
                 this.predial.setCon_quien_tenencia(((Parametro) this.cmbConQuienTieneTenencia.getSelectedItem()).getParametro());
             }
             this.predial.setFecha_tenencia_lote(this.fechaTenencia.getText().toString());
-            this.predial.setUrl_video(this.urlVideo.getText().toString());
-            this.predial.setLongitude(String.valueOf(longitude));
-            this.predial.setLatitude(String.valueOf(latitude));
-            this.predial.setEstado("G");
-            archivoDao.insertInTx(archivos);
-            long idPredial = predialDao.insert(this.predial);
-            if (idPredial < 0) {
-                builder = new AlertDialog.Builder(AgregarInformacionSIDGDUEActivity.this);
-                builder.setTitle("Información");
-                builder.setMessage("La información no pudo ser almacenada correctamente.");
-                builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                alert = builder.create();
-                alert.show();
-                return;
-            } else {
-                builder = new AlertDialog.Builder(AgregarInformacionSIDGDUEActivity.this);
-                builder.setTitle("Información");
-                builder.setMessage("Información almacenada correctamente.");
-                builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        AgregarInformacionSIDGDUEActivity.this.setResult(-1, new Intent());
-                        try {
-                            if (UtilidadesGenerales.isOnline()) {
-                                AgregarInformacionSIDGDUEActivity.this.startService(new Intent(AgregarInformacionSIDGDUEActivity.this, EnviarInformacionSIGDUEService.class));
-                            }
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                        dialog.dismiss();
-                        finish();
-                    }
-                });
-                alert = builder.create();
-                alert.show();
+            if (this.urlVideo.getText() != null && !this.urlVideo.getText().toString().isEmpty()) {
+                archivos = new ArrayList<>();
+                Archivo archivo = new Archivo();
+                archivo.setId_usuario(usuario.getId_usuario());
+                archivo.setRuta(this.urlVideo.getText().toString());
+                archivo.setTipo("video");
+                archivo.setEstado("P");
+                setIdArchivo(archivo);
+                archivos.add(archivo);
             }
+
+            this.usuario.setLongitude(String.valueOf(longitude));
+            this.usuario.setLatitude(String.valueOf(latitude));
+            this.usuarioDao.update(usuario);
+
+            archivoDao.insertInTx(archivos);
+            predialDao.insert(this.predial);
+
+            confirmarAlmacenamientoExitoso();
+
+
         } catch (Exception ex) {
+            mostrarError();
             ex.printStackTrace();
         }
+    }
+
+    private void confirmarAlmacenamientoExitoso() {
+        AlertDialog.Builder builder;
+        AlertDialog alert;
+        builder = new AlertDialog.Builder(AgregarInformacionSIDGDUEActivity.this);
+        builder.setTitle("Información");
+        builder.setMessage("Información almacenada correctamente.");
+        builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                AgregarInformacionSIDGDUEActivity.this.setResult(-1, new Intent());
+                dialog.dismiss();
+                finish();
+            }
+        });
+        alert = builder.create();
+        alert.show();
+    }
+
+    private void mostrarError() {
+        AlertDialog.Builder builder;
+        AlertDialog alert;
+        builder = new AlertDialog.Builder(AgregarInformacionSIDGDUEActivity.this);
+        builder.setTitle("Información");
+        builder.setMessage("La información no pudo ser almacenada correctamente.");
+        builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        alert = builder.create();
+        alert.show();
     }
 
 
@@ -592,14 +674,14 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
         builder.setPositiveButton("Si", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 try {
-                    if (predial != null && (predial.getEstado().equals("P"))) {
+                    if (usuario != null) {
                         File carpetaArchivos = new File(Environment.getExternalStorageDirectory(), RUTAMULTIMEDIASIGDUE);
                         //borrar fotos
-                        String inicio = predial.getId_predial() + "_foto_";
+                        String inicio = usuario.getId_usuario() + "_foto_";
                         String fin = ".jpg";
                         File[] archivos = carpetaArchivos.listFiles(new Filtro(inicio, fin));
                         if (archivos != null && archivos.length > 0) {
-                            for (int i = 0; i < archivos.length && i < 3; i++) {
+                            for (int i = 0; i < archivos.length && i < 6; i++) {
                                 File tempf = archivos[i];
                                 if (tempf.exists()) {
                                     tempf.delete();
@@ -646,6 +728,7 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        ContentResolver cR = getContentResolver();
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 try {
@@ -677,8 +760,10 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
                         Uri uri = data.getClipData().getItemAt(i).getUri();
                         Archivo archivo = new Archivo();
                         setIdArchivo(archivo);
-                        archivo.setId_predial(predial.getId_predial());
+                        archivo.setId_usuario(usuario.getId_usuario());
                         archivo.setRuta(uri.getPath());
+                        archivo.setTipo(cR.getType(uri));
+                        archivo.setEstado("P");
                         archivos.add(archivo);
                     }
                     this.btnCargarArchivos.setText("Adjuntar archivos (" + data.getClipData().getItemCount() + ")");
@@ -687,9 +772,11 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
                     this.btnCargarArchivos.setText("Adjuntar archivos (1)");
                     archivos = new ArrayList<>();
                     Archivo archivo = new Archivo();
-                    archivo.setId_predial(predial.getId_predial());
+                    archivo.setId_usuario(usuario.getId_usuario());
                     archivo.setRuta(uri.getPath());
+                    archivo.setTipo(cR.getType(uri));
                     setIdArchivo(archivo);
+                    archivo.setEstado("P");
                     archivos.add(archivo);
                 } else {
                     this.btnCargarArchivos.setText("Adjuntar archivos");
@@ -702,12 +789,12 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity {
         }
     }
 
-    public void setIdArchivo(Archivo archivo){
-        List<Archivo> archivos = this.archivoDao.queryBuilder().orderDesc(ArchivoDao.Properties.Id_predial).list();
-        if (archivos == null || archivos.size() <= 0) {
-            archivo.setId_archivo(1);
+    public void setIdArchivo(Archivo archivo) {
+        List<Archivo> archivosBD = this.archivoDao.queryBuilder().orderDesc(ArchivoDao.Properties.Id_archivo).list();
+        if (archivosBD == null || archivosBD.size() <= 0) {
+            archivo.setId_archivo(1 + archivos.size());
         } else {
-            archivo.setId_archivo((archivos.get(0)).getId_predial() + 1);
+            archivo.setId_archivo((archivosBD.get(0)).getId_archivo() + 1 + archivos.size());
         }
     }
 }

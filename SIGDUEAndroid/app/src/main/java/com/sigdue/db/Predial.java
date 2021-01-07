@@ -43,11 +43,6 @@ public class Predial {
     private String con_quien_tenencia;
     private String nom_quien_tenencia;
     private String fecha_tenencia_lote;
-    private String url_video;
-    private String longitude;
-    private String latitude;
-    private String estado;
-    private String id_bd;
 
     // KEEP FIELDS - put your custom fields here
     // KEEP FIELDS END
@@ -61,7 +56,7 @@ public class Predial {
     }
 
     @Generated
-    public Predial(long id_predial, String dane_sede, String cod_predio, String clima, String distancia_mts_sede_ppal, String dist_km_centro_poblado, String clase_predio, String avaluo_catastral, String fec_avaluo_catastral, String avaluo_comercial, String fec_avaluo_comercial, String zona_aislamiento, String zona_alto_riesgo, String zona_proteccion, String topografia, String propiedad_lote, String tipo_documento, String cual_tipo_documento, String nro_documento_legalizacion, String fec_expedicion, String notaria_dependencia_origen, String lugar_expedicion, String registro_catastral, String matricula_inmobiliaria, String propietarios, String tenencia, String con_quien_tenencia, String nom_quien_tenencia, String fecha_tenencia_lote, String url_video, String longitude, String latitude, String estado, String id_bd) {
+    public Predial(long id_predial, String dane_sede, String cod_predio, String clima, String distancia_mts_sede_ppal, String dist_km_centro_poblado, String clase_predio, String avaluo_catastral, String fec_avaluo_catastral, String avaluo_comercial, String fec_avaluo_comercial, String zona_aislamiento, String zona_alto_riesgo, String zona_proteccion, String topografia, String propiedad_lote, String tipo_documento, String cual_tipo_documento, String nro_documento_legalizacion, String fec_expedicion, String notaria_dependencia_origen, String lugar_expedicion, String registro_catastral, String matricula_inmobiliaria, String propietarios, String tenencia, String con_quien_tenencia, String nom_quien_tenencia, String fecha_tenencia_lote) {
         this.id_predial = id_predial;
         this.dane_sede = dane_sede;
         this.cod_predio = cod_predio;
@@ -91,11 +86,6 @@ public class Predial {
         this.con_quien_tenencia = con_quien_tenencia;
         this.nom_quien_tenencia = nom_quien_tenencia;
         this.fecha_tenencia_lote = fecha_tenencia_lote;
-        this.url_video = url_video;
-        this.longitude = longitude;
-        this.latitude = latitude;
-        this.estado = estado;
-        this.id_bd = id_bd;
     }
 
     public long getId_predial() {
@@ -328,46 +318,6 @@ public class Predial {
 
     public void setFecha_tenencia_lote(String fecha_tenencia_lote) {
         this.fecha_tenencia_lote = fecha_tenencia_lote;
-    }
-
-    public String getUrl_video() {
-        return url_video;
-    }
-
-    public void setUrl_video(String url_video) {
-        this.url_video = url_video;
-    }
-
-    public String getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(String longitude) {
-        this.longitude = longitude;
-    }
-
-    public String getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(String latitude) {
-        this.latitude = latitude;
-    }
-
-    public String getEstado() {
-        return estado;
-    }
-
-    public void setEstado(String estado) {
-        this.estado = estado;
-    }
-
-    public String getId_bd() {
-        return id_bd;
-    }
-
-    public void setId_bd(String id_bd) {
-        this.id_bd = id_bd;
     }
 
     // KEEP METHODS - put your custom methods here

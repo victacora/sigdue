@@ -15,8 +15,10 @@ public class Archivo {
 
     @Id
     private long id_archivo;
-    private Long id_predial;
+    private Long id_usuario;
+    private String tipo;
     private String ruta;
+    private String estado;
 
     // KEEP FIELDS - put your custom fields here
     // KEEP FIELDS END
@@ -30,10 +32,12 @@ public class Archivo {
     }
 
     @Generated
-    public Archivo(long id_archivo, Long id_predial, String ruta) {
+    public Archivo(long id_archivo, Long id_usuario, String tipo, String ruta, String estado) {
         this.id_archivo = id_archivo;
-        this.id_predial = id_predial;
+        this.id_usuario = id_usuario;
+        this.tipo = tipo;
         this.ruta = ruta;
+        this.estado = estado;
     }
 
     public long getId_archivo() {
@@ -44,12 +48,20 @@ public class Archivo {
         this.id_archivo = id_archivo;
     }
 
-    public Long getId_predial() {
-        return id_predial;
+    public Long getId_usuario() {
+        return id_usuario;
     }
 
-    public void setId_predial(Long id_predial) {
-        this.id_predial = id_predial;
+    public void setId_usuario(Long id_usuario) {
+        this.id_usuario = id_usuario;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 
     public String getRuta() {
@@ -58,6 +70,14 @@ public class Archivo {
 
     public void setRuta(String ruta) {
         this.ruta = ruta;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 
     // KEEP METHODS - put your custom methods here

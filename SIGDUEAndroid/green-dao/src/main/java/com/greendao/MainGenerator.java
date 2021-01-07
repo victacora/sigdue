@@ -14,7 +14,7 @@ public class MainGenerator {
     private static Entity archivo;
 
     public static void main(String[] args) {
-        Schema schema = new Schema(5, "com.sigdue.db");
+        Schema schema = new Schema(7, "com.sigdue.db");
         schema.enableKeepSectionsByDefault();
         addTables(schema);
         try {
@@ -70,11 +70,6 @@ public class MainGenerator {
         predial.addStringProperty("con_quien_tenencia");
         predial.addStringProperty("nom_quien_tenencia");
         predial.addStringProperty("fecha_tenencia_lote");
-        predial.addStringProperty("url_video");
-        predial.addStringProperty("longitude");
-        predial.addStringProperty("latitude");
-        predial.addStringProperty("estado");
-        predial.addStringProperty("id_bd");
         return predial;
     }
 
@@ -83,14 +78,24 @@ public class MainGenerator {
         usuario.addLongProperty("id_usuario").primaryKey().notNull();
         usuario.addStringProperty("usuario").unique();
         usuario.addStringProperty("contrasena");
+        usuario.addStringProperty("nombre_municipio");
+        usuario.addStringProperty("nombre_establecimiento");
+        usuario.addStringProperty("rector_establecimiento");
+        usuario.addStringProperty("nombre_sede");
+        usuario.addStringProperty("zona_sede");
+        usuario.addStringProperty("est_sede");
+        usuario.addStringProperty("longitude");
+        usuario.addStringProperty("latitude");
         return usuario;
     }
 
     private static Entity addArchivos(Schema schema) {
         Entity archivo = schema.addEntity("Archivo");
         archivo.addLongProperty("id_archivo").primaryKey().notNull();
-        archivo.addLongProperty("id_predial");
+        archivo.addLongProperty("id_usuario");
+        archivo.addStringProperty("tipo");
         archivo.addStringProperty("ruta");
+        archivo.addStringProperty("estado");
         return archivo;
     }
 }

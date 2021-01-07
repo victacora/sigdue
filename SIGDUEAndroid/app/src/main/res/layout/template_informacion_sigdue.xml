@@ -23,52 +23,53 @@
                 android:textStyle="bold" />
 
             <com.sigdue.ui.AutoResizeTextView
-                android:id="@+id/codigo_predio"
+                android:layout_marginTop="5dp"
+                android:id="@+id/nombre_municipio"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/codigo_dane"
                 android:textSize="17sp" />
 
             <com.sigdue.ui.AutoResizeTextView
-                android:id="@+id/clase_predio"
+                android:id="@+id/nombre_establecimiento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/codigo_predio"
+                android:layout_below="@+id/nombre_municipio"
                 android:textSize="17sp" />
 
             <com.sigdue.ui.AutoResizeTextView
-                android:id="@+id/tenencia"
+                android:id="@+id/rector_establecimiento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/clase_predio"
+                android:layout_below="@+id/nombre_establecimiento"
                 android:textSize="17sp" />
 
             <com.sigdue.ui.AutoResizeTextView
-                android:id="@+id/distancia_poblado"
+                android:id="@+id/nombre_sede"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/tenencia"
+                android:layout_below="@+id/rector_establecimiento"
                 android:textSize="17sp" />
 
             <com.sigdue.ui.AutoResizeTextView
-                android:id="@+id/tipo_documento"
+                android:id="@+id/zona_sede"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/distancia_poblado"
+                android:layout_below="@+id/nombre_sede"
                 android:textSize="17sp" />
 
             <com.sigdue.ui.AutoResizeTextView
-                android:id="@+id/topografia"
+                android:id="@+id/est_sede"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/tipo_documento"
+                android:layout_below="@+id/zona_sede"
                 android:textSize="17sp" />
 
             <com.sigdue.ui.AutoResizeTextView
                 android:id="@+id/posicion"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/topografia"
+                android:layout_below="@+id/est_sede"
                 android:textSize="17sp" />
 
             <com.sigdue.ui.AutoResizeTextView
@@ -76,38 +77,61 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/posicion"
-                android:textSize="17sp" />
+                android:textSize="17sp"
+                android:layout_marginBottom="20dp"/>
 
-            <com.sigdue.ui.AutoResizeTextView
-                android:id="@+id/estado"
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/archivos"
-                android:textStyle="bold"
-                android:textSize="17sp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/estado"
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/btnEditar"
+                    android:id="@+id/btnActualizarUbiGeo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Editar"
-                    android:visibility="gone" />
+                    android:layout_marginTop="4dp"
+                    android:background="@drawable/button"
+                    android:drawableLeft="@android:drawable/ic_dialog_map"
+                    android:maxWidth="320dp"
+                    android:padding="16dp"
+                    android:minWidth="320dp"
+                    android:textColor="#FFFFFF"
+                    android:layout_alignParentTop="true"
+                    android:text="Actualizar ubicación" />
 
                 <Button
-                    android:id="@+id/btnVerFotos"
+                    android:id="@+id/btnAdjuntarArchivos"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_below="@+id/btnActualizarUbiGeo"
                     android:layout_weight="1"
-                    android:text="Ver fotos"
-                    android:visibility="gone" />
-            </LinearLayout>
+                    android:drawableLeft="@android:drawable/ic_menu_upload"
+                    android:layout_marginTop="4dp"
+                    android:background="@drawable/button"
+                    android:maxWidth="320dp"
+                    android:minWidth="320dp"
+                    android:padding="16dp"
+                    android:textColor="#FFFFFF"
+                    android:text="Cargar multimedia"/>
+
+                <Button
+                    android:id="@+id/btnInformacionPredio"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/button"
+                    android:maxWidth="320dp"
+                    android:layout_marginTop="4dp"
+                    android:minWidth="320dp"
+                    android:drawableLeft="@android:drawable/ic_menu_edit"
+                    android:padding="16dp"
+                    android:textColor="#FFFFFF"
+                    android:layout_below="@+id/btnAdjuntarArchivos"
+                    android:layout_weight="1"
+                    android:text="Actualizar información predio"/>
+
+            </RelativeLayout>
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 </LinearLayout>
