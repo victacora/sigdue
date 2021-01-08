@@ -49,8 +49,8 @@ public class InformacionSIGDUERecyclerView extends RecyclerView.Adapter<Informac
         holder.establecimiento.setText("Establecimiento: " + (this.data.get(position).getNombre_establecimiento() == null || (this.data.get(position)).getNombre_establecimiento().equals("") ? "" : this.data.get(position).getNombre_establecimiento()));
         holder.rector.setText("Rector: " + (this.data.get(position).getRector_establecimiento() == null || (this.data.get(position)).getRector_establecimiento().equals("") ? "" : this.data.get(position).getRector_establecimiento()));
         holder.posicion.setText(String.format("Posición: (%s , %s)",
-                this.data.get(position).getLongitude() == null || (this.data.get(position)).getLongitude().equals("") ? "" : this.data.get(position).getLongitude(),
-                this.data.get(position).getLatitude() == null || (this.data.get(position)).getLatitude().equals("") ? "" : this.data.get(position).getLatitude()));
+                this.data.get(position).getLatitude() == null || (this.data.get(position)).getLatitude().equals("") ? "" : this.data.get(position).getLatitude(),
+                this.data.get(position).getLongitude() == null || (this.data.get(position)).getLongitude().equals("") ? "" : this.data.get(position).getLongitude()));
         holder.sede.setText("Sede: " + (this.data.get(position).getNombre_sede() == null || (this.data.get(position)).getNombre_sede().equals("") ? "" : this.data.get(position).getNombre_sede()));
         holder.zona.setText("Zona: " + (this.data.get(position).getZona_sede() == null || (this.data.get(position)).getZona_sede().equals("") ? "" : this.data.get(position).getZona_sede()));
         holder.estado.setText("Estado: " + (this.data.get(position).getEst_sede() == null || (this.data.get(position)).getEst_sede().equals("") ? "" : this.data.get(position).getEst_sede()));

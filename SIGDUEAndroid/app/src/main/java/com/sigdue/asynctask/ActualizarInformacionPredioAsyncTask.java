@@ -4,12 +4,9 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.sigdue.db.Predial;
-import com.sigdue.db.Usuario;
 import com.sigdue.utilidadesgenerales.UtilidadesGenerales;
 import com.sigdue.webservice.api.WSSIGDUEClient;
 import com.sigdue.webservice.api.WSSIGDUEInterface;
-
-import java.text.SimpleDateFormat;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -34,8 +31,6 @@ public class ActualizarInformacionPredioAsyncTask extends AsyncTask<Predial, Str
             WSSIGDUEInterface service = WSSIGDUEClient.getClient();
             Predial predial = params[0];
             if (UtilidadesGenerales.isOnline()) {
-                SimpleDateFormat formatFecha = new SimpleDateFormat("MM/dd/yyyy");
-                SimpleDateFormat formatFechaMovil = new SimpleDateFormat("dd/MM/yyyy");
                 com.sigdue.webservice.modelo.Predial predialJSON = new com.sigdue.webservice.modelo.Predial();
                 predialJSON.setP_DANE_SEDE(predial.getDane_sede() != null ? predial.getDane_sede() : "");
                 predialJSON.setP_COD_PREDIO(predial.getCod_predio() != null ? predial.getCod_predio() : "");
@@ -44,9 +39,9 @@ public class ActualizarInformacionPredioAsyncTask extends AsyncTask<Predial, Str
                 predialJSON.setP_DIST_KM_CENTRO_POBLADO(predial.getDist_km_centro_poblado() != null ? predial.getDist_km_centro_poblado() : "");
                 predialJSON.setP_CLASE_PREDIO(predial.getClase_predio() != null ? predial.getClase_predio() : "");
                 predialJSON.setP_AVALUO_CATASTRAL(predial.getAvaluo_catastral() != null ? predial.getAvaluo_catastral() : "");
-                predialJSON.setpP_FEC_AVALUO_CATASTRAL(formatFecha.format(formatFechaMovil.parse(predial.getFec_avaluo_catastral())));
+                predialJSON.setP_FEC_AVALUO_CATASTRAL(predial.getFec_avaluo_catastral() != null ? predial.getFec_avaluo_catastral() : "");
                 predialJSON.setP_AVALUO_COMERCIAL(predial.getAvaluo_comercial() != null ? predial.getAvaluo_comercial() : "");
-                predialJSON.setpP_FEC_AVALUO_COMERCIAL(formatFecha.format(formatFechaMovil.parse(predial.getFec_avaluo_comercial())));
+                predialJSON.setP_FEC_AVALUO_COMERCIAL(predial.getFec_avaluo_comercial() != null ? predial.getFec_avaluo_comercial() : "");
                 predialJSON.setP_ZONA_AISLAMIENTO(predial.getZona_aislamiento() != null ? predial.getZona_aislamiento() : "");
                 predialJSON.setP_ZONA_ALTO_RIESGO(predial.getZona_alto_riesgo() != null ? predial.getZona_alto_riesgo() : "");
                 predialJSON.setP_ZONA_PROTECCION(predial.getZona_proteccion() != null ? predial.getZona_proteccion() : "");
@@ -55,7 +50,7 @@ public class ActualizarInformacionPredioAsyncTask extends AsyncTask<Predial, Str
                 predialJSON.setP_TIPO_DOCUMENTO(predial.getTipo_documento() != null ? predial.getTipo_documento() : "");
                 predialJSON.setP_CUAL_TIPO_DOCUMENTO(predial.getCual_tipo_documento() != null ? predial.getCual_tipo_documento() : "");
                 predialJSON.setP_NRO_DOCUMENTO_LEGALIZACION(predial.getNro_documento_legalizacion() != null ? predial.getNro_documento_legalizacion() : "");
-                predialJSON.setpP_FEC_EXPEDICION(formatFecha.format(formatFechaMovil.parse(predial.getFec_expedicion())));
+                predialJSON.setP_FEC_EXPEDICION(predial.getFec_expedicion() != null ? predial.getFec_expedicion() : "");
                 predialJSON.setP_NOTARIA_DEPENDENCIA_ORIGEN(predial.getNotaria_dependencia_origen() != null ? predial.getNotaria_dependencia_origen() : "");
                 predialJSON.setP_LUGAR_EXPEDICION(predial.getLugar_expedicion() != null ? predial.getLugar_expedicion() : "");
                 predialJSON.setP_REGISTRO_CATASTRAL(predial.getRegistro_catastral() != null ? predial.getRegistro_catastral() : "");
@@ -64,7 +59,7 @@ public class ActualizarInformacionPredioAsyncTask extends AsyncTask<Predial, Str
                 predialJSON.setP_TENENCIA(predial.getTenencia() != null ? predial.getTenencia() : "");
                 predialJSON.setP_CON_QUIEN_TENENCIA(predial.getCon_quien_tenencia() != null ? predial.getCon_quien_tenencia() : "");
                 predialJSON.setP_NOM_QUIEN_TENENCIA(predial.getNom_quien_tenencia() != null ? predial.getNom_quien_tenencia() : "");
-                predialJSON.setpP_FECHA_TENENCIA_LOTE(formatFecha.format(formatFechaMovil.parse(predial.getFecha_tenencia_lote())));
+                predialJSON.setP_FECHA_TENENCIA_LOTE(predial.getFecha_tenencia_lote() != null ? predial.getFecha_tenencia_lote() : "");
 
                 Call<ResponseBody> serviceCall = service.crearPredial(predialJSON);
                 Response<ResponseBody> response = serviceCall.execute();

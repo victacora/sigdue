@@ -420,31 +420,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncTaskSIGDUE 
                 UtilidadesGenerales.escribirSharedPreferences(R.string.pref_usuario_key, String.valueOf(usuario.getId_usuario()), UtilidadesGenerales.STRING_TYPE);
                 app.setUsuario(usuario.getUsuario());
                 app.setIdUsuario(usuario.getId_usuario());
-                AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
-                builder.setTitle("Confirmación");
-                builder.setMessage("¿Desea actualizar maestros en este momento?");
-                builder.setPositiveButton("Si", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        try {
-                            showProgress("Actualizando maestros...");
-                            mAuthTask = null;
-                            parametrosAsyncTask = new ParametrosAsyncTask(LoginActivity.this, daoSession, mProgressDialog);
-                            parametrosAsyncTask.execute();
-                            dialog.dismiss();
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                });
-                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        irAListarInformacionSIGDUE();
-                        dialog.dismiss();
-                    }
-                });
-                AlertDialog alert = builder.create();
-                alert.show();
+                irAListarInformacionSIGDUE();
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

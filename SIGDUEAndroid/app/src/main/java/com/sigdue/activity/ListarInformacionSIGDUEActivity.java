@@ -30,8 +30,6 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -47,7 +45,6 @@ import com.sigdue.asynctask.AsyncTaskSIGDUE;
 import com.sigdue.asynctask.ParametrosAsyncTask;
 import com.sigdue.asynctask.ProgressDialogFragment;
 import com.sigdue.db.DaoSession;
-import com.sigdue.db.ParametroDao;
 import com.sigdue.db.Usuario;
 import com.sigdue.db.UsuarioDao;
 import com.sigdue.listadapter.InformacionSIGDUERecyclerView;
@@ -71,16 +68,6 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity implement
     RecyclerView rv;
     private UsuarioDao usuarioDao;
 
-    private BroadcastReceiver mHabilitarGPS = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            try {
-                habilitarGPS();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    };
 
     private BroadcastReceiver mActualizarListaComparendosBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -190,9 +177,13 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity implement
 
     @Override
     public void onCallActivity(int tarea) {
-        Intent intent=new Intent(ListarInformacionSIGDUEActivity.this, AgregarInformacionSIDGDUEActivity.class);
+        Intent intent = new Intent(ListarInformacionSIGDUEActivity.this, AgregarInformacionSIDGDUEActivity.class);
         intent.putExtra(Constants.TASK, tarea);
-        startActivityForResult(intent, NOTIFICACIONES_ID);
+        if (tarea == AgregarInformacionSIDGDUEActivity.FORMULARIO_ACTUALIZAR_UBICACION) {
+            UtilidadesGenerales.habilitarGPS(ListarInformacionSIGDUEActivity.this, intent);
+        } else {
+            startActivityForResult(intent, NOTIFICACIONES_ID);
+        }
     }
 
 
@@ -284,11 +275,6 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity implement
             filter.addAction(RESPUESTA_SERVICIO);
             registerReceiver(mActualizarListaComparendosBroadcastReceiver, filter);
 
-            filter = new IntentFilter();
-            filter.addAction("android.location.PROVIDERS_CHANGED");
-            registerReceiver(mHabilitarGPS, filter);
-
-            habilitarGPS();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -297,31 +283,8 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity implement
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(mHabilitarGPS);
         unregisterReceiver(mActualizarListaComparendosBroadcastReceiver);
     }
 
-
-    public void habilitarGPS() {
-        try {
-            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) && !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(this);
-                builder.setCancelable(false);
-                builder.setMessage("Este aplicación requiere el uso de GPS por favor habilitelo para continuar.")
-                        .setCancelable(false)
-                        .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                                startActivity(intent);
-                            }
-                        });
-                android.support.v7.app.AlertDialog alert = builder.create();
-                alert.show();
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
 
 }

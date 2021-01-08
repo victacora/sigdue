@@ -8,9 +8,9 @@ public class Predial {
     private String P_DIST_KM_CENTRO_POBLADO;
     private String P_CLASE_PREDIO;
     private String P_AVALUO_CATASTRAL;
-    private String pP_FEC_AVALUO_CATASTRAL;
+    private String P_FEC_AVALUO_CATASTRAL;
     private String P_AVALUO_COMERCIAL;
-    private String pP_FEC_AVALUO_COMERCIAL;
+    private String P_FEC_AVALUO_COMERCIAL;
     private String P_ZONA_AISLAMIENTO;
     private String P_ZONA_ALTO_RIESGO;
     private String P_ZONA_PROTECCION;
@@ -19,7 +19,7 @@ public class Predial {
     private String P_TIPO_DOCUMENTO;
     private String P_CUAL_TIPO_DOCUMENTO;
     private String P_NRO_DOCUMENTO_LEGALIZACION;
-    private String pP_FEC_EXPEDICION;
+    private String P_FEC_EXPEDICION;
     private String P_NOTARIA_DEPENDENCIA_ORIGEN;
     private String P_LUGAR_EXPEDICION;
     private String P_REGISTRO_CATASTRAL;
@@ -28,7 +28,7 @@ public class Predial {
     private String P_TENENCIA;
     private String P_CON_QUIEN_TENENCIA;
     private String P_NOM_QUIEN_TENENCIA;
-    private String pP_FECHA_TENENCIA_LOTE;
+    private String P_FECHA_TENENCIA_LOTE;
 
     public String getP_DANE_SEDE() {
         return P_DANE_SEDE;
@@ -86,12 +86,12 @@ public class Predial {
         P_AVALUO_CATASTRAL = p_AVALUO_CATASTRAL;
     }
 
-    public String getpP_FEC_AVALUO_CATASTRAL() {
-        return pP_FEC_AVALUO_CATASTRAL;
+    public String getP_FEC_AVALUO_CATASTRAL() {
+        return P_FEC_AVALUO_CATASTRAL;
     }
 
-    public void setpP_FEC_AVALUO_CATASTRAL(String pP_FEC_AVALUO_CATASTRAL) {
-        this.pP_FEC_AVALUO_CATASTRAL = pP_FEC_AVALUO_CATASTRAL;
+    public void setP_FEC_AVALUO_CATASTRAL(String p_FEC_AVALUO_CATASTRAL) {
+        this.P_FEC_AVALUO_CATASTRAL = p_FEC_AVALUO_CATASTRAL;
     }
 
     public String getP_AVALUO_COMERCIAL() {
@@ -102,12 +102,12 @@ public class Predial {
         P_AVALUO_COMERCIAL = p_AVALUO_COMERCIAL;
     }
 
-    public String getpP_FEC_AVALUO_COMERCIAL() {
-        return pP_FEC_AVALUO_COMERCIAL;
+    public String getP_FEC_AVALUO_COMERCIAL() {
+        return P_FEC_AVALUO_COMERCIAL;
     }
 
-    public void setpP_FEC_AVALUO_COMERCIAL(String pP_FEC_AVALUO_COMERCIAL) {
-        this.pP_FEC_AVALUO_COMERCIAL = pP_FEC_AVALUO_COMERCIAL;
+    public void setP_FEC_AVALUO_COMERCIAL(String p_FEC_AVALUO_COMERCIAL) {
+        this.P_FEC_AVALUO_COMERCIAL = p_FEC_AVALUO_COMERCIAL;
     }
 
     public String getP_ZONA_AISLAMIENTO() {
@@ -174,12 +174,12 @@ public class Predial {
         P_NRO_DOCUMENTO_LEGALIZACION = p_NRO_DOCUMENTO_LEGALIZACION;
     }
 
-    public String getpP_FEC_EXPEDICION() {
-        return pP_FEC_EXPEDICION;
+    public String getP_FEC_EXPEDICION() {
+        return P_FEC_EXPEDICION;
     }
 
-    public void setpP_FEC_EXPEDICION(String pP_FEC_EXPEDICION) {
-        this.pP_FEC_EXPEDICION = pP_FEC_EXPEDICION;
+    public void setP_FEC_EXPEDICION(String p_FEC_EXPEDICION) {
+        this.P_FEC_EXPEDICION = p_FEC_EXPEDICION;
     }
 
     public String getP_NOTARIA_DEPENDENCIA_ORIGEN() {
@@ -246,11 +246,11 @@ public class Predial {
         P_NOM_QUIEN_TENENCIA = p_NOM_QUIEN_TENENCIA;
     }
 
-    public String getpP_FECHA_TENENCIA_LOTE() {
-        return pP_FECHA_TENENCIA_LOTE;
+    public String getP_FECHA_TENENCIA_LOTE() {
+        return P_FECHA_TENENCIA_LOTE;
     }
 
-    public void setpP_FECHA_TENENCIA_LOTE(String pP_FECHA_TENENCIA_LOTE) {
-        this.pP_FECHA_TENENCIA_LOTE = pP_FECHA_TENENCIA_LOTE;
+    public void setP_FECHA_TENENCIA_LOTE(String p_FECHA_TENENCIA_LOTE) {
+        this.P_FECHA_TENENCIA_LOTE = p_FECHA_TENENCIA_LOTE;
     }
 }

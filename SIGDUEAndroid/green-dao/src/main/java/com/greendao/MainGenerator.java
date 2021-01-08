@@ -14,7 +14,7 @@ public class MainGenerator {
     private static Entity archivo;
 
     public static void main(String[] args) {
-        Schema schema = new Schema(7, "com.sigdue.db");
+        Schema schema = new Schema(8, "com.sigdue.db");
         schema.enableKeepSectionsByDefault();
         addTables(schema);
         try {
@@ -94,6 +94,8 @@ public class MainGenerator {
         archivo.addLongProperty("id_usuario");
         archivo.addStringProperty("tipo");
         archivo.addStringProperty("ruta");
+        archivo.addStringProperty("nombre");
+        archivo.addStringProperty("descripcion");
         archivo.addStringProperty("estado");
         return archivo;
     }

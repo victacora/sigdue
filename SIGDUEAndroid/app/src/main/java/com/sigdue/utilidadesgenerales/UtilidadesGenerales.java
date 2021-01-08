@@ -1,12 +1,16 @@
 package com.sigdue.utilidadesgenerales;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -98,6 +102,30 @@ public class UtilidadesGenerales {
         });
         AlertDialog alert = builder.create();
         alert.show();
+    }
+
+    public static void habilitarGPS(final Context context, Intent intent) {
+        try {
+            LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+            if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) && !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(context);
+                builder.setCancelable(false);
+                builder.setMessage("Este aplicación requiere el uso de GPS por favor habilitelo para continuar.")
+                        .setCancelable(false)
+                        .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                context.startActivity(intent);
+                            }
+                        });
+                android.support.v7.app.AlertDialog alert = builder.create();
+                alert.show();
+            } else {
+                if (intent != null) context.startActivity(intent);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     public static void hideSoftKeyboard(View view) throws Exception {

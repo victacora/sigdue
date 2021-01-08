@@ -2,13 +2,16 @@ package com.sigdue.activity;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -16,6 +19,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -153,6 +157,17 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
     private ActualizarInformacionPredioAsyncTask actualizarInformacionPredioAsyncTask;
     private ProgressDialogFragment mProgressDialogConsultaInfoSIGDUE = null;
 
+    private BroadcastReceiver mHabilitarGPS = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            try {
+                UtilidadesGenerales.habilitarGPS(context, null);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -194,23 +209,6 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
 
             longitudEditext = ((FloatLabel) findViewById(R.id.longitud)).getEditText();
             setSoloLectura(longitudEditext, false);
-
-            if (locationTrack.canGetLocation()) {
-                longitude = locationTrack.getLongitude();
-                latitude = locationTrack.getLatitude();
-
-                latitudEditext.setText(String.valueOf(latitude));
-                longitudEditext.setText(String.valueOf(longitude));
-
-                IMapController mapController = map.getController();
-                mapController.setZoom(19.0);
-                GeoPoint startPoint = new GeoPoint(latitude, longitude);
-                mapController.setCenter(startPoint);
-                Marker startMarker = new Marker(map);
-                startMarker.setPosition(startPoint);
-                startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-                map.getOverlays().add(startMarker);
-            }
 
             fotos = new ArrayList();
             numeroFoto = 0;
@@ -276,7 +274,9 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
             setSoloLectura(codigoDane, false);
             codigoPredio = ((FloatLabel) findViewById(R.id.codigo_predio)).getEditText();
             avaluoCatastral = ((FloatLabel) findViewById(R.id.avaluo_catastral)).getEditText();
+            avaluoCatastral.setText("0");
             avaluoComercial = ((FloatLabel) findViewById(R.id.avaluo_comercial)).getEditText();
+            avaluoComercial.setText("0");
             cualTipoDocumento = ((FloatLabel) findViewById(R.id.cual_tipo_documento)).getEditText();
             numeroDocumentoLegalizacion = ((FloatLabel) findViewById(R.id.nro_documento_legalizacion)).getEditText();
             notariaDependenciaOrigen = ((FloatLabel) findViewById(R.id.notaria_dependencia_origen)).getEditText();
@@ -439,6 +439,42 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
         }
     }
 
+    private void confMapa() {
+        if (locationTrack.canGetLocation()) {
+            longitude = locationTrack.getLongitude();
+            latitude = locationTrack.getLatitude();
+
+            latitudEditext.setText(String.valueOf(latitude));
+            longitudEditext.setText(String.valueOf(longitude));
+
+            IMapController mapController = map.getController();
+            mapController.setZoom(19.0);
+            GeoPoint startPoint = new GeoPoint(latitude, longitude);
+            mapController.setCenter(startPoint);
+            Marker startMarker = new Marker(map);
+            startMarker.setPosition(startPoint);
+            startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+            startMarker.setDraggable(true);
+            startMarker.setOnMarkerDragListener(new Marker.OnMarkerDragListener() {
+                @Override
+                public void onMarkerDragStart(Marker marker) {}
+
+                @Override
+                public void onMarkerDragEnd(Marker marker) {
+                    latitude=marker.getPosition().getLatitude();
+                    longitude=marker.getPosition().getLongitude();
+                    latitudEditext.setText(String.valueOf(latitude));
+                    longitudEditext.setText(String.valueOf(longitude));
+                    marker.setPosition(new GeoPoint(marker.getPosition().getLatitude(),marker.getPosition().getLongitude()));
+                }
+
+                @Override
+                public void onMarkerDrag(Marker marker) {}
+            });
+            map.getOverlays().add(startMarker);
+        }
+    }
+
     private void incializarInformacionDelPredio() {
         List<Predial> infoPredial = predialDao.queryBuilder().where(PredialDao.Properties.Dane_sede.eq(app.getUsuario())).list();
         if (infoPredial != null && !infoPredial.isEmpty()) {
@@ -571,11 +607,20 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
     public void onPause() {
         super.onPause();
         map.onPause();
+        if (task == FORMULARIO_ACTUALIZAR_UBICACION) {
+            unregisterReceiver(mHabilitarGPS);
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        if (task == FORMULARIO_ACTUALIZAR_UBICACION) {
+            IntentFilter filter = new IntentFilter();
+            filter.addAction("android.location.PROVIDERS_CHANGED");
+            registerReceiver(mHabilitarGPS, filter);
+            confMapa();
+        }
         map.onResume();
     }
 
@@ -884,4 +929,6 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
     public void onCancelled() {
         hideProgress();
     }
+
+
 }
