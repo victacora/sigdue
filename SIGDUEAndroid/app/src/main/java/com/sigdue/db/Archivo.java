@@ -17,6 +17,7 @@ public class Archivo {
     private long id_archivo;
     private Long id_usuario;
     private String tipo;
+    private String media_type;
     private String ruta;
     private String nombre;
     private String descripcion;
@@ -34,10 +35,11 @@ public class Archivo {
     }
 
     @Generated
-    public Archivo(long id_archivo, Long id_usuario, String tipo, String ruta, String nombre, String descripcion, String estado) {
+    public Archivo(long id_archivo, Long id_usuario, String tipo, String media_type, String ruta, String nombre, String descripcion, String estado) {
         this.id_archivo = id_archivo;
         this.id_usuario = id_usuario;
         this.tipo = tipo;
+        this.media_type = media_type;
         this.ruta = ruta;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -66,6 +68,14 @@ public class Archivo {
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
+    }
+
+    public String getMedia_type() {
+        return media_type;
+    }
+
+    public void setMedia_type(String media_type) {
+        this.media_type = media_type;
     }
 
     public String getRuta() {

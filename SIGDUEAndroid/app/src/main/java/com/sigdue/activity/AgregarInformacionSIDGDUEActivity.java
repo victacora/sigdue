@@ -8,20 +8,19 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
-import android.location.LocationManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.provider.Settings;
-import android.support.v4.content.FileProvider;
+import android.provider.OpenableColumns;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -37,13 +36,13 @@ import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 import com.iangclifton.android.floatlabel.FloatLabel;
-import com.sigdue.BuildConfig;
 import com.sigdue.Constants;
 import com.sigdue.R;
 import com.sigdue.aplication.AplicacionSIGDUE;
 import com.sigdue.asynctask.ActualizarInformacionPredioAsyncTask;
 import com.sigdue.asynctask.ActualizarUbiGeoAsyncTask;
 import com.sigdue.asynctask.AsyncTaskSIGDUE;
+import com.sigdue.asynctask.CargarMultimediaAsyncTask;
 import com.sigdue.asynctask.ProgressDialogFragment;
 import com.sigdue.db.Archivo;
 import com.sigdue.db.ArchivoDao;
@@ -56,7 +55,6 @@ import com.sigdue.db.Usuario;
 import com.sigdue.db.UsuarioDao;
 import com.sigdue.service.LocationTrack;
 import com.sigdue.ui.SearchableSpinner;
-import com.sigdue.utilidadesgenerales.Filtro;
 import com.sigdue.utilidadesgenerales.UtilidadesGenerales;
 
 import org.osmdroid.api.IMapController;
@@ -68,9 +66,7 @@ import org.osmdroid.views.overlay.Marker;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -78,10 +74,6 @@ import java.util.Date;
 import java.util.List;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
-
-import static com.sigdue.Constants.CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE;
-import static com.sigdue.Constants.RUTAMULTIMEDIASIGDUE;
-import static com.sigdue.Constants.tiposParametros;
 
 public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity implements AsyncTaskSIGDUE {
 
@@ -95,7 +87,7 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
     private Button btnEliminar;
     private Button btnCargarArchivos;
     private Button btnSiguiente;
-    private Button btnTomarFoto;
+    private Button btnAdjuntarUrlVideo;
     private SearchableSpinner cmbClasePredio;
     private SearchableSpinner cmbClima;
     private SearchableSpinner cmbConQuienTieneTenencia;
@@ -114,13 +106,11 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
     private ArchivoDao archivoDao;
     private EditText fechaAvaluoCatastral;
     private DatePicker dp;
-    ArrayList<String> fotos;
     private PhotoViewAttacher mAttacher;
     private ImageView mImageView;
-    private LinearLayout mostrarFotos;
-    int numeroFoto;
-    int posFoto;
-    String rutafoto;
+    int numeroArchivo;
+    int posArchivo;
+    String rutaArchivo;
     private double longitude;
     private double latitude;
     private LocationTrack locationTrack;
@@ -141,6 +131,7 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
     private EditText fechaExpedicion;
     private EditText fechaTenencia;
     private EditText urlVideo;
+    private EditText descripcion;
     private List<Archivo> archivos;
     private MapView map = null;
     private UsuarioDao usuarioDao;
@@ -151,10 +142,11 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
     private LinearLayout formularioUbicacion;
     private LinearLayout formularioPredio;
     private LinearLayout formularioMultimedia;
-    private LinearLayout formularioFotos;
+    private LinearLayout mostrarUrl;
     private TextView titluloformulario;
     private ActualizarUbiGeoAsyncTask actualizarUbiGeoAsyncTask;
     private ActualizarInformacionPredioAsyncTask actualizarInformacionPredioAsyncTask;
+    private CargarMultimediaAsyncTask cargarMultimediaAsyncTask;
     private ProgressDialogFragment mProgressDialogConsultaInfoSIGDUE = null;
 
     private BroadcastReceiver mHabilitarGPS = new BroadcastReceiver() {
@@ -178,7 +170,6 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
             if (extras != null) {
                 task = extras.getInt(Constants.TASK);
                 titluloformulario = findViewById(R.id.datosInformacion);
-                formularioFotos = findViewById(R.id.formularioFotos);
                 formularioMultimedia = findViewById(R.id.formularioMultimedia);
                 formularioUbicacion = findViewById(R.id.formularioUbicacion);
                 formularioPredio = findViewById(R.id.formularioInfoPredio);
@@ -187,11 +178,9 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                     formularioUbicacion.setVisibility(View.VISIBLE);
                 } else if (task == 2) {
                     titluloformulario.setText("Cargar multimedia");
-                    formularioFotos.setVisibility(View.VISIBLE);
                     formularioMultimedia.setVisibility(View.VISIBLE);
                 } else if (task == 3) {
                     titluloformulario.setText("Información del predio");
-                    formularioMultimedia.setVisibility(View.VISIBLE);
                     formularioPredio.setVisibility(View.VISIBLE);
                 }
             }
@@ -210,10 +199,9 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
             longitudEditext = ((FloatLabel) findViewById(R.id.longitud)).getEditText();
             setSoloLectura(longitudEditext, false);
 
-            fotos = new ArrayList();
-            numeroFoto = 0;
-            posFoto = 0;
-            rutafoto = "";
+            numeroArchivo = 0;
+            posArchivo = 0;
+            rutaArchivo = "";
 
             this.app = (AplicacionSIGDUE) getApplication();
             this.daoSession = this.app.getDaoSession();
@@ -221,10 +209,19 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
             this.parametroDao = this.daoSession.getParametroDao();
             this.archivoDao = this.daoSession.getArchivoDao();
             this.usuarioDao = this.daoSession.getUsuarioDao();
+
             List<Usuario> usuarios = usuarioDao.queryBuilder().where(UsuarioDao.Properties.Id_usuario.eq(app.getIdUsuario())).list();
             if (usuarios != null && usuarios.size() > 0) {
                 usuario = usuarios.get(0);
             }
+
+            List<Archivo> archivosBd = archivoDao.queryBuilder().where(ArchivoDao.Properties.Id_usuario.eq(app.getIdUsuario())).list();
+            if (archivosBd != null && !archivosBd.isEmpty()) {
+                archivos = archivosBd;
+            } else {
+                archivos = new ArrayList<>();
+            }
+
             cmbClasePredio = (SearchableSpinner) findViewById(R.id.cmbClasePredio);
             setComboConf(cmbClasePredio, "Clase predio", Constants.CLASE_PREDIO);
 
@@ -261,12 +258,10 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
             cmbZonaProteccion = (SearchableSpinner) findViewById(R.id.cmbZonaProteccion);
             setComboConf(cmbZonaProteccion, "Zona de protección", Constants.ZONA_PROTECCION);
 
-            this.mostrarFotos = (LinearLayout) findViewById(R.id.mostrarFotos);
             this.mImageView = (ImageView) findViewById(R.id.imagen);
             Drawable bitmap = getResources().getDrawable(R.drawable.imagenes);
             this.mImageView.setImageDrawable(bitmap);
             this.mAttacher = new PhotoViewAttacher(this.mImageView);
-            this.fotos = new ArrayList();
             this.predial = null;
 
             codigoDane = ((FloatLabel) findViewById(R.id.dane_sede)).getEditText();
@@ -286,6 +281,57 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
             propietarios = ((FloatLabel) findViewById(R.id.propietarios)).getEditText();
             nombreTenencia = ((FloatLabel) findViewById(R.id.nombre_tiene_tenencia)).getEditText();
             urlVideo = ((FloatLabel) findViewById(R.id.url_video)).getEditText();
+            urlVideo.addTextChangedListener(
+                    new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                        }
+
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable s) {
+                            try {
+                                if (archivos.size() > 0 && posArchivo >= 0 && posArchivo < archivos.size()) {
+                                    archivos.get(posArchivo).setNombre(urlVideo.getText().toString());
+                                }
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                    }
+            );
+            mostrarUrl = findViewById(R.id.mostrarURlVideo);
+            mostrarUrl.setVisibility(View.GONE);
+            descripcion = ((FloatLabel) findViewById(R.id.descripcion)).getEditText();
+            descripcion.addTextChangedListener(
+                    new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                        }
+
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable s) {
+                            try {
+                                if (archivos.size() > 0 && posArchivo >= 0 && posArchivo < archivos.size()) {
+                                    archivos.get(posArchivo).setDescripcion(descripcion.getText().toString());
+                                }
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                    }
+            );
             fechaAvaluoCatastral = ((FloatLabel) findViewById(R.id.fecha_avaluo)).getEditText();
             setFechaConf(fechaAvaluoCatastral, "Fecha avalúo catastral", avaluoComercial);
 
@@ -299,7 +345,23 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
             setFechaConf(fechaTenencia, "Fecha tenencia", urlVideo);
 
             incializarInformacionDelPredio();
-
+            this.btnAdjuntarUrlVideo = (Button) findViewById(R.id.btnCargarVideo);
+            btnAdjuntarUrlVideo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Archivo archivo = new Archivo();
+                    archivo.setId_usuario(usuario.getId_usuario());
+                    archivo.setRuta("");
+                    archivo.setTipo("Video");
+                    archivo.setMedia_type("text/uri-list");
+                    archivo.setNombre("");
+                    setIdArchivo(archivo);
+                    archivo.setEstado("P");
+                    archivos.add(archivo);
+                    urlVideo.setText("");
+                    desplegarArchivo(archivos.size() - 1);
+                }
+            });
             this.btnCargarArchivos = (Button) findViewById(R.id.btnCargarArchivos);
             this.btnCargarArchivos.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
@@ -321,42 +383,15 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                 }
             });
 
-            this.btnTomarFoto = (Button) findViewById(R.id.btnTomarFoto);
-            this.btnTomarFoto.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    try {
-                        if (AgregarInformacionSIDGDUEActivity.this.fotos.size() < 6) {
-                            Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                            File imagesFolder = new File(Environment.getExternalStorageDirectory(), RUTAMULTIMEDIASIGDUE);
-                            if (!imagesFolder.exists()) imagesFolder.mkdirs();
-                            rutafoto = usuario.getId_usuario() + "_foto_" + numeroFoto + ".jpg";
-                            Uri uriSavedImage = null;
-                            File image = new File(imagesFolder, rutafoto);
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                uriSavedImage = FileProvider.getUriForFile(AgregarInformacionSIDGDUEActivity.this, BuildConfig.APPLICATION_ID + ".provider", image);
-
-                            } else {
-                                uriSavedImage = Uri.fromFile(image);
-                            }
-                            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage);
-                            startActivityForResult(cameraIntent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
-                            return;
-                        }
-                        UtilidadesGenerales.mostrarMensaje("Solo se permite 6 fotos como maximo.", 1);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            });
             this.btnAtras = (Button) findViewById(R.id.btnAtras);
             this.btnAtras.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     try {
-                        if (posFoto - 1 >= 0) {
-                            posFoto--;
+                        if (posArchivo - 1 >= 0) {
+                            posArchivo--;
                         }
-                        if (posFoto >= 0) {
-                            desplegarFoto(posFoto);
+                        if (posArchivo >= 0) {
+                            desplegarArchivo(posArchivo);
                         }
                     } catch (Exception ex) {
                         ex.printStackTrace();
@@ -368,24 +403,23 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                 @Override
                 public void onClick(View v) {
                     try {
-                        if (fotos != null && fotos.size() > 0) {
+                        if (archivos != null && archivos.size() > 0) {
                             AlertDialog.Builder builder = new AlertDialog.Builder(AgregarInformacionSIDGDUEActivity.this);
                             builder.setTitle("Confirmación");
-                            builder.setMessage("¿Está usted seguro de querer eliminar la foto seleccionada?");
+                            builder.setMessage("¿Está usted seguro de eliminar el archivo seleccionado?");
                             builder.setPositiveButton("Si", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
-                                    File filefoto = new File(fotos.get(posFoto));
-                                    if (filefoto.exists()) {
-                                        filefoto.delete();
+                                    Archivo archivo = archivoDao.queryBuilder().where(ArchivoDao.Properties.Id_archivo.eq(archivos.get(posArchivo).getId_archivo())).unique();
+                                    if (archivo != null && archivo.getId_archivo() > 0) {
+                                        archivoDao.delete(archivo);
                                     }
-                                    fotos.remove(AgregarInformacionSIDGDUEActivity.this.posFoto);
-                                    posFoto--;
-                                    if (fotos.size() > 0 && posFoto >= 0 && posFoto < fotos.size()) {
-                                        desplegarFoto(posFoto);
-                                    } else if (fotos.size() == 0) {
-                                        mImageView.setImageDrawable(AgregarInformacionSIDGDUEActivity.this.getResources().getDrawable(R.drawable.imagenes));
+                                    archivos.remove(posArchivo);
+                                    posArchivo--;
+                                    if (archivos.size() > 0 && posArchivo >= 0 && posArchivo < archivos.size()) {
+                                        desplegarArchivo(posArchivo);
+                                    } else if (archivos.size() == 0) {
+                                        mImageView.setImageDrawable(AgregarInformacionSIDGDUEActivity.this.getResources().getDrawable(R.color.actionbar_divider));
                                         mAttacher.update();
-                                        mostrarFotos.setVisibility(View.GONE);
                                     }
                                     dialog.dismiss();
                                 }
@@ -401,7 +435,7 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                         } else {
                             AlertDialog.Builder builder = new AlertDialog.Builder(AgregarInformacionSIDGDUEActivity.this);
                             builder.setTitle("Información");
-                            builder.setMessage("El inmovilizacion no tiene fotos asociadas para eliminar.");
+                            builder.setMessage("No existen archivos pendientes por eliminar.");
                             builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
@@ -409,8 +443,7 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                             });
                             AlertDialog alert = builder.create();
                             alert.show();
-                            Drawable bitmap = getResources().getDrawable(R.drawable.imagenes);
-                            mImageView.setImageDrawable(bitmap);
+                            mImageView.setImageDrawable(AgregarInformacionSIDGDUEActivity.this.getResources().getDrawable(R.color.actionbar_divider));
                             mAttacher.update();
                         }
 
@@ -423,11 +456,11 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
             this.btnSiguiente.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     try {
-                        if (posFoto + 1 < fotos.size()) {
-                            posFoto++;
+                        if (posArchivo + 1 < archivos.size()) {
+                            posArchivo++;
                         }
-                        if (posFoto < fotos.size()) {
-                            desplegarFoto(posFoto);
+                        if (posArchivo < archivos.size()) {
+                            desplegarArchivo(posArchivo);
                         }
                     } catch (Exception ex) {
                         ex.printStackTrace();
@@ -457,19 +490,21 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
             startMarker.setDraggable(true);
             startMarker.setOnMarkerDragListener(new Marker.OnMarkerDragListener() {
                 @Override
-                public void onMarkerDragStart(Marker marker) {}
-
-                @Override
-                public void onMarkerDragEnd(Marker marker) {
-                    latitude=marker.getPosition().getLatitude();
-                    longitude=marker.getPosition().getLongitude();
-                    latitudEditext.setText(String.valueOf(latitude));
-                    longitudEditext.setText(String.valueOf(longitude));
-                    marker.setPosition(new GeoPoint(marker.getPosition().getLatitude(),marker.getPosition().getLongitude()));
+                public void onMarkerDragStart(Marker marker) {
                 }
 
                 @Override
-                public void onMarkerDrag(Marker marker) {}
+                public void onMarkerDragEnd(Marker marker) {
+                    latitude = marker.getPosition().getLatitude();
+                    longitude = marker.getPosition().getLongitude();
+                    latitudEditext.setText(String.valueOf(latitude));
+                    longitudEditext.setText(String.valueOf(longitude));
+                    marker.setPosition(new GeoPoint(marker.getPosition().getLatitude(), marker.getPosition().getLongitude()));
+                }
+
+                @Override
+                public void onMarkerDrag(Marker marker) {
+                }
             });
             map.getOverlays().add(startMarker);
         }
@@ -709,17 +744,10 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                 actualizarInformacionPredioAsyncTask.execute(predial);
 
             } else if (task == FORMULARIO_CARGAR_MULTIMEDIA) {
-                if (this.urlVideo.getText() != null && !this.urlVideo.getText().toString().isEmpty()) {
-                    archivos = new ArrayList<>();
-                    Archivo archivo = new Archivo();
-                    archivo.setId_usuario(usuario.getId_usuario());
-                    archivo.setRuta(this.urlVideo.getText().toString());
-                    archivo.setTipo("video");
-                    archivo.setEstado("P");
-                    setIdArchivo(archivo);
-                    archivos.add(archivo);
-                }
                 archivoDao.insertInTx(archivos);
+                showProgress("Actualizando multimedia");
+                cargarMultimediaAsyncTask = new CargarMultimediaAsyncTask(this, getContentResolver(), daoSession, mProgressDialogConsultaInfoSIGDUE);
+                cargarMultimediaAsyncTask.execute(String.valueOf(usuario.getId_usuario()), usuario.getUsuario());
             } else if (task == FORMULARIO_ACTUALIZAR_UBICACION) {
                 this.usuario.setLongitude(String.valueOf(longitude));
                 this.usuario.setLatitude(String.valueOf(latitude));
@@ -823,13 +851,28 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
     }
 
 
-    public void desplegarFoto(int pos) {
+    public void desplegarArchivo(int pos) {
         try {
-            if (this.fotos != null && this.fotos.size() > 0) {
-                this.mImageView.setImageBitmap(BitmapFactory.decodeFile(this.fotos.get(pos)));
-                this.mAttacher.update();
+            if (this.archivos != null && this.archivos.size() > 0) {
+                this.descripcion.setText(this.archivos.get(pos).getDescripcion());
+                mostrarUrl.setVisibility(View.GONE);
+                if (this.archivos.get(pos).getTipo().equals("image/jpeg")) {
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.parse(this.archivos.get(pos).getRuta()));
+                    this.mImageView.setImageBitmap(bitmap);
+                    this.mAttacher.update();
+                } else if (this.archivos.get(pos).getTipo().equals("application/pdf")) {
+                    mImageView.setImageDrawable(AgregarInformacionSIDGDUEActivity.this.getResources().getDrawable(R.drawable.pdf));
+                    this.mAttacher.update();
+                } else {
+                    mostrarUrl.setVisibility(View.VISIBLE);
+                    this.urlVideo.setText(this.archivos.get(pos).getNombre());
+                    mImageView.setImageDrawable(AgregarInformacionSIDGDUEActivity.this.getResources().getDrawable(R.drawable.video));
+                    this.mAttacher.update();
+                }
             }
-        } catch (ClassCastException ex) {
+        } catch (Exception ex) {
+            mImageView.setImageDrawable(AgregarInformacionSIDGDUEActivity.this.getResources().getDrawable(R.color.actionbar_divider));
+            this.mAttacher.update();
             ex.printStackTrace();
         }
     }
@@ -844,64 +887,58 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         ContentResolver cR = getContentResolver();
-        if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                try {
-                    File image = new File(Environment.getExternalStorageDirectory() + "/" + RUTAMULTIMEDIASIGDUE + "/" + this.rutafoto);
-                    Bitmap bMap = BitmapFactory.decodeFile(image.getAbsolutePath());
-                    try {
-                        OutputStream stream = new FileOutputStream(image);
-                        bMap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-                        stream.close();
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    this.fotos.add(Environment.getExternalStorageDirectory() + "/" + RUTAMULTIMEDIASIGDUE + "/" + this.rutafoto);
-                    this.posFoto = this.fotos.size() - 1;
-                    this.numeroFoto++;
-                    desplegarFoto(this.posFoto);
-                    this.mostrarFotos.setVisibility(View.VISIBLE);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        } else if (requestCode == PICK_FILES) {
+        if (requestCode == PICK_FILES) {
             if (null != data) {
                 if (null != data.getClipData()) {
-                    archivos = new ArrayList<>();
                     for (int i = 0; i < data.getClipData().getItemCount(); i++) {
                         Uri uri = data.getClipData().getItemAt(i).getUri();
                         Archivo archivo = new Archivo();
                         setIdArchivo(archivo);
                         archivo.setId_usuario(usuario.getId_usuario());
-                        archivo.setRuta(uri.getPath());
-                        archivo.setTipo(cR.getType(uri));
+                        archivo.setRuta(uri.toString());
+                        archivo.setMedia_type(cR.getType(uri));
+                        archivo.setTipo(archivo.getMedia_type().equals("image/jpeg") ? "Imagen" : "Pdf");
+                        archivo.setNombre(getFileName(uri));
                         archivo.setEstado("P");
                         archivos.add(archivo);
                     }
-                    this.btnCargarArchivos.setText("Adjuntar archivos (" + data.getClipData().getItemCount() + ")");
                 } else if (data.getData() != null) {
                     Uri uri = data.getData();
-                    this.btnCargarArchivos.setText("Adjuntar archivos (1)");
-                    archivos = new ArrayList<>();
                     Archivo archivo = new Archivo();
                     archivo.setId_usuario(usuario.getId_usuario());
-                    archivo.setRuta(uri.getPath());
-                    archivo.setTipo(cR.getType(uri));
+                    archivo.setRuta(uri.toString());
+                    archivo.setMedia_type(cR.getType(uri));
+                    archivo.setTipo(archivo.getMedia_type().equals("image/jpeg") ? "Imagen" : "Pdf");
+                    archivo.setNombre(getFileName(uri));
                     setIdArchivo(archivo);
                     archivo.setEstado("P");
                     archivos.add(archivo);
-                } else {
-                    this.btnCargarArchivos.setText("Adjuntar archivos");
-                    archivos = new ArrayList<>();
                 }
-            } else {
-                this.btnCargarArchivos.setText("Adjuntar archivos");
-                archivos = new ArrayList<>();
+                if (!archivos.isEmpty()) desplegarArchivo(archivos.size() - 1);
             }
         }
+    }
+
+    public String getFileName(Uri uri) {
+        String result = null;
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+        return result;
     }
 
     public void setIdArchivo(Archivo archivo) {
@@ -917,6 +954,7 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
     public void onPostExecute(Object result) {
         actualizarUbiGeoAsyncTask = null;
         actualizarInformacionPredioAsyncTask = null;
+        cargarMultimediaAsyncTask = null;
         hideProgress();
         if (result != null && ((Boolean) result)) {
             confirmarAlmacenamientoExitoso();

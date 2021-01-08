@@ -25,10 +25,11 @@ public class ArchivoDao extends AbstractDao<Archivo, Long> {
         public final static Property Id_archivo = new Property(0, long.class, "id_archivo", true, "ID_ARCHIVO");
         public final static Property Id_usuario = new Property(1, Long.class, "id_usuario", false, "ID_USUARIO");
         public final static Property Tipo = new Property(2, String.class, "tipo", false, "TIPO");
-        public final static Property Ruta = new Property(3, String.class, "ruta", false, "RUTA");
-        public final static Property Nombre = new Property(4, String.class, "nombre", false, "NOMBRE");
-        public final static Property Descripcion = new Property(5, String.class, "descripcion", false, "DESCRIPCION");
-        public final static Property Estado = new Property(6, String.class, "estado", false, "ESTADO");
+        public final static Property Media_type = new Property(3, String.class, "media_type", false, "MEDIA_TYPE");
+        public final static Property Ruta = new Property(4, String.class, "ruta", false, "RUTA");
+        public final static Property Nombre = new Property(5, String.class, "nombre", false, "NOMBRE");
+        public final static Property Descripcion = new Property(6, String.class, "descripcion", false, "DESCRIPCION");
+        public final static Property Estado = new Property(7, String.class, "estado", false, "ESTADO");
     }
 
 
@@ -47,10 +48,11 @@ public class ArchivoDao extends AbstractDao<Archivo, Long> {
                 "\"ID_ARCHIVO\" INTEGER PRIMARY KEY NOT NULL ," + // 0: id_archivo
                 "\"ID_USUARIO\" INTEGER," + // 1: id_usuario
                 "\"TIPO\" TEXT," + // 2: tipo
-                "\"RUTA\" TEXT," + // 3: ruta
-                "\"NOMBRE\" TEXT," + // 4: nombre
-                "\"DESCRIPCION\" TEXT," + // 5: descripcion
-                "\"ESTADO\" TEXT);"); // 6: estado
+                "\"MEDIA_TYPE\" TEXT," + // 3: media_type
+                "\"RUTA\" TEXT," + // 4: ruta
+                "\"NOMBRE\" TEXT," + // 5: nombre
+                "\"DESCRIPCION\" TEXT," + // 6: descripcion
+                "\"ESTADO\" TEXT);"); // 7: estado
     }
 
     /** Drops the underlying database table. */
@@ -74,24 +76,29 @@ public class ArchivoDao extends AbstractDao<Archivo, Long> {
             stmt.bindString(3, tipo);
         }
  
+        String media_type = entity.getMedia_type();
+        if (media_type != null) {
+            stmt.bindString(4, media_type);
+        }
+ 
         String ruta = entity.getRuta();
         if (ruta != null) {
-            stmt.bindString(4, ruta);
+            stmt.bindString(5, ruta);
         }
  
         String nombre = entity.getNombre();
         if (nombre != null) {
-            stmt.bindString(5, nombre);
+            stmt.bindString(6, nombre);
         }
  
         String descripcion = entity.getDescripcion();
         if (descripcion != null) {
-            stmt.bindString(6, descripcion);
+            stmt.bindString(7, descripcion);
         }
  
         String estado = entity.getEstado();
         if (estado != null) {
-            stmt.bindString(7, estado);
+            stmt.bindString(8, estado);
         }
     }
 
@@ -110,24 +117,29 @@ public class ArchivoDao extends AbstractDao<Archivo, Long> {
             stmt.bindString(3, tipo);
         }
  
+        String media_type = entity.getMedia_type();
+        if (media_type != null) {
+            stmt.bindString(4, media_type);
+        }
+ 
         String ruta = entity.getRuta();
         if (ruta != null) {
-            stmt.bindString(4, ruta);
+            stmt.bindString(5, ruta);
         }
  
         String nombre = entity.getNombre();
         if (nombre != null) {
-            stmt.bindString(5, nombre);
+            stmt.bindString(6, nombre);
         }
  
         String descripcion = entity.getDescripcion();
         if (descripcion != null) {
-            stmt.bindString(6, descripcion);
+            stmt.bindString(7, descripcion);
         }
  
         String estado = entity.getEstado();
         if (estado != null) {
-            stmt.bindString(7, estado);
+            stmt.bindString(8, estado);
         }
     }
 
@@ -142,10 +154,11 @@ public class ArchivoDao extends AbstractDao<Archivo, Long> {
             cursor.getLong(offset + 0), // id_archivo
             cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1), // id_usuario
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // tipo
-            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // ruta
-            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // nombre
-            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // descripcion
-            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6) // estado
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // media_type
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // ruta
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // nombre
+            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // descripcion
+            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7) // estado
         );
         return entity;
     }
@@ -155,10 +168,11 @@ public class ArchivoDao extends AbstractDao<Archivo, Long> {
         entity.setId_archivo(cursor.getLong(offset + 0));
         entity.setId_usuario(cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1));
         entity.setTipo(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setRuta(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
-        entity.setNombre(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
-        entity.setDescripcion(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
-        entity.setEstado(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
+        entity.setMedia_type(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setRuta(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setNombre(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
+        entity.setDescripcion(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
+        entity.setEstado(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
      }
     
     @Override

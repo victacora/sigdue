@@ -4,6 +4,7 @@ import com.sigdue.webservice.modelo.Predial;
 import com.sigdue.webservice.modelo.UbiGeo;
 import com.sigdue.webservice.modelo.Usuario;
 import com.sigdue.webservice.modelo.WSSIGDUEResult;
+
 import okhttp3.MultipartBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -32,7 +33,7 @@ public interface WSSIGDUEInterface {
 
     @POST("multimedia")
     @Multipart
-    Call<ResponseBody> crearMultimedia(@Header("DANE_SEDE") String daneSede, @Header("FILE_NAME") String nombre, @Header("TIPO_MULTIMEDIA") String tipoArchivo, @Part MultipartBody.Part archivo, @Header("FILE_MIMETYPE") String fileMimeType);
+    Call<ResponseBody> crearMultimedia(@Header("DANE_SEDE") String daneSede, @Header("FILE_NAME") String nombre, @Header("DESCRIPCION") String descripcion, @Header("FILE_CHARACTERSET") String charSet, @Header("TIPO_MULTIMEDIA") String tipoArchivo, @Part MultipartBody.Part archivo, @Header("FILE_MIMETYPE") String fileMimeType);
 
     @GET("clase_predio")
     Call<WSSIGDUEResult> listarClasePredio();

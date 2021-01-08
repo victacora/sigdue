@@ -622,7 +622,7 @@
                 <com.iangclifton.android.floatlabel.FloatLabel
                     android:id="@+id/propietarios"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="100dp"
                     android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
                     android:background="@null"
                     android:gravity="top|left"
@@ -630,8 +630,8 @@
                     android:imeOptions="actionNext"
                     android:inputType="textMultiLine"
                     android:layout="@layout/float_label"
-                    android:lines="1"
-                    android:maxLines="1"
+                    android:lines="5"
+                    android:maxLines="5"
                     android:nextFocusForward="@+id/fecha_tenencia"
                     android:paddingLeft="@dimen/add_predio_padding"
                     android:paddingRight="@dimen/add_predio_padding"
@@ -718,7 +718,7 @@
                     android:background="@null"
                     android:gravity="top|left"
                     android:hint="Fecha tenencia"
-                    android:inputType="textMultiLine"
+                    android:inputType="text"
                     android:layout="@layout/float_label"
                     android:lines="1"
                     android:maxLines="1"
@@ -727,48 +727,11 @@
                     android:textSize="26sp" />
             </LinearLayout>
             <LinearLayout
-                android:id="@+id/formularioFotos"
+                android:id="@+id/formularioMultimedia"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:visibility="gone">
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:src="@color/drawer_divider" />
-
-                <com.iangclifton.android.floatlabel.FloatLabel
-                    android:id="@+id/url_video"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
-                    android:background="@null"
-                    android:gravity="top|left"
-                    android:hint="Url video"
-                    android:imeOptions="actionDone"
-                    android:inputType="text"
-                    android:layout="@layout/float_label"
-                    android:lines="1"
-                    android:maxLines="1"
-                    android:paddingLeft="@dimen/add_predio_padding"
-                    android:paddingRight="@dimen/add_predio_padding"
-                    android:textSize="26sp" />
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:src="@color/drawer_divider" />
-
-                <Button
-                    android:id="@+id/btnTomarFoto"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:background="#339933"
-                    android:layout_marginBottom="5dp"
-                    android:textColor="#FFFFFF"
-                    android:gravity="center"
-                    android:text="Tomar foto" />
 
                 <ImageView
                     android:layout_width="match_parent"
@@ -776,17 +739,17 @@
                     android:src="@color/drawer_divider" />
 
                 <LinearLayout
-                    android:id="@+id/mostrarFotos"
+                    android:id="@+id/mostrarArchivos"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_marginBottom="5dp"
-                    android:visibility="gone">
+                    android:layout_marginBottom="5dp">
 
                     <uk.co.senab.photoview.PhotoView
                         android:id="@+id/imagen"
                         android:layout_width="match_parent"
-                        android:layout_height="200dp"
+                        android:layout_height="250dp"
+                        android:background="@color/actionbar_divider"
                         android:scaleType="centerCrop"
                         android:layout_marginBottom="5dp"/>
 
@@ -837,14 +800,60 @@
                             android:layout_weight="1"
                             android:text="Siguiente" />
                     </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/mostrarURlVideo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="5dp">
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:src="@color/drawer_divider" />
+
+                    <com.iangclifton.android.floatlabel.FloatLabel
+                        android:id="@+id/url_video"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
+                        android:background="@null"
+                        android:gravity="top|left"
+                        android:hint="Url video"
+                        android:inputType="text"
+                        android:layout="@layout/float_label"
+                        android:lines="1"
+                        android:maxLines="1"
+                        android:paddingLeft="@dimen/add_predio_padding"
+                        android:paddingRight="@dimen/add_predio_padding"
+                        android:textSize="26sp" />
+                    </LinearLayout>
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:src="@color/drawer_divider" />
+
+                    <com.iangclifton.android.floatlabel.FloatLabel
+                        android:id="@+id/descripcion"
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp"
+                        android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
+                        android:background="@null"
+                        android:gravity="top|left"
+                        android:hint="Descripción"
+                        android:inputType="textMultiLine"
+                        android:layout="@layout/float_label"
+                        android:lines="5"
+                        android:maxLines="5"
+                        android:paddingLeft="@dimen/add_predio_padding"
+                        android:paddingRight="@dimen/add_predio_padding"
+                        android:textSize="26sp" />
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:src="@color/drawer_divider" />
+
                 </LinearLayout>
-            </LinearLayout>
-            <LinearLayout
-                android:id="@+id/formularioMultimedia"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone">
             <Button
                 android:id="@+id/btnCargarArchivos"
                 android:layout_width="match_parent"
@@ -855,6 +864,17 @@
                 android:background="#339933"
                 android:textColor="#FFFFFF"
                 android:text="Adjuntar archivos" />
+
+                <Button
+                    android:id="@+id/btnCargarVideo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="5dp"
+                    android:gravity="center"
+                    android:background="#339933"
+                    android:textColor="#FFFFFF"
+                    android:text="Adjuntar URL video" />
 
         </LinearLayout>
         </LinearLayout>
