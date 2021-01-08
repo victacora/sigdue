@@ -427,6 +427,7 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                                     if (archivos.size() > 0 && posArchivo >= 0 && posArchivo < archivos.size()) {
                                         desplegarArchivo(posArchivo);
                                     } else if (archivos.size() == 0) {
+                                        mostrarArchivos.setVisibility(View.GONE);
                                         mImageView.setImageDrawable(AgregarInformacionSIDGDUEActivity.this.getResources().getDrawable(R.color.actionbar_divider));
                                         mAttacher.update();
                                     }
