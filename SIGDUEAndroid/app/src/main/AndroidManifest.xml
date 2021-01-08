@@ -45,17 +45,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name="com.sigdue.activity.ListarInformacionSIGDUEActivity"
             android:label="@string/informacion_title"
             android:screenOrientation="portrait">
         </activity>
+
         <activity
             android:name="com.sigdue.activity.AgregarInformacionSIDGDUEActivity"
             android:label="@string/informacion_title"
             android:screenOrientation="portrait" />
 
-        -
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.provider"
