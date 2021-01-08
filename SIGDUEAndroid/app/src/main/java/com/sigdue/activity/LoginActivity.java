@@ -36,6 +36,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncTaskSIGDUE 
     private ParametrosAsyncTask parametrosAsyncTask = null;
     private ProgressDialogFragment mProgressDialog = null;
     private TextView mMessage;
+    private TextView version;
     private String mPassword;
     private EditText mPasswordEdit;
     private String mUsername;
@@ -66,8 +67,8 @@ public class LoginActivity extends AppCompatActivity implements AsyncTaskSIGDUE 
                     }
                 }
             });
-
-
+            version = findViewById(R.id.version);
+            version.setText(UtilidadesGenerales.getVersionApp());
             if (app.getIdUsuario() != -1) {
                 Usuario persona = usuarioDao.queryBuilder().where(UsuarioDao.Properties.Id_usuario.eq(app.getIdUsuario())).unique();
                 {

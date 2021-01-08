@@ -423,10 +423,10 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                                         archivoDao.delete(archivo);
                                     }
                                     archivos.remove(posArchivo);
-                                    posArchivo--;
-                                    if (archivos.size() > 0 && posArchivo >= 0 && posArchivo < archivos.size()) {
+                                    posArchivo=0;
+                                    if (!archivos.isEmpty()) {
                                         desplegarArchivo(posArchivo);
-                                    } else if (archivos.size() == 0) {
+                                    } else {
                                         mostrarArchivos.setVisibility(View.GONE);
                                         mImageView.setImageDrawable(AgregarInformacionSIDGDUEActivity.this.getResources().getDrawable(R.color.actionbar_divider));
                                         mAttacher.update();

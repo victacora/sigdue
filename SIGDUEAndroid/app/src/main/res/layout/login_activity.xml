@@ -11,6 +11,7 @@
         android:src="@drawable/login_background" />
 
     <LinearLayout
+        android:id="@+id/login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
@@ -111,5 +112,18 @@
             android:onClick="handleLogin"
             android:text="@string/login_activity_ok_button"
              />
+
+        <TextView
+            android:id="@+id/version"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Versión 1.1"
+            android:gravity="center_horizontal"
+            android:layout_gravity="center_horizontal"
+            android:textColor="#339933"
+            android:layout_marginTop="15dp"
+            android:textSize="15sp" />
+
     </LinearLayout>
+
 </RelativeLayout>

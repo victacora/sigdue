@@ -67,6 +67,8 @@ public class AutenticarUsuarioAsyncTask extends AsyncTask<String, String, Usuari
                             usuarioDao.insert(u);
                         } else if (usuarios != null && !usuarios.isEmpty()) {
                             u.setId_usuario(usuarios.get(0).getId_usuario());
+                            if(u.getLatitude().equals("Sin Datos"))u.setLatitude(usuarios.get(0).getLatitude());
+                            if(u.getLongitude().equals("Sin Datos"))u.setLongitude(usuarios.get(0).getLongitude());
                             usuarioDao.update(u);
                         }
                         publishProgress("Usuario autenticado remotamente.");
