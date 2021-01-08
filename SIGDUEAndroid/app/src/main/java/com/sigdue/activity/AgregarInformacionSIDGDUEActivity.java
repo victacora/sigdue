@@ -216,13 +216,6 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                 usuario = usuarios.get(0);
             }
 
-            List<Archivo> archivosBd = archivoDao.queryBuilder().where(ArchivoDao.Properties.Id_usuario.eq(app.getIdUsuario())).list();
-            if (archivosBd != null && !archivosBd.isEmpty()) {
-                archivos = archivosBd;
-            } else {
-                archivos = new ArrayList<>();
-            }
-
             cmbClasePredio = (SearchableSpinner) findViewById(R.id.cmbClasePredio);
             setComboConf(cmbClasePredio, "Clase predio", Constants.CLASE_PREDIO);
 
@@ -363,7 +356,8 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                     archivo.setEstado("P");
                     archivos.add(archivo);
                     urlVideo.setText("");
-                    desplegarArchivo(archivos.size() - 1);
+                    posArchivo = archivos.size() - 1;
+                    desplegarArchivo(posArchivo);
                 }
             });
             this.btnCargarArchivos = (Button) findViewById(R.id.btnCargarArchivos);
@@ -375,12 +369,23 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                                 "image/*"
                         };
                         Intent intent = new Intent();
-                        intent.setType("*/*");
-                        intent.setAction(Intent.ACTION_GET_CONTENT);
-                        intent.putExtra(Intent.EXTRA_MIME_TYPES, ACCEPT_MIME_TYPES);
-                        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                        startActivityForResult(Intent.createChooser(intent, "Adjuntar archivos"), PICK_FILES);
+                        if (Build.VERSION.SDK_INT < 19) {
+                            intent.setType("*/*");
+                            intent.setAction(Intent.ACTION_GET_CONTENT);
+                            intent.putExtra(Intent.EXTRA_MIME_TYPES, ACCEPT_MIME_TYPES);
+                            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                            startActivityForResult(Intent.createChooser(intent, "Adjuntar archivos"), PICK_FILES);
+                        } else {
+                            intent = new Intent();
+                            intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+                            intent.addCategory(Intent.CATEGORY_OPENABLE);
+                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                            intent.setType("*/*");
+                            intent.putExtra(Intent.EXTRA_MIME_TYPES, ACCEPT_MIME_TYPES);
+                            startActivityForResult(Intent.createChooser(intent, "Adjuntar archivos"), PICK_FILES);
 
+                        }
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -471,6 +476,14 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                     }
                 }
             });
+            List<Archivo> archivosBd = archivoDao.queryBuilder().where(ArchivoDao.Properties.Id_usuario.eq(app.getIdUsuario())).list();
+            if (archivosBd != null && !archivosBd.isEmpty() && task == FORMULARIO_CARGAR_MULTIMEDIA) {
+                archivos = archivosBd;
+                mostrarArchivos.setVisibility(View.VISIBLE);
+                desplegarArchivo(posArchivo);
+            } else {
+                archivos = new ArrayList<>();
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -748,9 +761,9 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                 actualizarInformacionPredioAsyncTask.execute(predial);
 
             } else if (task == FORMULARIO_CARGAR_MULTIMEDIA) {
-                archivoDao.insertInTx(archivos);
+                archivoDao.insertOrReplaceInTx(archivos);
                 showProgress("Actualizando multimedia");
-                cargarMultimediaAsyncTask = new CargarMultimediaAsyncTask(this, getContentResolver(), daoSession, mProgressDialogConsultaInfoSIGDUE);
+                cargarMultimediaAsyncTask = new CargarMultimediaAsyncTask(this,AgregarInformacionSIDGDUEActivity.this, daoSession, mProgressDialogConsultaInfoSIGDUE);
                 cargarMultimediaAsyncTask.execute(String.valueOf(usuario.getId_usuario()), usuario.getUsuario());
             } else if (task == FORMULARIO_ACTUALIZAR_UBICACION) {
                 this.usuario.setLongitude(String.valueOf(longitude));
@@ -861,11 +874,14 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                 mostrarArchivos.setVisibility(View.VISIBLE);
                 this.descripcion.setText(this.archivos.get(pos).getDescripcion());
                 mostrarUrl.setVisibility(View.GONE);
-                if (this.archivos.get(pos).getTipo().equals("image/jpeg")) {
+
+                if (this.archivos.get(pos).getTipo().equals("Imagen")) {
+                    final int takeFlags = (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    getContentResolver().takePersistableUriPermission(Uri.parse(this.archivos.get(pos).getRuta()), takeFlags);
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.parse(this.archivos.get(pos).getRuta()));
                     this.mImageView.setImageBitmap(bitmap);
                     this.mAttacher.update();
-                } else if (this.archivos.get(pos).getTipo().equals("application/pdf")) {
+                } else if (this.archivos.get(pos).getTipo().equals("Pdf")) {
                     mImageView.setImageDrawable(AgregarInformacionSIDGDUEActivity.this.getResources().getDrawable(R.drawable.pdf));
                     this.mAttacher.update();
                 } else {
@@ -919,7 +935,10 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                     archivo.setEstado("P");
                     archivos.add(archivo);
                 }
-                if (!archivos.isEmpty()) desplegarArchivo(archivos.size() - 1);
+                if (!archivos.isEmpty()) {
+                    posArchivo = archivos.size() - 1;
+                    desplegarArchivo(posArchivo);
+                }
             }
         }
     }

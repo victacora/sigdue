@@ -59,7 +59,11 @@ public class AutenticarUsuarioAsyncTask extends AsyncTask<String, String, Usuari
                         u.setContrasena(contrasena);
                         resultadoAutenticacion = u;
                         List<Usuario> usuarios = usuarioDao.queryBuilder().where(UsuarioDao.Properties.Usuario.eq(usuario)).list();
+                        List<Usuario> id = usuarioDao.queryBuilder().orderDesc(UsuarioDao.Properties.Id_usuario).list();
                         if (usuarios != null && usuarios.isEmpty()) {
+                            if (id != null && !id.isEmpty())
+                                u.setId_usuario(id.get(0).getId_usuario() + 1);
+                            else u.setId_usuario(1);
                             usuarioDao.insert(u);
                         } else if (usuarios != null && !usuarios.isEmpty()) {
                             u.setId_usuario(usuarios.get(0).getId_usuario());

@@ -1,6 +1,8 @@
 package com.sigdue.asynctask;
 
 import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -33,13 +35,13 @@ public class CargarMultimediaAsyncTask extends AsyncTask<String, String, Boolean
     private final String TAG = "CarMultiAsyncTask";
     private final ProgressDialogFragment progressDialogFragment;
     private final DaoSession daoSession;
-    private final ContentResolver contentResolver;
+    private final Context activity;
 
-    public CargarMultimediaAsyncTask(AsyncTaskSIGDUE context, ContentResolver contentResolver, DaoSession daoSession, ProgressDialogFragment progressDialogFragment) {
+    public CargarMultimediaAsyncTask(AsyncTaskSIGDUE context, Context activity, DaoSession daoSession, ProgressDialogFragment progressDialogFragment) {
         this.context = context;
         this.progressDialogFragment = progressDialogFragment;
         this.daoSession = daoSession;
-        this.contentResolver = contentResolver;
+        this.activity = activity;
     }
 
 
@@ -54,9 +56,17 @@ public class CargarMultimediaAsyncTask extends AsyncTask<String, String, Boolean
                 List<Archivo> archivos = archivoDao.queryBuilder().where(ArchivoDao.Properties.Estado.eq("P"), ArchivoDao.Properties.Id_usuario.eq(userId)).list();
                 for (int i = 0; archivos != null && i < archivos.size(); i++) {
                     Archivo archivo = archivos.get(i);
-                    Uri uri = Uri.parse(archivo.getRuta());
-                    InputStream iStream = contentResolver.openInputStream(uri);
-                    byte[] body = archivo.getTipo().equals("Video") ? archivo.getNombre().getBytes() : getBytes(iStream);
+                    byte[] body = null;
+                    if (archivo.getTipo().equals("Video")) {
+                        body = archivo.getNombre().getBytes();
+                    } else {
+                        Uri uri = Uri.parse(archivo.getRuta());
+                        final int takeFlags = (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                        activity.getContentResolver().takePersistableUriPermission(uri, takeFlags);
+                        InputStream iStream = activity.getContentResolver().openInputStream(uri);
+                        body = getBytes(iStream);
+                    }
+
                     if (body != null && body.length > 0) {
                         String mimeType = archivo.getMedia_type();
                         MediaType mediaType = null;
@@ -68,16 +78,15 @@ public class CargarMultimediaAsyncTask extends AsyncTask<String, String, Boolean
                         Call<ResponseBody> serviceCall = service.crearMultimedia(dane, archivo.getNombre(), archivo.getDescripcion(), "", archivo.getTipo(), multimedia, archivo.getMedia_type());
                         Response<ResponseBody> response = serviceCall.execute();
                         if (response != null && response.isSuccessful()) {
-                            publishProgress("Archivo: " + archivo.getNombre() + " Tipo: " + archivo.getTipo() + "publicado correctamente.");
+                            publishProgress("Archivo: " + archivo.getNombre() + " Tipo: " + archivo.getTipo() + " publicado correctamente.");
                             archivo.setEstado("G");
                             archivoDao.update(archivo);
                             Thread.sleep(SLEEP_PROGRESS_MAESTROS);
                         }
                     }
-                    archivos = archivoDao.queryBuilder().where(ArchivoDao.Properties.Estado.eq("P"), ArchivoDao.Properties.Id_usuario.eq(userId)).list();
-                    return archivos != null && archivos.isEmpty();
                 }
-                return false;
+                archivos = archivoDao.queryBuilder().where(ArchivoDao.Properties.Estado.eq("P"), ArchivoDao.Properties.Id_usuario.eq(userId)).list();
+                return archivos != null && archivos.isEmpty();
             } else {
                 publishProgress("No existe conexión a internet.");
             }
@@ -92,6 +101,7 @@ public class CargarMultimediaAsyncTask extends AsyncTask<String, String, Boolean
     }
 
     public byte[] getBytes(InputStream inputStream) throws IOException {
+        if (inputStream == null) return null;
         ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
         int bufferSize = 1024;
         byte[] buffer = new byte[bufferSize];
