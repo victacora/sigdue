@@ -921,6 +921,7 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                         archivo.setMedia_type(cR.getType(uri));
                         archivo.setTipo(archivo.getMedia_type().equals("image/jpeg") ? "Imagen" : "Pdf");
                         archivo.setNombre(getFileName(uri));
+                        archivo.setDescripcion(archivo.getNombre());
                         archivo.setEstado("P");
                         archivos.add(archivo);
                     }
@@ -932,12 +933,13 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                     archivo.setMedia_type(cR.getType(uri));
                     archivo.setTipo(archivo.getMedia_type().equals("image/jpeg") ? "Imagen" : "Pdf");
                     archivo.setNombre(getFileName(uri));
+                    archivo.setDescripcion(archivo.getNombre());
                     setIdArchivo(archivo);
                     archivo.setEstado("P");
                     archivos.add(archivo);
                 }
                 if (!archivos.isEmpty()) {
-                    posArchivo = archivos.size() - 1;
+                    posArchivo = 0;
                     desplegarArchivo(posArchivo);
                 }
             }
