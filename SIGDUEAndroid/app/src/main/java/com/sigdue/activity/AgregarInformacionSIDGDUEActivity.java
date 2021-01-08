@@ -142,6 +142,7 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
     private LinearLayout formularioUbicacion;
     private LinearLayout formularioPredio;
     private LinearLayout formularioMultimedia;
+    private LinearLayout mostrarArchivos;
     private LinearLayout mostrarUrl;
     private TextView titluloformulario;
     private ActualizarUbiGeoAsyncTask actualizarUbiGeoAsyncTask;
@@ -307,6 +308,9 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
             );
             mostrarUrl = findViewById(R.id.mostrarURlVideo);
             mostrarUrl.setVisibility(View.GONE);
+            mostrarArchivos = findViewById(R.id.mostrarArchivos);
+            mostrarArchivos.setVisibility(View.GONE);
+
             descripcion = ((FloatLabel) findViewById(R.id.descripcion)).getEditText();
             descripcion.addTextChangedListener(
                     new TextWatcher() {
@@ -854,6 +858,7 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
     public void desplegarArchivo(int pos) {
         try {
             if (this.archivos != null && this.archivos.size() > 0) {
+                mostrarArchivos.setVisibility(View.VISIBLE);
                 this.descripcion.setText(this.archivos.get(pos).getDescripcion());
                 mostrarUrl.setVisibility(View.GONE);
                 if (this.archivos.get(pos).getTipo().equals("image/jpeg")) {
