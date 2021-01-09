@@ -26,6 +26,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -144,6 +145,7 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
     private LinearLayout formularioMultimedia;
     private LinearLayout mostrarArchivos;
     private LinearLayout mostrarUrl;
+    private LinearLayout mostrarCualTipoDocumento;
     private TextView titluloformulario;
     private ActualizarUbiGeoAsyncTask actualizarUbiGeoAsyncTask;
     private ActualizarInformacionPredioAsyncTask actualizarInformacionPredioAsyncTask;
@@ -240,8 +242,23 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
             cmbTopografia = (SearchableSpinner) findViewById(R.id.cmbTopografia);
             setComboConf(cmbTopografia, "Topografía", Constants.TOPOGRAFIA);
 
+            mostrarCualTipoDocumento= findViewById(R.id.mostrarCualTipoDocumento);
+            mostrarCualTipoDocumento.setVisibility(View.GONE);
+
             cmbTipoDocumento = (SearchableSpinner) findViewById(R.id.cmbTipoDocumento);
             setComboConf(cmbTipoDocumento, "Tipo documento", Constants.TIPO_DOCUMENTO);
+            this.cmbTipoDocumento.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    if(((Parametro) parent.getItemAtPosition(position)).getParametro().equals("09 - Otro Documento"))  mostrarCualTipoDocumento.setVisibility(View.VISIBLE);
+                    else   mostrarCualTipoDocumento.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
 
             cmbZonaAislamiento = (SearchableSpinner) findViewById(R.id.cmbZonaAislamiento);
             setComboConf(cmbZonaAislamiento, "Zona de aislamiento", Constants.ZONA_AISLAMIENTO);
@@ -299,6 +316,7 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                         }
                     }
             );
+
             mostrarUrl = findViewById(R.id.mostrarURlVideo);
             mostrarUrl.setVisibility(View.GONE);
             mostrarArchivos = findViewById(R.id.mostrarArchivos);

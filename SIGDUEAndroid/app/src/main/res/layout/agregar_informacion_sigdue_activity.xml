@@ -453,29 +453,35 @@
                         app:hintText="Seleccione el tipo documento" />
                 </LinearLayout>
 
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:src="@color/drawer_divider" />
-
-                <com.iangclifton.android.floatlabel.FloatLabel
-                    android:id="@+id/cual_tipo_documento"
+                <LinearLayout
+                    android:id="@+id/mostrarCualTipoDocumento"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
-                    android:background="@null"
-                    android:gravity="top|left"
-                    android:hint="Cual tipo documento"
-                    android:imeOptions="actionNext"
-                    android:inputType="textMultiLine"
-                    android:layout="@layout/float_label"
-                    android:lines="1"
-                    android:maxLines="1"
-                    android:nextFocusForward="@+id/nro_documento_legalizacion"
-                    android:paddingLeft="@dimen/add_predio_padding"
-                    android:paddingRight="@dimen/add_predio_padding"
-                    android:textSize="26sp" />
+                    android:orientation="vertical"
+                    android:layout_marginBottom="5dp">
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:src="@color/drawer_divider" />
+
+                        <com.iangclifton.android.floatlabel.FloatLabel
+                            android:id="@+id/cual_tipo_documento"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/add_inmovilizacion_section_padding"
+                            android:background="@null"
+                            android:gravity="top|left"
+                            android:hint="Cual tipo documento"
+                            android:imeOptions="actionNext"
+                            android:inputType="textMultiLine"
+                            android:layout="@layout/float_label"
+                            android:lines="1"
+                            android:maxLines="1"
+                            android:nextFocusForward="@+id/nro_documento_legalizacion"
+                            android:paddingLeft="@dimen/add_predio_padding"
+                            android:paddingRight="@dimen/add_predio_padding"
+                            android:textSize="26sp" />
+                </LinearLayout>
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="1dp"

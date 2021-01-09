@@ -1,6 +1,20 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        debug {
+            storeFile file('C:\\Users\\losth\\OneDrive\\Documentos\\sigdue\\key.p12')
+            storePassword 'kernelclick2020@'
+            keyPassword 'kernelclick2020@'
+            keyAlias 'KernelClickKey'
+        }
+        release {
+            storeFile file('C:\\Users\\losth\\OneDrive\\Documentos\\sigdue\\key.p12')
+            keyAlias 'KernelClickKey'
+            storePassword 'kernelclick2020@'
+            keyPassword 'kernelclick2020@'
+        }
+    }
     compileSdkVersion 29
     buildToolsVersion '29.0.3'
     defaultConfig {
@@ -15,8 +29,17 @@ android {
     }
     buildTypes {
         release {
+            minifyEnabled true
+            debuggable false
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+        debug {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
         }
     }
     compileOptions {
