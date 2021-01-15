@@ -10,6 +10,7 @@
 		android:orderInCategory="12">
 		<menu>
 			<item android:id="@+id/menu_inm_sincronizar_maestros" android:title="@string/inm_sincronizar_maestros" />
+			<item android:id="@+id/menu_inm_sincronizar" android:title="@string/inm_sincronizar" />
 			<item android:id="@+id/menu_inm_cerrar" android:title="@string/inm_cerrar" />
 		</menu>
 	</item>

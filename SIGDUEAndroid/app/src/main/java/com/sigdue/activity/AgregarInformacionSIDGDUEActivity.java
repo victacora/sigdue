@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -60,14 +59,14 @@ import com.sigdue.utilidadesgenerales.UtilidadesGenerales;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
+import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -144,6 +143,7 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
     private LinearLayout formularioPredio;
     private LinearLayout formularioMultimedia;
     private LinearLayout mostrarArchivos;
+    private LinearLayout mostrarMapa;
     private LinearLayout mostrarUrl;
     private LinearLayout mostrarCualTipoDocumento;
     private TextView titluloformulario;
@@ -162,6 +162,8 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
             }
         }
     };
+    private Marker startMarker;
+    private IMapController mapController;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -192,9 +194,12 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
             Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
 
             locationTrack = new LocationTrack(AgregarInformacionSIDGDUEActivity.this);
+            mostrarMapa = findViewById(R.id.mostrarMapa);
+            mostrarMapa.setVisibility(UtilidadesGenerales.isOnline() ? View.VISIBLE : View.GONE);
             map = (MapView) findViewById(R.id.map);
             map.setTileSource(TileSourceFactory.MAPNIK);
             map.setMultiTouchControls(true);
+            map.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
 
             latitudEditext = ((FloatLabel) findViewById(R.id.latitud)).getEditText();
             setSoloLectura(latitudEditext, false);
@@ -242,7 +247,7 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
             cmbTopografia = (SearchableSpinner) findViewById(R.id.cmbTopografia);
             setComboConf(cmbTopografia, "Topografía", Constants.TOPOGRAFIA);
 
-            mostrarCualTipoDocumento= findViewById(R.id.mostrarCualTipoDocumento);
+            mostrarCualTipoDocumento = findViewById(R.id.mostrarCualTipoDocumento);
             mostrarCualTipoDocumento.setVisibility(View.GONE);
 
             cmbTipoDocumento = (SearchableSpinner) findViewById(R.id.cmbTipoDocumento);
@@ -250,8 +255,9 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
             this.cmbTipoDocumento.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    if(((Parametro) parent.getItemAtPosition(position)).getParametro().equals("09 - Otro Documento"))  mostrarCualTipoDocumento.setVisibility(View.VISIBLE);
-                    else   mostrarCualTipoDocumento.setVisibility(View.GONE);
+                    if (((Parametro) parent.getItemAtPosition(position)).getParametro().equals("09 - Otro Documento"))
+                        mostrarCualTipoDocumento.setVisibility(View.VISIBLE);
+                    else mostrarCualTipoDocumento.setVisibility(View.GONE);
                 }
 
                 @Override
@@ -441,7 +447,7 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                                         archivoDao.delete(archivo);
                                     }
                                     archivos.remove(posArchivo);
-                                    posArchivo=0;
+                                    posArchivo = 0;
                                     if (!archivos.isEmpty()) {
                                         desplegarArchivo(posArchivo);
                                     } else {
@@ -516,34 +522,40 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
             latitudEditext.setText(String.valueOf(latitude));
             longitudEditext.setText(String.valueOf(longitude));
 
-            IMapController mapController = map.getController();
+            mapController = map.getController();
             mapController.setZoom(19.0);
             GeoPoint startPoint = new GeoPoint(latitude, longitude);
             mapController.setCenter(startPoint);
-            Marker startMarker = new Marker(map);
+            startMarker = new Marker(map);
             startMarker.setPosition(startPoint);
+            startMarker.setTitle("Establezca su ubicación");
             startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-            startMarker.setDraggable(true);
-            startMarker.setOnMarkerDragListener(new Marker.OnMarkerDragListener() {
+
+            MapEventsReceiver mReceive = new MapEventsReceiver() {
                 @Override
-                public void onMarkerDragStart(Marker marker) {
+                public boolean singleTapConfirmedHelper(GeoPoint p) {
+                    mapController.animateTo(p);
+                    actualizarPosicionMarcador(p.getLatitude(), p.getLongitude());
+                    return false;
                 }
 
                 @Override
-                public void onMarkerDragEnd(Marker marker) {
-                    latitude = marker.getPosition().getLatitude();
-                    longitude = marker.getPosition().getLongitude();
-                    latitudEditext.setText(String.valueOf(latitude));
-                    longitudEditext.setText(String.valueOf(longitude));
-                    marker.setPosition(new GeoPoint(marker.getPosition().getLatitude(), marker.getPosition().getLongitude()));
+                public boolean longPressHelper(GeoPoint p) {
+                    return false;
                 }
-
-                @Override
-                public void onMarkerDrag(Marker marker) {
-                }
-            });
+            };
+            map.getOverlays().add(new MapEventsOverlay(mReceive));
             map.getOverlays().add(startMarker);
+
         }
+    }
+
+    private void actualizarPosicionMarcador(double latitude, double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+        latitudEditext.setText(String.valueOf(latitude));
+        longitudEditext.setText(String.valueOf(longitude));
+        this.startMarker.setPosition(new GeoPoint(latitude, longitude));
     }
 
     private void incializarInformacionDelPredio() {
@@ -714,8 +726,6 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
 
 
     public void almacenarInformacionSIGDUE() {
-        AlertDialog.Builder builder;
-        AlertDialog alert;
         try {
             if (task == FORMULARIO_INFO_PREDIO) {
                 boolean actualizar = !(this.predial.getDane_sede() == null || this.predial.getDane_sede().isEmpty());
@@ -775,22 +785,27 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                 if (archivos != null) archivoDao.insertInTx(archivos);
                 if (actualizar) predialDao.update(this.predial);
                 else predialDao.insert(this.predial);
-                showProgress("Actualizando información del predio");
-                actualizarInformacionPredioAsyncTask = new ActualizarInformacionPredioAsyncTask(this, mProgressDialogConsultaInfoSIGDUE);
-                actualizarInformacionPredioAsyncTask.execute(predial);
-
+                if (UtilidadesGenerales.isOnline()) {
+                    showProgress("Actualizando información del predio");
+                    actualizarInformacionPredioAsyncTask = new ActualizarInformacionPredioAsyncTask(this, mProgressDialogConsultaInfoSIGDUE);
+                    actualizarInformacionPredioAsyncTask.execute(predial);
+                }
             } else if (task == FORMULARIO_CARGAR_MULTIMEDIA) {
                 archivoDao.insertOrReplaceInTx(archivos);
-                showProgress("Actualizando multimedia");
-                cargarMultimediaAsyncTask = new CargarMultimediaAsyncTask(this,AgregarInformacionSIDGDUEActivity.this, daoSession, mProgressDialogConsultaInfoSIGDUE);
-                cargarMultimediaAsyncTask.execute(String.valueOf(usuario.getId_usuario()), usuario.getUsuario());
+                if (UtilidadesGenerales.isOnline()) {
+                    showProgress("Actualizando multimedia");
+                    cargarMultimediaAsyncTask = new CargarMultimediaAsyncTask(this, AgregarInformacionSIDGDUEActivity.this, daoSession, mProgressDialogConsultaInfoSIGDUE);
+                    cargarMultimediaAsyncTask.execute(String.valueOf(usuario.getId_usuario()), usuario.getUsuario());
+                }
             } else if (task == FORMULARIO_ACTUALIZAR_UBICACION) {
                 this.usuario.setLongitude(String.valueOf(longitude));
                 this.usuario.setLatitude(String.valueOf(latitude));
                 this.usuarioDao.update(usuario);
-                showProgress("Actualizando ubicación");
-                actualizarUbiGeoAsyncTask = new ActualizarUbiGeoAsyncTask(this, mProgressDialogConsultaInfoSIGDUE);
-                actualizarUbiGeoAsyncTask.execute(usuario);
+                if (UtilidadesGenerales.isOnline()) {
+                    showProgress("Actualizando ubicación");
+                    actualizarUbiGeoAsyncTask = new ActualizarUbiGeoAsyncTask(this, mProgressDialogConsultaInfoSIGDUE);
+                    actualizarUbiGeoAsyncTask.execute(usuario);
+                }
             }
         } catch (Exception ex) {
             mostrarError();

@@ -22,7 +22,7 @@
     <string name="account_preferences_key">ConfigurarCuenta</string>
     <string name="account_preferences_title">ConfigurarCuenta</string>
     <string name="account_preferences_summary">Configurar sincronizacion y notificaciones.</string>
-    <string name="inm_sincronizar">Sincronizar información SIGDUE</string>
+    <string name="inm_sincronizar">Sincronizar información</string>
     <string name="inm_cerrar">Cerrar sesión</string>
     <string name="login_activity_ok_button">Iniciar sesión</string>
     <string name="login_activity_password_label">Contraseña</string>

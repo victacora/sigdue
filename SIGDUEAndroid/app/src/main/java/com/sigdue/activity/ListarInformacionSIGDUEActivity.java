@@ -3,13 +3,10 @@ package com.sigdue.activity;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,10 +18,15 @@ import android.view.MenuItem;
 import com.sigdue.Constants;
 import com.sigdue.R;
 import com.sigdue.aplication.AplicacionSIGDUE;
+import com.sigdue.asynctask.ActualizarInformacionPredioAsyncTask;
+import com.sigdue.asynctask.ActualizarUbiGeoAsyncTask;
 import com.sigdue.asynctask.AsyncTaskSIGDUE;
+import com.sigdue.asynctask.CargarMultimediaAsyncTask;
 import com.sigdue.asynctask.ParametrosAsyncTask;
 import com.sigdue.asynctask.ProgressDialogFragment;
 import com.sigdue.db.DaoSession;
+import com.sigdue.db.Predial;
+import com.sigdue.db.PredialDao;
 import com.sigdue.db.Usuario;
 import com.sigdue.db.UsuarioDao;
 import com.sigdue.listadapter.InformacionSIGDUERecyclerView;
@@ -47,7 +49,8 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity implement
     private EjecutarConsultarServiciosAsyncTask mConsultarinformacionSIGDUETask;
     RecyclerView rv;
     private UsuarioDao usuarioDao;
-
+    private PredialDao predialDao;
+    private int totalTareas = 0;
 
     private BroadcastReceiver mActualizarListaComparendosBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -66,6 +69,7 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity implement
         }
     };
 
+
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
@@ -76,7 +80,7 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity implement
             this.app = (AplicacionSIGDUE) getApplication();
             this.daoSession = this.app.getDaoSession();
             this.usuarioDao = this.daoSession.getUsuarioDao();
-
+            this.predialDao = this.daoSession.getPredialDao();
             this.rv = (RecyclerView) findViewById(R.id.rv);
             this.rv.setHasFixedSize(true);
             this.llm = new LinearLayoutManager(this);
@@ -125,6 +129,36 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity implement
                     showProgress("Actualizando maestros...");
                     asyncTask = new ParametrosAsyncTask(ListarInformacionSIGDUEActivity.this, daoSession, mProgressDialogConsultaInfoSIGDUE);
                     asyncTask.execute();
+                    result = true;
+                    break;
+                case R.id.menu_inm_sincronizar:
+                    showProgress("Publicando información...");
+                    Predial predial = null;
+                    Usuario usuario = null;
+
+                    List<Predial> infoPredial = predialDao.queryBuilder().where(PredialDao.Properties.Dane_sede.eq(app.getUsuario())).list();
+                    if (infoPredial != null && !infoPredial.isEmpty()) {
+                        predial = infoPredial.get(0);
+                    }
+
+                    List<Usuario> usuarios = usuarioDao.queryBuilder().where(UsuarioDao.Properties.Id_usuario.eq(app.getIdUsuario())).list();
+                    if (usuarios != null && usuarios.size() > 0) {
+                        usuario = usuarios.get(0);
+                    }
+
+                    ActualizarInformacionPredioAsyncTask actualizarInformacionPredioAsyncTask = new ActualizarInformacionPredioAsyncTask(this, mProgressDialogConsultaInfoSIGDUE);
+                    CargarMultimediaAsyncTask cargarMultimediaAsyncTask = new CargarMultimediaAsyncTask(this, this, daoSession, mProgressDialogConsultaInfoSIGDUE);
+                    ActualizarUbiGeoAsyncTask actualizarUbiGeoAsyncTask = new ActualizarUbiGeoAsyncTask(this, mProgressDialogConsultaInfoSIGDUE);
+                    totalTareas = 0;
+                    if (predial != null) {
+                        totalTareas = 1;
+                        actualizarInformacionPredioAsyncTask.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, predial);
+                    }
+                    if (usuario != null) {
+                        totalTareas += 2;
+                        cargarMultimediaAsyncTask.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, String.valueOf(usuario.getId_usuario()), usuario.getUsuario());
+                        actualizarUbiGeoAsyncTask.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, usuario);
+                    }
                     result = true;
                     break;
                 case R.id.menu_inm_cerrar:
@@ -209,7 +243,8 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity implement
 
     private void onConsultarInmovilizacionFinish(List<Usuario> informacionSIGDUE) {
         this.mConsultarinformacionSIGDUETask = null;
-        hideProgress();
+        if (totalTareas == 0 || totalTareas == 1) hideProgress();
+        else totalTareas--;
         if (informacionSIGDUE != null) {
             this.mAdapter = new InformacionSIGDUERecyclerView(informacionSIGDUE, daoSession, this, this);
             this.rv.setAdapter(this.mAdapter);

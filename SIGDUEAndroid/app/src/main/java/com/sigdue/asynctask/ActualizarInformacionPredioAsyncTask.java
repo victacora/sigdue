@@ -30,7 +30,7 @@ public class ActualizarInformacionPredioAsyncTask extends AsyncTask<Predial, Str
         try {
             WSSIGDUEInterface service = WSSIGDUEClient.getClient();
             Predial predial = params[0];
-            if (UtilidadesGenerales.isOnline()) {
+            if (UtilidadesGenerales.isOnline() && predial != null) {
                 com.sigdue.webservice.modelo.Predial predialJSON = new com.sigdue.webservice.modelo.Predial();
                 predialJSON.setP_DANE_SEDE(predial.getDane_sede() != null ? predial.getDane_sede() : "");
                 predialJSON.setP_COD_PREDIO(predial.getCod_predio() != null ? predial.getCod_predio() : "");
