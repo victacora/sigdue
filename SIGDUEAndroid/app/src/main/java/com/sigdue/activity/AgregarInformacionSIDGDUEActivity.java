@@ -785,27 +785,21 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
                 if (archivos != null) archivoDao.insertInTx(archivos);
                 if (actualizar) predialDao.update(this.predial);
                 else predialDao.insert(this.predial);
-                if (UtilidadesGenerales.isOnline()) {
-                    showProgress("Actualizando información del predio");
-                    actualizarInformacionPredioAsyncTask = new ActualizarInformacionPredioAsyncTask(this, mProgressDialogConsultaInfoSIGDUE);
-                    actualizarInformacionPredioAsyncTask.execute(predial);
-                }
+                showProgress("Actualizando información del predio");
+                actualizarInformacionPredioAsyncTask = new ActualizarInformacionPredioAsyncTask(this, mProgressDialogConsultaInfoSIGDUE);
+                actualizarInformacionPredioAsyncTask.execute(predial);
             } else if (task == FORMULARIO_CARGAR_MULTIMEDIA) {
                 archivoDao.insertOrReplaceInTx(archivos);
-                if (UtilidadesGenerales.isOnline()) {
-                    showProgress("Actualizando multimedia");
-                    cargarMultimediaAsyncTask = new CargarMultimediaAsyncTask(this, AgregarInformacionSIDGDUEActivity.this, daoSession, mProgressDialogConsultaInfoSIGDUE);
-                    cargarMultimediaAsyncTask.execute(String.valueOf(usuario.getId_usuario()), usuario.getUsuario());
-                }
+                showProgress("Actualizando multimedia");
+                cargarMultimediaAsyncTask = new CargarMultimediaAsyncTask(this, AgregarInformacionSIDGDUEActivity.this, daoSession, mProgressDialogConsultaInfoSIGDUE);
+                cargarMultimediaAsyncTask.execute(String.valueOf(usuario.getId_usuario()), usuario.getUsuario());
             } else if (task == FORMULARIO_ACTUALIZAR_UBICACION) {
                 this.usuario.setLongitude(String.valueOf(longitude));
                 this.usuario.setLatitude(String.valueOf(latitude));
                 this.usuarioDao.update(usuario);
-                if (UtilidadesGenerales.isOnline()) {
-                    showProgress("Actualizando ubicación");
-                    actualizarUbiGeoAsyncTask = new ActualizarUbiGeoAsyncTask(this, mProgressDialogConsultaInfoSIGDUE);
-                    actualizarUbiGeoAsyncTask.execute(usuario);
-                }
+                showProgress("Actualizando ubicación");
+                actualizarUbiGeoAsyncTask = new ActualizarUbiGeoAsyncTask(this, mProgressDialogConsultaInfoSIGDUE);
+                actualizarUbiGeoAsyncTask.execute(usuario);
             }
         } catch (Exception ex) {
             mostrarError();
