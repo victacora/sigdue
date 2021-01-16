@@ -1,5 +1,8 @@
 package com.sigdue.webservice.api;
 
+import com.sigdue.R;
+import com.sigdue.utilidadesgenerales.UtilidadesGenerales;
+
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
@@ -10,20 +13,25 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static com.sigdue.Constants.BASE_URL_API;
-
 
 public class WSSIGDUEClient
 {
     private static OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
     public static Retrofit retrofit;
     private static WSSIGDUEInterface wssigdueInterface;
+    private static String urlRestService;
+    private static int tiempoTimeOut;
 
-    public static WSSIGDUEInterface getClient() {
+    public static WSSIGDUEInterface getClient() throws Exception {
         if (wssigdueInterface == null) {
-            Retrofit.Builder builder = new Retrofit.Builder().baseUrl(BASE_URL_API).addConverterFactory(GsonConverterFactory.create());
-            httpClient.readTimeout(5, TimeUnit.MINUTES);
-            httpClient.connectTimeout(5, TimeUnit.MINUTES);
+            urlRestService = (String) UtilidadesGenerales.leerSharedPreferences(R.string.pref_url_api_key, R.string.pref_url_api_default, UtilidadesGenerales.STRING_TYPE);
+            tiempoTimeOut = Integer.parseInt((String) UtilidadesGenerales.leerSharedPreferences(R.string.pref_timeout_key, R.string.pref_timeout_default, UtilidadesGenerales.STRING_TYPE));
+
+            Retrofit.Builder builder = new Retrofit.Builder().baseUrl(urlRestService)
+                    .addConverterFactory(GsonConverterFactory.create());
+            httpClient.readTimeout(tiempoTimeOut, TimeUnit.SECONDS);
+            httpClient.connectTimeout(tiempoTimeOut, TimeUnit.SECONDS);
+
             httpClient.interceptors().add(new Interceptor() {
                 @Override
                 public Response intercept(Chain chain) throws IOException {

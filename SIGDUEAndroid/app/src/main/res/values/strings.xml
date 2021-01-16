@@ -89,10 +89,12 @@
     <string name="pref_tipodocumento_summary">Indique el tipo de documento a seleccionar por defecto al realizar comparendos</string>
     <string name="pref_tipodocumento_title">Configuracón tipo documento comparendos</string>
     <string name="pref_transito_title">Configuración tránsito</string>
-    <string name="pref_url_accesoria">Establesca la URL a los servicios Accesorias</string>
-    <string name="pref_url_accesoria_default">http://173.201.37.144:60208/ServiciosComparendosMovilesNuevos/ServiciosAccesoriasCompMovilesPort?wsdl</string>
-    <string name="pref_url_accesoria_key">pref_url_accesoria_key</string>
-    <string name="pref_url_accesoria_title">Servicio accesoria</string>
+
+    <string name="pref_url_api">Establesca la URL al API de servicios SIGDUE</string>
+    <string name="pref_url_api_default">http://ssipc.oracleapexservices.com/apex/restfull92/sig/</string>
+    <string name="pref_url_api_key">pref_url_api_key</string>
+    <string name="pref_url_api_title">URL API servicio SIGDUE</string>
+
     <string name="pref_url_comp_consultas">Establezca la URL a los servicios Consulta Comparendos</string>
     <string name="pref_url_comp_consultas_default">http://173.201.37.144:60208/ServiciosComparendosMovilesNuevos/ServiciosGeneralesCompPort?wsdl</string>
     <string name="pref_url_comp_consultas_key">pref_url_comp_consultas_key</string>

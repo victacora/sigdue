@@ -15,6 +15,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sigdue.R;
@@ -43,6 +44,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncTaskSIGDUE 
     private EditText mUsernameEdit;
     private DaoSession daoSession;
     private UsuarioDao usuarioDao;
+    private ImageView btnConfiguracion;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -83,6 +85,14 @@ public class LoginActivity extends AppCompatActivity implements AsyncTaskSIGDUE 
                     }
                 }
             }
+            btnConfiguracion = findViewById(R.id.btnConfiguracion);
+            btnConfiguracion.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(LoginActivity.this, ConfiguracionActivity.class);
+                    startActivity(intent);
+                }
+            });
         } catch (Exception ex) {
             ex.printStackTrace();
         }
