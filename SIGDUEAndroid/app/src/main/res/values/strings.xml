@@ -90,10 +90,10 @@
     <string name="pref_tipodocumento_title">Configuracón tipo documento comparendos</string>
     <string name="pref_transito_title">Configuración tránsito</string>
 
-    <string name="pref_url_api">Establesca la URL al API de servicios SIGDUE</string>
+    <string name="pref_url_api">Establezca la URL del API de servicios SIGDUE</string>
     <string name="pref_url_api_default">http://ssipc.oracleapexservices.com/apex/restfull92/sig/</string>
     <string name="pref_url_api_key">pref_url_api_key</string>
-    <string name="pref_url_api_title">URL API servicio SIGDUE</string>
+    <string name="pref_url_api_title">URL api servicio</string>
 
     <string name="pref_url_comp_consultas">Establezca la URL a los servicios Consulta Comparendos</string>
     <string name="pref_url_comp_consultas_default">http://173.201.37.144:60208/ServiciosComparendosMovilesNuevos/ServiciosGeneralesCompPort?wsdl</string>
@@ -116,7 +116,7 @@
     <string name="pref_usar_wifi_switch_on">Si</string>
     <string name="pref_usar_wifi_title">Conexión a impresora</string>
     <string name="pref_usuario_key">pref_usuario_key</string>
-    <string name="preferences_title">Configuracion</string>
+    <string name="preferences_title">Configuración</string>
     <string name="search_results_bookmark">Resultado SIGDUE</string>
     <string name="titleApp">SIGDUE</string>
     <string name="title_activity_add_comparendo">Agregar comparendo</string>
