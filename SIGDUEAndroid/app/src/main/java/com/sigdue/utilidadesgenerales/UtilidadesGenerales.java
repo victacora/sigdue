@@ -1,5 +1,6 @@
 package com.sigdue.utilidadesgenerales;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -79,6 +80,7 @@ public class UtilidadesGenerales {
         return null;
     }
 
+    @SuppressLint("MissingPermission")
     public static String getIMEI() throws Exception {
         if (context == null) throw new Exception("No se ha establecido el contexto");
         String result = "";
