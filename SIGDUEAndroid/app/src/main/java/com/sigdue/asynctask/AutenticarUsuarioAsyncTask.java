@@ -50,11 +50,19 @@ public class AutenticarUsuarioAsyncTask extends AsyncTask<String, String, Usuari
                         u.setNombre_municipio(getHeaderParametro(headers, "p_nom_municipio"));
                         u.setNombre_establecimiento(getHeaderParametro(headers, "p_nom_establecimiento"));
                         u.setRector_establecimiento(getHeaderParametro(headers, "p_rec_establecimiento"));
-                        u.setLatitude(getHeaderParametro(headers, "p_latitud"));
-                        u.setLongitude(getHeaderParametro(headers, "p_longitud"));
+                        u.setLatitude(getHeaderParametro(headers, "p_latitud").replaceAll(",","."));
+                        u.setLongitude(getHeaderParametro(headers, "p_longitud").replaceAll(",","."));
                         u.setNombre_sede(getHeaderParametro(headers, "p_nom_sede"));
                         u.setZona_sede(getHeaderParametro(headers, "p_zon_sede"));
                         u.setEst_sede(getHeaderParametro(headers, "p_est_sede"));
+                        /*u.setNombre_municipio("Almaguer");
+                        u.setNombre_establecimiento("I.E. NORMAL SUPERIOR SANTA CLARA");
+                        u.setRector_establecimiento("DUMER EUTINIO GAVIRIA");
+                        u.setLatitude("1.91374697900864");
+                        u.setLongitude("-76.85496223709");
+                        u.setNombre_sede("NORMAL NACIONAL SANTA CLARA - SEDE PRINCIPAL");
+                        u.setZona_sede("URBANA");
+                        u.setEst_sede("ANTIGUO-ACTIVO");*/
                         u.setUsuario(usuario);
                         u.setContrasena(contrasena);
                         resultadoAutenticacion = u;

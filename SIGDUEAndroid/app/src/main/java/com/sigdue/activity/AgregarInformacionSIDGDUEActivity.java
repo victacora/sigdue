@@ -519,6 +519,13 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
             longitude = locationTrack.getLongitude();
             latitude = locationTrack.getLatitude();
 
+            if (usuario != null) {
+                double longUsuario = getValorNumerico(usuario.getLongitude());
+                longitude = longUsuario != 0 && longUsuario != -1 ? longUsuario : longitude;
+                double latUsuario = getValorNumerico(usuario.getLatitude());
+                latitude = latUsuario != 0 && latUsuario != -1 ? latUsuario : latitude;
+            }
+
             latitudEditext.setText(String.valueOf(latitude));
             longitudEditext.setText(String.valueOf(longitude));
 
@@ -547,6 +554,15 @@ public class AgregarInformacionSIDGDUEActivity extends AppCompatActivity impleme
             map.getOverlays().add(new MapEventsOverlay(mReceive));
             map.getOverlays().add(startMarker);
 
+        }
+    }
+
+    private double getValorNumerico(String valor) {
+        try {
+            return Double.parseDouble(valor);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return -1;
         }
     }
 

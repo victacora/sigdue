@@ -10,6 +10,7 @@
             android:defaultValue="@string/pref_timeout_default"
             android:key="@string/pref_timeout_key"
             android:summary="@string/pref_timeout_summary"
+            android:inputType="number"
             android:title="@string/pref_timeout_title" />
     </PreferenceCategory>
 </PreferenceScreen>

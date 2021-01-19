@@ -1,10 +1,7 @@
 
 package com.sigdue.activity;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -35,7 +32,6 @@ import com.sigdue.utilidadesgenerales.UtilidadesGenerales;
 import java.util.List;
 
 import static com.sigdue.Constants.NOTIFICACIONES_ID;
-import static com.sigdue.Constants.RESPUESTA_SERVICIO;
 
 public class ListarInformacionSIGDUEActivity extends AppCompatActivity implements AsyncTaskSIGDUE, ExecuteTaskSIGDUE {
 
@@ -51,24 +47,6 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity implement
     private UsuarioDao usuarioDao;
     private PredialDao predialDao;
     private int totalTareas = 0;
-
-    private BroadcastReceiver mActualizarListaComparendosBroadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            try {
-                String result = intent.getStringExtra("resultado");
-                if (result != null && !result.equals("")) {
-                    if (app != null) {
-                        daoSession = app.getDaoSession();
-                    }
-                    ejecutarConsultaServicios(app.getIdUsuario());
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    };
-
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -286,9 +264,6 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity implement
                 this.daoSession = this.app.getDaoSession();
             }
             ejecutarConsultaServicios(this.app.getIdUsuario());
-            IntentFilter filter = new IntentFilter();
-            filter.addAction(RESPUESTA_SERVICIO);
-            registerReceiver(mActualizarListaComparendosBroadcastReceiver, filter);
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -298,7 +273,11 @@ public class ListarInformacionSIGDUEActivity extends AppCompatActivity implement
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(mActualizarListaComparendosBroadcastReceiver);
+    }
+
+    @Override
+    public void onBackPressed() {
+
     }
 
 

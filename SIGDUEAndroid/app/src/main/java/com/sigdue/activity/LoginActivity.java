@@ -146,16 +146,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncTaskSIGDUE 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         String mensaje = null;
         if (grantResults.length > 0) {
-            if (requestCode == UtilidadesGenerales.READ_PHONE_STATE_CODE
-                    && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                mensaje = "Error al activar permiso para consultar IMEI.";
-            } else if (requestCode == UtilidadesGenerales.CAMERA_CODE
-                    && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                mensaje = "Error al activar permiso para uso de camara.";
-            } else if (requestCode == UtilidadesGenerales.RECORD_AUDIO
-                    && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                mensaje = "Error al activar permiso para almacenar audio desde el equipo.";
-            } else if (requestCode == UtilidadesGenerales.ACCESS_WIFI_STATE_CODE
+            if (requestCode == UtilidadesGenerales.ACCESS_WIFI_STATE_CODE
                     && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 mensaje = "Error al activar permiso para consutar el estado de conexion a WIFI.";
             } else if (requestCode == UtilidadesGenerales.ACCESS_NETWORK_STATE_CODE
@@ -199,72 +190,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncTaskSIGDUE 
     private void verificarPersmisos() {
         int sdkInt = Build.VERSION.SDK_INT;
         if (sdkInt >= Build.VERSION_CODES.M) {
-            if (ActivityCompat.checkSelfPermission(this,
-                    Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-                android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
-                builder.setTitle("Información");
-                builder.setCancelable(false);
-                builder.setMessage("Esta aplicación requiere tener habilitado el permiso para consultar el IMEI del equipo.");
-                builder.setPositiveButton("Activar", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.READ_PHONE_STATE},
-                                UtilidadesGenerales.READ_PHONE_STATE_CODE);
-                        dialog.dismiss();
-                    }
-                });
-                android.app.AlertDialog alert = builder.create();
-                alert.show();
-
-                Log.i(TAG, "Solicitar permiso para consultar IMEI.");
-            } else if (ActivityCompat.checkSelfPermission(this,
-                    Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
-                builder.setTitle("Información");
-                builder.setCancelable(false);
-                builder.setMessage("Esta aplicación requiere tener habilitado el permiso para hacer uso de la cámara del equipo.");
-                builder.setPositiveButton("Activar", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.CAMERA},
-                                UtilidadesGenerales.CAMERA_CODE);
-                        dialog.dismiss();
-                    }
-                });
-                android.app.AlertDialog alert = builder.create();
-                alert.show();
-                Log.i(TAG, "Solicitar permiso para uso de camara.");
-            } else if (ActivityCompat.checkSelfPermission(this,
-                    Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
-                builder.setTitle("Información");
-                builder.setCancelable(false);
-                builder.setMessage("Esta aplicación requiere tener habilitado el permiso para almacenar audio desde el equipo.");
-                builder.setPositiveButton("Activar", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.RECORD_AUDIO},
-                                UtilidadesGenerales.RECORD_AUDIO);
-                        dialog.dismiss();
-                    }
-                });
-                android.app.AlertDialog alert = builder.create();
-                alert.show();
-                Log.i(TAG, "Solicitar permiso para uso de audio.");
-            } else if (ActivityCompat.checkSelfPermission(this,
-                    Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
-                builder.setTitle("Información");
-                builder.setCancelable(false);
-                builder.setMessage("Esta aplicación requiere tener habilitado el permiso para almacenar audio desde el equipo.");
-                builder.setPositiveButton("Activar", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.CAMERA},
-                                UtilidadesGenerales.RECORD_AUDIO);
-                        dialog.dismiss();
-                    }
-                });
-                android.app.AlertDialog alert = builder.create();
-                alert.show();
-                Log.i(TAG, "Solicitar permiso para uso de audio.");
-            } else if (ActivityCompat.checkSelfPermission(this,
+           if (ActivityCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_WIFI_STATE) != PackageManager.PERMISSION_GRANTED) {
                 android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
                 builder.setTitle("Información");
